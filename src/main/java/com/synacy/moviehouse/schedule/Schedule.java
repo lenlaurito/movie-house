@@ -2,27 +2,34 @@ package com.synacy.moviehouse.schedule;
 
 import com.synacy.moviehouse.cinema.Cinema;
 import com.synacy.moviehouse.movie.Movie;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
 
+@Getter
+@EqualsAndHashCode(of = {"id"})
 @Entity
 public class Schedule {
 
 	@Id @GeneratedValue
 	private Long id;
 
-	@NotNull @OneToOne(fetch = FetchType.LAZY)
+	@Setter	@NotNull
+	@OneToOne(fetch = FetchType.LAZY)
 	private Movie movie;
 
-	@NotNull @OneToOne(fetch = FetchType.LAZY)
+	@Setter @NotNull
+	@OneToOne(fetch = FetchType.LAZY)
 	private Cinema cinema;
 
-	@NotNull
+	@Setter @NotNull
 	private Date startDateTime;
 
-	@NotNull
+	@Setter @NotNull
 	private Date endDateTime;
 
 }
