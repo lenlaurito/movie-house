@@ -33,11 +33,11 @@ public class Schedule {
 	private Date date;
 
 	@NotNull @Setter
-	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm Z", timezone="GMT")
 	private Date startDateTime;
 
 	@NotNull @Setter
-	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm Z", timezone="GMT")
 	private Date endDateTime;
 
 }

@@ -44,15 +44,12 @@ public class ScheduleController {
                                            @RequestParam(value = "max", required = false) Integer max,
                                            @RequestParam(value = "date", required = false) String dateInString) throws ParseException {
 
-        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        Date date = dateFormat.parse(dateInString);
-
         if (offset == null && max == null) {
-            List<Schedule> scheduleList =  scheduleService.fetchAll(date);
+            List<Schedule> scheduleList =  scheduleService.fetchAll(dateInString);
             return ResponseEntity.ok().body(scheduleList);
         }
         else if(offset != null && max != null) {
-            Page<Schedule> schedulePage =  scheduleService.fetchAllPaginated(date, offset, max);
+            Page<Schedule> schedulePage =  scheduleService.fetchAllPaginated(dateInString, offset, max);
             return ResponseEntity.ok().body(schedulePage);
         }
         else{
@@ -85,7 +82,8 @@ public class ScheduleController {
             return scheduleService.updateSchedule(scheduleToBeUpdated, movie, cinema, schedule.getStartDateTime(), schedule.getEndDateTime());
     }
 
-    @RequestMapping(method = RequestMethod.DELETE, value = "/{scheduleId")
+    @RequestMapping(method = RequestMethod.DELETE, value = "/{scheduleId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteSchedule(@PathVariable(value = "scheduleId") Long scheduleId){
         Schedule schedule = scheduleService.fetchById(scheduleId);
         scheduleService.deleteSchedule(schedule);

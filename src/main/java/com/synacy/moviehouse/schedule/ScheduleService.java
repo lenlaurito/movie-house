@@ -1,12 +1,9 @@
 package com.synacy.moviehouse.schedule;
 
 import com.synacy.moviehouse.cinema.Cinema;
-import com.synacy.moviehouse.cinema.CinemaRepository;
 import com.synacy.moviehouse.exception.InvalidDataPassedException;
-import com.synacy.moviehouse.exception.InvalidParameterException;
 import com.synacy.moviehouse.exception.NoContentFoundException;
 import com.synacy.moviehouse.movie.Movie;
-import com.synacy.moviehouse.movie.MovieRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -38,11 +35,11 @@ public class ScheduleService {
             return schedule;
     }
 
-    public List<Schedule> fetchAll(Date date) {
+    public List<Schedule> fetchAll(String dateInString) throws ParseException {
         List<Schedule> scheduleList;
 
-        if(date != null)
-           scheduleList = scheduleRepository.findAllByDate(date);
+        if(dateInString != null)
+           scheduleList = scheduleRepository.findAllByDate(dateFormatter(dateInString));
         else
             scheduleList = (List)scheduleRepository.findAll();
 
@@ -52,11 +49,11 @@ public class ScheduleService {
             return scheduleList;
     }
 
-    public Page<Schedule> fetchAllPaginated(Date date, Integer offset, Integer max) {
+    public Page<Schedule> fetchAllPaginated(String dateInString, Integer offset, Integer max) throws ParseException {
         Page<Schedule> page;
 
-        if(date != null)
-            page = scheduleRepository.findAllByDate(date,new PageRequest(offset, max));
+        if(dateInString != null)
+            page = scheduleRepository.findAllByDate(dateFormatter(dateInString),new PageRequest(offset, max));
         else
             page = scheduleRepository.findAll(new PageRequest(offset, max));
 
@@ -76,7 +73,8 @@ public class ScheduleService {
         schedule.setStartDateTime(startDateTime);
         schedule.setEndDateTime(endDateTime);
 
-        if(isValidEndDateTime(schedule.getMovie().getDuration(),schedule.getStartDateTime(),schedule.getEndDateTime()))
+        if(isValidEndDateTime(schedule.getMovie().getDuration(),schedule.getStartDateTime(),schedule.getEndDateTime())
+                && !isDateOverlapping(schedule))
             return  scheduleRepository.save(schedule);
         else
             throw new InvalidDataPassedException("Invalid Date Input");
@@ -89,7 +87,8 @@ public class ScheduleService {
         schedule.setStartDateTime(startDateTime);
         schedule.setEndDateTime(endDateTime);
 
-        if(isValidEndDateTime(schedule.getMovie().getDuration(),schedule.getStartDateTime(),schedule.getEndDateTime()))
+        if(isValidEndDateTime(schedule.getMovie().getDuration(),schedule.getStartDateTime(),schedule.getEndDateTime())
+                && !isDateOverlapping(schedule))
             return  scheduleRepository.save(schedule);
         else
             throw new InvalidDataPassedException("Invalid Date Input");
@@ -99,10 +98,32 @@ public class ScheduleService {
         scheduleRepository.delete(schedule);
     }
 
+    private Date dateFormatter(String dateInString) throws ParseException {
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        return dateFormat.parse(dateInString);
+    }
+
     private Boolean isValidEndDateTime(int duration, Date startTime, Date endTime){
         int differenceInMinutes = ((int) (endTime.getTime() - startTime.getTime()))/60000;
         if(differenceInMinutes >= duration) return true;
         else return false;
+    }
+
+    private Boolean isDateOverlapping(Schedule schedule){
+        List<Schedule> scheduleList = (List)scheduleRepository.findAll();
+        for(Schedule scheduleInList : scheduleList){
+            if(scheduleInList.getCinema() == schedule.getCinema()){
+                if((schedule.getStartDateTime().after(scheduleInList.getStartDateTime())
+                        && schedule.getStartDateTime().before(scheduleInList.getEndDateTime()))
+                        || (schedule.getEndDateTime().after(scheduleInList.getStartDateTime())
+                        && schedule.getEndDateTime().before(scheduleInList.getEndDateTime()))
+                        || schedule.getStartDateTime().equals(scheduleInList.getStartDateTime())
+                        || schedule.getEndDateTime().equals(scheduleInList.getEndDateTime())){
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
 }

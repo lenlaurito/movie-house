@@ -6,6 +6,9 @@ import org.springframework.boot.jackson.JsonObjectSerializer;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 
 /**
  * Created by steven on 5/13/17.
@@ -18,7 +21,8 @@ public class ScheduleSerializer extends JsonObjectSerializer<Schedule> {
         jgen.writeObjectField("movie", schedule.getMovie());
         jgen.writeObjectField("cinema", schedule.getCinema());
         //jgen.writeStringField("date", schedule.getDate().toString());
-        jgen.writeStringField("startDateTime", schedule.getStartDateTime().toString());
-        jgen.writeStringField("endDateTime", schedule.getEndDateTime().toString());
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm Z");
+        jgen.writeStringField("startDateTime", dateFormat.format(schedule.getStartDateTime()));
+        jgen.writeStringField("endDateTime", dateFormat.format(schedule.getEndDateTime()));
     }
 }
