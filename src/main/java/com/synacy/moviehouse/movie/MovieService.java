@@ -21,7 +21,6 @@ public class MovieService {
     MovieRepository movieRepository;
 
     public Movie fetchById(Long id) {
-
         Movie movie = movieRepository.findOne(id);
 
         if(movie == null)
@@ -32,40 +31,40 @@ public class MovieService {
 
     public List<Movie> fetchAll(String name, MovieGenre genre) {
 
-        List<Movie> movies;
+        List<Movie> movieList;
 
         if(name != null && genre == null)
-            movies = movieRepository.findByName(name);
+            movieList = movieRepository.findByName(name);
         else if(name == null && genre != null)
-            movies = movieRepository.findByGenre(genre);
+            movieList = movieRepository.findByGenre(genre);
         else if(name != null && genre != null)
-            movies = movieRepository.findByNameAndGenre(name,genre);
+            movieList = movieRepository.findByNameAndGenre(name,genre);
         else
-            movies = (List) movieRepository.findAll();
+            movieList = (List) movieRepository.findAll();
 
-        if(movies.size() < 1)
+        if(movieList.size() < 1)
             throw new NoContentFoundException("Not content found");
         else
-            return movies;
+            return movieList;
     }
 
     public Page<Movie> fetchAllPaginated(String name, MovieGenre genre, Integer offset, Integer max) {
 
-        Page<Movie> page;
+        Page<Movie> moviePage;
 
         if(name != null && genre == null)
-            page = movieRepository.findAllByName(name, new PageRequest(offset, max));
+            moviePage = movieRepository.findAllByName(name, new PageRequest(offset, max));
         else if(name == null && genre != null)
-            page = movieRepository.findAllByGenre(genre, new PageRequest(offset, max));
+            moviePage = movieRepository.findAllByGenre(genre, new PageRequest(offset, max));
         else if(name != null && genre != null)
-            page = movieRepository.findAllByNameAndGenre(name,genre,new PageRequest(offset, max));
+            moviePage = movieRepository.findAllByNameAndGenre(name,genre,new PageRequest(offset, max));
         else
-            page = movieRepository.findAll(new PageRequest(offset, max));
+            moviePage = movieRepository.findAll(new PageRequest(offset, max));
 
-        if(page.getTotalPages() < 1)
+        if(moviePage.getTotalPages() < 1)
             throw new NoContentFoundException("Not content found");
         else
-            return page;
+            return moviePage;
     }
 
     public Movie createMovie(String name, MovieGenre genre, int duration, String description) {

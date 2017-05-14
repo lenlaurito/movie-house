@@ -37,8 +37,8 @@ public class MovieController {
             return ResponseEntity.ok().body(movieList);
         }
         else if(offset != null && max != null) {
-            Page<Movie> movieList =  movieService.fetchAllPaginated(name, genre, offset, max);
-            return ResponseEntity.ok().body(movieList);
+            Page<Movie> moviePage =  movieService.fetchAllPaginated(name, genre, offset, max);
+            return ResponseEntity.ok().body(moviePage);
         }
         else{
             throw new InvalidParameterException("Parameters incomplete or isn't acceptable");

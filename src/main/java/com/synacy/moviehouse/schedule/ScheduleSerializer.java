@@ -17,6 +17,7 @@ public class ScheduleSerializer extends JsonObjectSerializer<Schedule> {
         jgen.writeNumberField("id", schedule.getId());
         jgen.writeObjectField("movie", schedule.getMovie());
         jgen.writeObjectField("cinema", schedule.getCinema());
+        //jgen.writeStringField("date", schedule.getDate().toString());
         jgen.writeStringField("startDateTime", schedule.getStartDateTime().toString());
         jgen.writeStringField("endDateTime", schedule.getEndDateTime().toString());
     }
