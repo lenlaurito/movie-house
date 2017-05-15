@@ -23,10 +23,10 @@ public class CinemaController {
     public List<Cinema> fetchAllCinema(Pageable pageable,
                                        @RequestParam(value = "type", required = false) String type) {
 
-        Sort sort = new Sort(Sort.Direction.ASC, "type");
-        PageRequest pageRequest = new PageRequest(pageable.getOffset(), pageable.getPageSize(), sort);
+        //Sort sort = new Sort(Sort.Direction.ASC, "type");
+        //PageRequest pageRequest = new PageRequest(pageable.getOffset(), pageable.getPageSize(), sort);
 
-        return cinemaService.fetchAllCinema(pageRequest, type);
+        return cinemaService.fetchAllCinema(pageable, type);
     }
 
     @RequestMapping(method = RequestMethod.POST)
