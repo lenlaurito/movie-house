@@ -65,7 +65,7 @@ public class ScheduleServiceTest {
         int page = 0;
         int size = 10;
 
-        String date = "2017-01-01";
+        Date date = mock(Date.class);
         String movieName = "matrix";
 
         Page pageOjb = mock(Page.class);

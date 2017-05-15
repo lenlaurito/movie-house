@@ -26,10 +26,10 @@ public class MovieController {
                                    @RequestParam(value = "genre", required = false) String genre,
                                    @RequestParam(value = "name", required = false) String name) {
 
-        Sort sort = new Sort(Sort.Direction.ASC, "genre", "name");
-        PageRequest pageRequest = new PageRequest(pageable.getOffset(), pageable.getPageSize(), sort);
+        //Sort sort = new Sort(Sort.Direction.ASC, "genre", "name");
+        //PageRequest pageRequest = new PageRequest(pageable.getOffset(), pageable.getPageSize(), sort);
 
-        return movieService.fetchMovies(pageRequest, genre, name);
+        return movieService.fetchMovies(pageable, genre, name);
     }
 
     @RequestMapping(method = RequestMethod.POST)
