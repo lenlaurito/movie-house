@@ -36,7 +36,8 @@ public class MovieController {
     @ResponseStatus(HttpStatus.CREATED)
     public Movie createMovie(@RequestBody Movie movie) {
 
-        return movieService.createMovie(movie);
+        return movieService.createMovie(movie.getName(), movie.getGenre(), movie.getDuration(),
+                movie.getDescription());
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/{movieId}")
@@ -48,14 +49,8 @@ public class MovieController {
     public Movie updateMovie(@PathVariable(value = "movieId") Long movieId,
                              @RequestBody Movie movieRequest) {
 
-        Movie movie = movieService.fetchMovieById(movieId);
-
-        movie.setGenre(movieRequest.getGenre());
-        movie.setDuration(movieRequest.getDuration());
-        movie.setName(movieRequest.getName());
-        movie.setDescription(movieRequest.getDescription());
-
-        return movieService.updateMovie(movie);
+        return movieService.updateMovie(movieId, movieRequest.getName(), movieRequest.getGenre(),
+                movieRequest.getDuration(), movieRequest.getDescription());
     }
 
     @RequestMapping(method = RequestMethod.DELETE, value = "/{movieId}")

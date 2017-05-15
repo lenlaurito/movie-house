@@ -32,7 +32,14 @@ public class MovieService {
         return moviePage.getContent();
     }
 
-    public Movie createMovie(Movie movie) {
+    public Movie createMovie(String name, String genre, Integer duration, String description) {
+        Movie movie = new Movie();
+
+        movie.setName(name);
+        movie.setGenre(genre);
+        movie.setDuration(duration);
+        movie.setDescription(description);
+
         return movieRepository.save(movie);
     }
 
@@ -45,7 +52,14 @@ public class MovieService {
         return movie;
     }
 
-    public Movie updateMovie(Movie movie) {
+    public Movie updateMovie(Long movieId, String name, String genre, Integer duration, String description) {
+        Movie movie = fetchMovieById(movieId);
+
+        movie.setName(name);
+        movie.setGenre(genre);
+        movie.setDuration(duration);
+        movie.setDescription(description);
+
         return movieRepository.save(movie);
     }
 

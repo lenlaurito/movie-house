@@ -5,6 +5,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -95,13 +96,16 @@ public class MovieServiceTest {
     @Test
     public void createMovie_shouldSaveMovie() throws Exception {
 
-        Movie movie = mock(Movie.class);
+        String name = "sample";
+        String genre = "sample";
+        Integer duration = 1;
+        String description = "sample";
 
-        movieService.createMovie(movie);
+        movieService.createMovie(name, genre, duration, description);
 
         int expectedInvocation = 1;
 
-        verify(movieRepository, times(expectedInvocation)).save(ArgumentMatchers.eq(movie));
+        verify(movieRepository, times(expectedInvocation)).save(Mockito.any(Movie.class));
     }
 
     @Test
@@ -128,7 +132,10 @@ public class MovieServiceTest {
     public void updateMovie() throws Exception {
         Movie movie = mock(Movie.class);
 
-        movieService.updateMovie(movie);
+        when(movieRepository.findOne(movie.getId())).thenReturn(movie);
+
+        movieService.updateMovie(movie.getId(), movie.getName(), movie.getGenre(), movie.getDuration(),
+                movie.getDescription());
 
         int expectedInvocation = 1;
 
