@@ -32,7 +32,7 @@ public class ScheduleService {
     @Autowired @Getter
     CinemaService cinemaService;
 
-    public List<Schedule> fetchAllSchedules(Pageable pageable, String date) {
+    public List<Schedule> fetchAllSchedules(Pageable pageable, Date date) {
         Page<Schedule> schedulePage;
 
         if (date == null)

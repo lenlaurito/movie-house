@@ -1,10 +1,17 @@
 package com.synacy.moviehouse.schedule;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -20,8 +27,13 @@ public class ScheduleController {
     @RequestMapping(method = RequestMethod.GET)
     public List<Schedule> fetchAllSchedules(Pageable pageable,
                                             @RequestParam(value = "date", required = false) String date) {
-
-        return scheduleService.fetchAllSchedules(pageable, date);
+        Date d = null;
+        try {
+            d = new SimpleDateFormat("yyyy-MM-dd").parse(date);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return scheduleService.fetchAllSchedules(pageable, d);
     }
 
     @RequestMapping(method = RequestMethod.POST)
@@ -50,5 +62,14 @@ public class ScheduleController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteScheduleById(@PathVariable(value = "scheduleId") Long scheduleId) {
         scheduleService.deleteScheduleById(scheduleId);
+    }
+
+    @Bean
+    public MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter() {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+        MappingJackson2HttpMessageConverter converter =
+                new MappingJackson2HttpMessageConverter(mapper);
+        return converter;
     }
 }

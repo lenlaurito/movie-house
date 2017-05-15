@@ -10,5 +10,5 @@ import java.util.Date;
  * Created by michael on 5/15/17.
  */
 public interface ScheduleRepository extends PagingAndSortingRepository<Schedule, Long> {
-    Page<Schedule> findAllByStartDateTime(String date, Pageable pageable);
+    Page<Schedule> findAllByStartDateTime(Date date, Pageable pageable);
 }

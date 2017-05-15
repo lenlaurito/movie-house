@@ -1,5 +1,6 @@
 package com.synacy.moviehouse.schedule;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.synacy.moviehouse.cinema.Cinema;
 import com.synacy.moviehouse.movie.Movie;
 import lombok.Getter;
@@ -15,16 +16,18 @@ public class Schedule {
 	@Id @GeneratedValue @Setter @Getter
 	private Long id;
 
-	@NotNull @OneToOne(fetch = FetchType.LAZY) @Setter @Getter
+	@NotNull @Setter @Getter @OneToOne(fetch = FetchType.LAZY)
 	private Movie movie;
 
-	@NotNull @OneToOne(fetch = FetchType.LAZY) @Setter @Getter
+	@NotNull @Setter @Getter @OneToOne(fetch = FetchType.LAZY)
 	private Cinema cinema;
 
 	@NotNull @Setter @Getter
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm Z", timezone="GMT")
 	private Date startDateTime;
 
 	@NotNull @Setter @Getter
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm Z", timezone="GMT")
 	private Date endDateTime;
 
 }
