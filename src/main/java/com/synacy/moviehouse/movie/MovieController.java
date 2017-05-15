@@ -29,7 +29,7 @@ public class MovieController {
         Sort sort = new Sort(Sort.Direction.ASC, "genre", "name");
         PageRequest pageRequest = new PageRequest(pageable.getOffset(), pageable.getPageSize(), sort);
 
-        return movieService.fetchMovies(pageable, genre, name);
+        return movieService.fetchMovies(pageRequest, genre, name);
     }
 
     @RequestMapping(method = RequestMethod.POST)
@@ -37,6 +37,11 @@ public class MovieController {
     public Movie createMovie(@RequestBody Movie movie) {
 
         return movieService.createMovie(movie);
+    }
+
+    @RequestMapping(method = RequestMethod.GET, value = "/{movieId}")
+    public Movie fetchMovieById(@PathVariable(value = "movieId") Long movieId) {
+        return movieService.fetchMovieById(movieId);
     }
 
     @RequestMapping(method = RequestMethod.PUT, value = "/{movieId}")
