@@ -24,14 +24,20 @@ public class ScheduleController {
     @Autowired
     ScheduleService scheduleService;
 
+    @Autowired
+    SimpleDateFormat simpleDateFormat;
+
     @RequestMapping(method = RequestMethod.GET)
     public List<Schedule> fetchAllSchedules(Pageable pageable,
                                             @RequestParam(value = "date", required = false) String date) {
         Date d = null;
-        try {
-            d = new SimpleDateFormat("yyyy-MM-dd").parse(date);
-        } catch (ParseException e) {
-            e.printStackTrace();
+
+        if (date != null) {
+            try {
+                d = simpleDateFormat.parse(date);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
         }
         return scheduleService.fetchAllSchedules(pageable, d);
     }
