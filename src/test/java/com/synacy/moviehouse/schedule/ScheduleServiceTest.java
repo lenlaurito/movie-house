@@ -7,6 +7,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -17,7 +18,6 @@ import javax.persistence.NoResultException;
 import java.util.Date;
 import java.util.List;
 
-import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 /**
@@ -53,6 +53,8 @@ public class ScheduleServiceTest {
         when(scheduleRepository.findAll(pageRequest)).thenReturn(pageOjb);
         when(pageOjb.getContent()).thenReturn(schedules);
 
+        scheduleService.fetchAllSchedules(pageRequest, null);
+
         int expectedInvoccations = 1;
 
         verify(scheduleRepository, times(expectedInvoccations)).findAll(ArgumentMatchers.eq(pageRequest));
@@ -63,39 +65,33 @@ public class ScheduleServiceTest {
         int page = 0;
         int size = 10;
 
-        Date date = mock(Date.class);
-        String name = "matrix";
+        String date = "2017-01-01";
+        String movieName = "matrix";
 
         Page pageOjb = mock(Page.class);
         PageRequest pageRequest = mock(PageRequest.class);
         List<Schedule> schedules = mock(List.class);
 
-        when(scheduleRepository.findAllScheduleByDateContainingAndMovieNameContaing(date, name, pageRequest))
+        when(scheduleRepository.findAllByStartDateTime(date, pageRequest))
                 .thenReturn(pageOjb);
         when(pageOjb.getContent()).thenReturn(schedules);
 
+        scheduleService.fetchAllSchedules(pageRequest, date);
+
         int expectedInvoccations = 1;
 
-        verify(scheduleRepository, times(expectedInvoccations)).findAllScheduleByDateContainingAndMovieNameContaing(
+        verify(scheduleRepository, times(expectedInvoccations)).findAllByStartDateTime(
                 ArgumentMatchers.eq(date),
-                ArgumentMatchers.eq(name),
                 ArgumentMatchers.eq(pageRequest));
     }
 
     @Test
     public void createSchedule() throws Exception {
-        Schedule schedule = new Schedule();
-
-        schedule.setMovie(mock(Movie.class));
-        schedule.setStartDateTime(mock(Date.class));
-        schedule.setEndDateTime(mock(Date.class));
-        schedule.setCinema(mock(Cinema.class));
-
-        scheduleService.createSchedule(schedule);
+        scheduleService.createSchedule(mock(Date.class), mock(Date.class), mock(Movie.class), mock(Cinema.class));
 
         int expectedInvocations = 1;
 
-        verify(scheduleRepository, times(1)).save(schedule);
+        verify(scheduleRepository, times(1)).save(Mockito.any(Schedule.class));
     }
 
     @Test
@@ -106,7 +102,7 @@ public class ScheduleServiceTest {
 
         when(scheduleRepository.findOne(idToFind)).thenReturn(schedule);
 
-        scheduleService.fetchSscheduleById(idToFind);
+        scheduleService.fetchScheduleById(idToFind);
 
         int expectedInvocations = 1;
 
@@ -117,7 +113,7 @@ public class ScheduleServiceTest {
     public void fetchSscheduleById_notExist_shouldThrowException() throws Exception {
         Long idToFind = new Long(1);
 
-        scheduleService.fetchSscheduleById(idToFind);
+        scheduleService.fetchScheduleById(idToFind);
     }
 
     @Test
@@ -128,7 +124,8 @@ public class ScheduleServiceTest {
 
         when(scheduleRepository.findOne(idToFind)).thenReturn(schedule);
 
-        scheduleService.updateSchedule(idToFind, schedule);
+        scheduleService.updateSchedule(idToFind, mock(Date.class), mock(Date.class),
+                mock(Movie.class), mock(Cinema.class));
 
         int expectedInvocations = 1;
 
