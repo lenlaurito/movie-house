@@ -10,12 +10,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 
 import javax.persistence.NoResultException;
 import java.util.List;
 
-import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 /**
@@ -82,7 +80,7 @@ public class MovieServiceTest {
 
         PageRequest pageRequest = new PageRequest(page, size);
 
-        when(movieRepository.findAll(pageRequest)).thenReturn(pageOjb);
+        when(movieRepository.findMoviesByGenreContainingAndNameContaining(genre, name, pageRequest)).thenReturn(pageOjb);
         when(pageOjb.getContent()).thenReturn(movies);
         when(movies.size()).thenReturn(2);
 
@@ -90,10 +88,10 @@ public class MovieServiceTest {
 
         int expectedInvocation = 1;
 
-        verify(movieRepository, times(expectedInvocation)).findAllWithGenreAndName(
-                ArgumentMatchers.eq(pageRequest),
+        verify(movieRepository, times(expectedInvocation)).findMoviesByGenreContainingAndNameContaining(
                 ArgumentMatchers.eq(genre),
-                ArgumentMatchers.eq(name));
+                ArgumentMatchers.eq(name),
+                ArgumentMatchers.eq(pageRequest));
     }
 
     @Test(expected = NoResultException.class)
@@ -163,14 +161,13 @@ public class MovieServiceTest {
 
         Movie movie = mock(Movie.class);
 
-
         when(movieRepository.findOne(idToFind)).thenReturn(movie);
 
-        movieService.fetchMovieById(idToFind);
+        movieService.deleteMovie(idToFind);
 
         int expectedInvocations = 1;
 
         verify(movieRepository, times(expectedInvocations)).findOne(ArgumentMatchers.eq(idToFind));
-        verify(movieRepository, times(expectedInvocations)).delete(movie);
+        verify(movieRepository, times(expectedInvocations)).delete(ArgumentMatchers.eq(movie));
     }
 }

@@ -1,6 +1,7 @@
 package com.synacy.moviehouse.movie;
 
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.Commit;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.transaction.TestTransaction;
 import org.springframework.test.jdbc.JdbcTestUtils;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,10 +43,9 @@ public class MovieServiceIntegreationTest {
 
     @Test
     @Sql(statements = "insert into movie values (100000, null, 120, 'sample genre 1', 'sample name 0')")
-    @Sql(statements = "insert into movie values (100000, null, 120, 'sample genre 1', 'sample name 1')")
-    @Sql(statements = "insert into movie values (100000, null, 120, 'sample genre 2', 'sample name 2')")
-    @Sql(statements = "insert into movie values (100000, null, 120, 'sample genre 3', 'sample name 3')")
-    @Sql(statements = "insert into topic (id, name) values ('af200c05-fe22-4966-8cda-ff044cfbd535', 'java')")
+    @Sql(statements = "insert into movie values (100001, null, 120, 'sample genre 1', 'sample name 1')")
+    @Sql(statements = "insert into movie values (100002, null, 120, 'sample genre 2', 'sample name 2')")
+    @Sql(statements = "insert into movie values (100003, null, 120, 'sample genre 3', 'sample name 3')")
     public void fetchMovies_withNoFilter_shouldReturnFilteredCollectionOfMovies() throws Exception {
         int page = 0;
         int size = 10;
@@ -53,16 +54,15 @@ public class MovieServiceIntegreationTest {
 
         Iterable<Movie> movies = movieService.fetchMovies(pageRequest, null, null);
 
-        int expectedSize = 5;
+        int expectedSize = 4;
         assertEquals(expectedSize, movies.spliterator().getExactSizeIfKnown());
     }
 
     @Test
     @Sql(statements = "insert into movie values (100000, null, 120, 'sample genre 1', 'sample name 0')")
-    @Sql(statements = "insert into movie values (100000, null, 120, 'sample genre 1', 'sample name 1')")
-    @Sql(statements = "insert into movie values (100000, null, 120, 'sample genre 2', 'sample name 2')")
-    @Sql(statements = "insert into movie values (100000, null, 120, 'sample genre 3', 'sample name 3')")
-    @Sql(statements = "insert into topic (id, name) values ('af200c05-fe22-4966-8cda-ff044cfbd535', 'java')")
+    @Sql(statements = "insert into movie values (100001, null, 120, 'sample genre 1', 'sample name 1')")
+    @Sql(statements = "insert into movie values (100002, null, 120, 'sample genre 2', 'sample name 2')")
+    @Sql(statements = "insert into movie values (100003, null, 120, 'sample genre 3', 'sample name 3')")
     public void fetchMovies_withFilter_shouldReturnFilteredCollectionOfMovies() throws Exception {
         int page = 0;
         int size = 10;
@@ -79,8 +79,6 @@ public class MovieServiceIntegreationTest {
     }
 
     @Test
-    @Sql(statements = "insert into movie values (100000, null, 120, 'sample genre 1', 'sample name 0')")
-    @Sql(statements = "insert into movie values (100000, null, 120, 'sample genre 1', 'sample name 1')")
     @Commit
     public void createMovie_movieIsSaved() throws Exception {
         Movie movie = new Movie();
@@ -90,9 +88,10 @@ public class MovieServiceIntegreationTest {
         movie.setGenre("action");
 
         Movie savedMovie = movieService.createMovie(movie);
+        TestTransaction.end();
 
         int expectedSize = 1;
-        String condition = "id='" + savedMovie.getDescription() + "'";
+        String condition = "id='" + savedMovie.getId() + "'";
 
         assertEquals(expectedSize, JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, tableName, condition));
     }
@@ -109,6 +108,7 @@ public class MovieServiceIntegreationTest {
 
     @Test
     @Sql(statements = "insert into movie values (100000, null, 120, 'sample genre 1', 'sample name 0')")
+    @Commit
     public void updateMovie_movieIsSaved() throws Exception {
         Long idToFind = new Long(100000);
 
@@ -117,9 +117,10 @@ public class MovieServiceIntegreationTest {
         movie.setName("sample name 123");
 
         Movie savedMovie = movieService.updateMovie(movie);
+        TestTransaction.end();
 
         int expectedSize = 1;
-        String condition = "id='" + savedMovie.getDescription() + "' and name = '" + movie.getName() + "'";
+        String condition = "id='" + savedMovie.getId() + "' and name = '" + movie.getName() + "'";
 
         assertEquals(expectedSize, JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, tableName, condition));
     }
