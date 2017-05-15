@@ -133,12 +133,12 @@ public class CinemaServiceTest {
 
         when(cinemaRepository.findOne(idToFind)).thenReturn(cinema);
 
-        cinemaService.fetchCinemaById(idToFind);
+        cinemaService.deleteCinemaById(idToFind);
 
         int expectedInvocations = 1;
 
-        verify(cinemaRepository, times(expectedInvocations)).findOne(idToFind);
-        verify(cinemaRepository, times(expectedInvocations)).delete(cinema);
+        verify(cinemaRepository, times(expectedInvocations)).findOne(ArgumentMatchers.eq(idToFind));
+        verify(cinemaRepository, times(expectedInvocations)).delete(ArgumentMatchers.eq(cinema));
     }
 
     @Test(expected = NoResultException.class)

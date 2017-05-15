@@ -39,10 +39,10 @@ public class CinemaServiceIntegrationTest {
     }
 
     @Test
-    @Sql(statements = "insert into movie cinema (100000, 'sample 1', 'type 1")
-    @Sql(statements = "insert into movie cinema (100000, 'sample 2', 'type 1")
-    @Sql(statements = "insert into movie cinema (100000, 'sample 3', 'type 2")
-    @Sql(statements = "insert into movie cinema (100000, 'sample 4', 'type 2")
+    @Sql(statements = "insert into cinema values (100000, 'sample 1', 'type 1')")
+    @Sql(statements = "insert into cinema values (100001, 'sample 2', 'type 1')")
+    @Sql(statements = "insert into cinema values (100002, 'sample 3', 'type 2')")
+    @Sql(statements = "insert into cinema values (100003, 'sample 4', 'type 2')")
     public void fetchAllCinema_withoutFilter_shouldReturnAllCollectionOfCinema() throws Exception {
         int page = 0;
         int size = 10;
@@ -57,9 +57,9 @@ public class CinemaServiceIntegrationTest {
     }
 
     @Test
-    @Sql(statements = "insert into movie cinema (100000, 'sample 1', 'type 1")
-    @Sql(statements = "insert into movie cinema (100000, 'sample 3', 'type 2")
-    @Sql(statements = "insert into movie cinema (100000, 'sample 4', 'type 2")
+    @Sql(statements = "insert into cinema values (100000, 'sample 1', 'type 1')")
+    @Sql(statements = "insert into cinema values (100001, 'sample 3', 'type 2')")
+    @Sql(statements = "insert into cinema values (100002, 'sample 4', 'type 2')")
     public void fetchAllCinema_withFilter_shouldReturnAllCollectionOfCinemaOfSameType() throws Exception {
         int page = 0;
         int size = 10;
@@ -92,7 +92,7 @@ public class CinemaServiceIntegrationTest {
     }
 
     @Test
-    @Sql(statements = "insert into movie cinema (100000, 'sample 1', 'type 1")
+    @Sql(statements = "insert into cinema values (100000, 'sample 1', 'type 1')")
     @Commit
     public void saveCinema_existing_cinemaIsSaved() throws Exception {
         Long idToFind = new Long(100000);
@@ -113,7 +113,7 @@ public class CinemaServiceIntegrationTest {
     }
 
     @Test
-    @Sql(statements = "insert into movie cinema (100000, 'sample 1', 'type 1")
+    @Sql(statements = "insert into cinema values (100000, 'sample 1', 'type 1')")
     public void fetchCinemaById_existing_shouldReturnCinema() throws Exception {
         Long idToFind = new Long(100000);
 
@@ -131,16 +131,17 @@ public class CinemaServiceIntegrationTest {
     }
 
     @Test
-    @Sql(statements = "insert into movie cinema (100000, 'sample 1', 'type 1")
+    @Sql(statements = "insert into cinema values (100000, 'sample 1', 'type 1')")
     @Commit
     public void deleteCinemaById() throws Exception {
         Long idToFind = new Long(100000);
 
         cinemaService.deleteCinemaById(idToFind);
+        TestTransaction.end();
 
         int expectedSize = 0;
 
-        String condition = "id='" + idToFind + "'";
+        String condition = "id='" + idToFind.toString() + "'";
 
         assertEquals(expectedSize, JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, "cinema", condition));
     }
