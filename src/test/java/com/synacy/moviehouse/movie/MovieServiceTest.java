@@ -54,7 +54,6 @@ public class MovieServiceTest {
 
         when(movieRepository.findAll(pageRequest)).thenReturn(pageOjb);
         when(pageOjb.getContent()).thenReturn(movies);
-        when(movies.size()).thenReturn(2);
 
         movieService.fetchMovies(pageRequest, null, null);
 
@@ -82,7 +81,6 @@ public class MovieServiceTest {
 
         when(movieRepository.findMoviesByGenreContainingAndNameContaining(genre, name, pageRequest)).thenReturn(pageOjb);
         when(pageOjb.getContent()).thenReturn(movies);
-        when(movies.size()).thenReturn(2);
 
         movieService.fetchMovies(pageRequest, genre, name);
 
@@ -92,24 +90,6 @@ public class MovieServiceTest {
                 ArgumentMatchers.eq(genre),
                 ArgumentMatchers.eq(name),
                 ArgumentMatchers.eq(pageRequest));
-    }
-
-    @Test(expected = NoResultException.class)
-    public void fetchMovies_emptyData_shouldThrowException() throws Exception {
-        int page = 0;
-        int size = 10;
-
-        Page pageOjb = mock(Page.class);
-
-        List<Movie> movies = mock(List.class);
-
-        PageRequest pageRequest = new PageRequest(page, size);
-
-        when(movieRepository.findAll(pageRequest)).thenReturn(pageOjb);
-        when(pageOjb.getContent()).thenReturn(movies);
-        when(movies.size()).thenReturn(0);
-
-        movieService.fetchMovies(pageRequest, null, null);
     }
 
     @Test

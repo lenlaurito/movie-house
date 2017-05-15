@@ -21,16 +21,13 @@ public class MovieService {
     @Autowired @Setter @Getter
     private MovieRepository movieRepository;
 
-    public List<Movie> fetchMovies(Pageable pageable, String genre, String name) throws Exception {
+    public List<Movie> fetchMovies(Pageable pageable, String genre, String name) {
         Page<Movie> moviePage = null;
 
         if (genre == null && name == null)
             moviePage = movieRepository.findAll(pageable);
         else
             moviePage = movieRepository.findMoviesByGenreContainingAndNameContaining(genre, name, pageable);
-
-        if (moviePage.getContent().size() == 0)
-            throw new NoResultException();
 
         return moviePage.getContent();
     }
