@@ -32,7 +32,12 @@ public class CinemaService {
         return cinemaPage.getContent();
     }
 
-    public Cinema saveCinema(Cinema cinema) {
+    public Cinema createCinema(String name, String type) {
+        Cinema cinema = new Cinema();
+
+        cinema.setName(name);
+        cinema.setType(type);
+
         return cinemaRepository.save(cinema);
     }
 
@@ -43,6 +48,15 @@ public class CinemaService {
             throw new NoResultException();
 
         return cinema;
+    }
+
+    public Cinema updateCinema(Long cinemaId, String name, String type) {
+        Cinema cinema = fetchCinemaById(cinemaId);
+
+        cinema.setName(name);
+        cinema.setType(type);
+
+        return cinemaRepository.save(cinema);
     }
 
     public void deleteCinemaById(Long cinemaId) {

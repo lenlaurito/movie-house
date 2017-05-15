@@ -32,7 +32,8 @@ public class CinemaController {
     @RequestMapping(method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.CREATED)
     public Cinema createCinema(@RequestBody Cinema cinemaRequest) {
-        return cinemaService.saveCinema(cinemaRequest);
+
+        return cinemaService.createCinema(cinemaRequest.getName(), cinemaRequest.getType());
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/{cinemaId}")
@@ -43,12 +44,8 @@ public class CinemaController {
     @RequestMapping(method = RequestMethod.PUT, value = "/{cinemaId}")
     public Cinema updateCinema(@PathVariable(value = "cinemaId")Long cinemaId,
                                @RequestBody Cinema cinemaRequest) {
-        Cinema cinemaToBeUpdated = cinemaService.fetchCinemaById(cinemaId);
 
-        cinemaToBeUpdated.setName(cinemaRequest.getName());
-        cinemaToBeUpdated.setType(cinemaRequest.getType());
-
-        return cinemaService.saveCinema(cinemaToBeUpdated);
+        return cinemaService.updateCinema(cinemaId, cinemaRequest.getName(), cinemaRequest.getType());
     }
 
     @RequestMapping(method = RequestMethod.DELETE, value = "/{cinemaId}")

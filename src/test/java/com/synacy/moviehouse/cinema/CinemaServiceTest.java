@@ -5,6 +5,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -75,31 +76,28 @@ public class CinemaServiceTest {
     }
 
     @Test
-    public void saveCinema_new_shouldSaveMovie() throws Exception {
-        Cinema cinema = new Cinema();
+    public void createCinema_shouldSaveMovie() throws Exception {
 
-        cinema.setName("sample");
-        cinema.setType("sample");
-
-        cinemaService.saveCinema(cinema);
+        cinemaService.createCinema("sample", "sample");
 
         int expectedInvoccations = 1;
 
-        verify(cinemaRepository, times(expectedInvoccations)).save(ArgumentMatchers.eq(cinema));
+        verify(cinemaRepository, times(expectedInvoccations)).save(Mockito.any(Cinema.class));
     }
 
     @Test
-    public void saveCinema_existing_shouldSaveMovie() throws Exception {
+    public void updateCinema_shouldSaveMovie() throws Exception {
+        Long idToFind = new Long(1);
+
         Cinema cinema = mock(Cinema.class);
 
-        cinema.setName("sample");
-        cinema.setType("sample");
+        when(cinemaRepository.findOne(idToFind)).thenReturn(cinema);
 
-        cinemaService.saveCinema(cinema);
+        cinemaService.updateCinema(idToFind, cinema.getName(), cinema.getType());
 
         int expectedInvoccations = 1;
 
-        verify(cinemaRepository, times(expectedInvoccations)).save(ArgumentMatchers.eq(cinema));
+        verify(cinemaRepository, times(expectedInvoccations)).save(Mockito.any(Cinema.class));
     }
 
 
