@@ -105,14 +105,15 @@ public class ScheduleService {
 
     private Boolean isValidEndDateTime(int duration, Date startTime, Date endTime){
         int differenceInMinutes = ((int) (endTime.getTime() - startTime.getTime()))/60000;
-        if(differenceInMinutes >= duration) return true;
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        if(differenceInMinutes >= duration && dateFormat.format(startTime).equals(dateFormat.format(endTime))) return true;
         else return false;
     }
 
     private Boolean isDateOverlapping(Schedule schedule){
         List<Schedule> scheduleList = (List)scheduleRepository.findAll();
         for(Schedule scheduleInList : scheduleList){
-            if(scheduleInList.getCinema() == schedule.getCinema()){
+            if(scheduleInList.getCinema().getId() == schedule.getCinema().getId()){
                 if((schedule.getStartDateTime().after(scheduleInList.getStartDateTime())
                         && schedule.getStartDateTime().before(scheduleInList.getEndDateTime()))
                         || (schedule.getEndDateTime().after(scheduleInList.getStartDateTime())
