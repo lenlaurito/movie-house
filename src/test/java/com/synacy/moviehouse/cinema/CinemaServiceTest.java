@@ -63,11 +63,14 @@ public class CinemaServiceTest {
         when(cinemaRepository.findAll(pageRequest)).thenReturn(page);
         when(page.getContent()).thenReturn(cinemas);
 
-        cinemaService.fetchAllCinema(pageRequest, type);
+        List<Cinema> fetchedCinema = cinemaService.fetchAllCinema(pageRequest, type);
 
         int expectedInvoccations = 1;
 
         verify(cinemaRepository, times(expectedInvoccations)).findAll(ArgumentMatchers.eq(pageRequest));
+
+        assert fetchedCinema.get(0).equals(cinema1);
+        assert fetchedCinema.get(1).equals(cinema2);
     }
 
     @Test
@@ -103,49 +106,72 @@ public class CinemaServiceTest {
                 ArgumentMatchers.eq(pageRequest));
 
         assert  fetchedCinemas.size() == 2;
-        assert fetchedCinemas.get(0).equals(cinema1) == true;
-        assert fetchedCinemas.get(1).equals(cinema2) == true;
+        assert fetchedCinemas.get(0).equals(cinema1);
+        assert fetchedCinemas.get(1).equals(cinema2);
     }
 
     @Test
     public void createCinema_shouldSaveMovie() throws Exception {
+        String name = "sample";
+        String type = "sample type";
 
-        cinemaService.createCinema("sample", "sample");
+        Cinema cinema = new Cinema();
+
+        cinema.setName(name);
+        cinema.setType(type);
+
+        when(cinemaRepository.save(Mockito.any(Cinema.class))).thenReturn(cinema);
+
+        Cinema cinemaCreated = cinemaService.createCinema("sample", "sample");
 
         int expectedInvoccations = 1;
 
         verify(cinemaRepository, times(expectedInvoccations)).save(Mockito.any(Cinema.class));
+
+        assert cinemaCreated.getName() == name;
+        assert cinemaCreated.getType() == type;
     }
 
     @Test
     public void updateCinema_shouldSaveMovie() throws Exception {
         Long idToFind = new Long(1);
 
-        Cinema cinema = mock(Cinema.class);
+        String nameToUpdate = "any";
+        String typeToUpdate = "test";
+
+        Cinema cinema = new Cinema();
+        cinema.setId(idToFind);
 
         when(cinemaRepository.findOne(idToFind)).thenReturn(cinema);
+        when(cinemaRepository.save(cinema)).thenReturn(cinema);
 
-        cinemaService.updateCinema(idToFind, cinema.getName(), cinema.getType());
+        Cinema updatedCinema = cinemaService.updateCinema(idToFind, nameToUpdate, typeToUpdate);
 
         int expectedInvoccations = 1;
 
         verify(cinemaRepository, times(expectedInvoccations)).save(Mockito.any(Cinema.class));
-    }
 
+        assert updatedCinema.getId() == idToFind;
+        assert updatedCinema.getName() == nameToUpdate;
+        assert updatedCinema.getType() == typeToUpdate;
+    }
 
     @Test
     public void fetchCinemaById_exist_shouldReturnCinema() throws Exception {
         Long idToFind = new Long(1);
 
-        Cinema cinema = mock(Cinema.class);
+        Cinema cinema = new Cinema();
+        cinema.setId(idToFind);
 
         when(cinemaRepository.findOne(idToFind)).thenReturn(cinema);
 
-        cinemaService.fetchCinemaById(idToFind);
+        Cinema found = cinemaService.fetchCinemaById(idToFind);
 
         int expectedInvocations = 1;
 
         verify(cinemaRepository, times(expectedInvocations)).findOne(idToFind);
+
+        assert found.getId() == idToFind;
     }
 
     @Test(expected = NoResultException.class)

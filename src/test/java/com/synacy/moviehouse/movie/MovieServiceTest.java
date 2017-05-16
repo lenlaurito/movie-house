@@ -126,11 +126,24 @@ public class MovieServiceTest {
         Integer duration = 1;
         String description = "sample";
 
-        movieService.createMovie(name, genre, duration, description);
+        Movie movie = new Movie();
+        movie.setName(name);
+        movie.setGenre(genre);
+        movie.setDuration(duration);
+        movie.setDescription(description);
+
+        when(movieRepository.save(Mockito.any(Movie.class))).thenReturn(movie);
+
+        Movie movieCreated = movieService.createMovie(name, genre, duration, description);
 
         int expectedInvocation = 1;
 
         verify(movieRepository, times(expectedInvocation)).save(Mockito.any(Movie.class));
+
+        assert movieCreated.getName() == name;
+        assert movieCreated.getGenre() == genre;
+        assert movieCreated.getDuration() == duration;
+        assert movieCreated.getDescription() == description;
     }
 
     @Test
@@ -155,23 +168,37 @@ public class MovieServiceTest {
 
     @Test
     public void updateMovie() throws Exception {
-        Movie movie = mock(Movie.class);
+        Movie movie = new Movie();
+
+        movie.setName("sample");
+        movie.setGenre("sample");
+        movie.setDuration(120);
 
         when(movieRepository.findOne(movie.getId())).thenReturn(movie);
+        when(movieRepository.save(movie)).thenReturn(movie);
 
-        movieService.updateMovie(movie.getId(), movie.getName(), movie.getGenre(), movie.getDuration(),
+        Movie fetchedMovie = movieService.updateMovie(movie.getId(), movie.getName(), movie.getGenre(), movie.getDuration(),
                 movie.getDescription());
 
         int expectedInvocation = 1;
 
         verify(movieRepository, times(expectedInvocation)).save(ArgumentMatchers.eq(movie));
+
+        assert fetchedMovie.getName() == "sample";
+        assert fetchedMovie.getGenre() == "sample";
+        assert fetchedMovie.getDuration() == 120;
+        assert fetchedMovie.getDescription() == null;
     }
 
     @Test
     public void deleteMovie_noException_shouldFindAndDeleteMovie() throws Exception {
         Long idToFind = new Long(1);
 
-        Movie movie = mock(Movie.class);
+        Movie movie = new Movie();
+
+        movie.setName("sample");
+        movie.setGenre("sample");
+        movie.setDuration(120);
 
         when(movieRepository.findOne(idToFind)).thenReturn(movie);
 

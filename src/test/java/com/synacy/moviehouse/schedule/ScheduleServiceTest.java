@@ -111,24 +111,54 @@ public class ScheduleServiceTest {
         Movie movie = new Movie();
         Cinema cinema = new Cinema();
 
+        Schedule schedule = new Schedule();
+        schedule.setStartDateTime(start);
+        schedule.setEndDateTime(end);
+        schedule.setMovie(movie);
+        schedule.setCinema(cinema);
+
         when(scheduleRepository.isScheduleAvailable(start, end)).thenReturn(false);
 
-        scheduleService.createSchedule(start, end, movie, cinema);
+        Schedule createdSchedule = scheduleService.createSchedule(start, end, movie, cinema);
+
+        verify(scheduleRepository, times(1))
+                .save(ArgumentMatchers.eq(Mockito.any(Schedule.class)));
+
+        assert createdSchedule.getStartDateTime().equals(start);
+        assert createdSchedule.getEndDateTime().equals(end);
+        assert createdSchedule.getMovie().equals(movie);
+        assert createdSchedule.getCinema().equals(cinema);
     }
 
     @Test
     public void fetchSscheduleById_exist_shouldReturnSchedule() throws Exception {
         Long idToFind = new Long(1);
 
-        Schedule schedule = mock(Schedule.class);
+        Date start = new SimpleDateFormat("yyyy-MM-dd").parse("2016-01-01");
+        Date end = new SimpleDateFormat("yyyy-MM-dd").parse("2016-01-31");
+        Movie movie = new Movie();
+        Cinema cinema = new Cinema();
+
+        Schedule schedule = new Schedule();
+        schedule.setId(idToFind);
+        schedule.setStartDateTime(start);
+        schedule.setEndDateTime(end);
+        schedule.setMovie(movie);
+        schedule.setCinema(cinema);
 
         when(scheduleRepository.findOne(idToFind)).thenReturn(schedule);
 
-        scheduleService.fetchScheduleById(idToFind);
+        Schedule fetchedSchedule = scheduleService.fetchScheduleById(idToFind);
 
         int expectedInvocations = 1;
 
         verify(scheduleRepository, times(expectedInvocations)).findOne(idToFind);
+
+        assert fetchedSchedule.getId().equals(idToFind);
+        assert fetchedSchedule.getStartDateTime().equals(start);
+        assert fetchedSchedule.getEndDateTime().equals(end);
+        assert fetchedSchedule.getMovie().equals(movie);
+        assert fetchedSchedule.getCinema().equals(cinema);
     }
 
     @Test(expected = NoResultException.class)
@@ -142,24 +172,37 @@ public class ScheduleServiceTest {
     public void updateSchedule_exist_shouldSaveSchedule() throws Exception {
         Long idToFind = new Long(1);
 
-        Schedule schedule = mock(Schedule.class);
+        Date start = new SimpleDateFormat("yyyy-MM-dd").parse("2016-01-01");
+        Date end = new SimpleDateFormat("yyyy-MM-dd").parse("2016-01-31");
+        Movie movie = new Movie();
+        Cinema cinema = new Cinema();
+
+        Schedule schedule = new Schedule();
+        schedule.setId(idToFind);
+        schedule.setStartDateTime(start);
 
         when(scheduleRepository.findOne(idToFind)).thenReturn(schedule);
+        when(scheduleRepository.save(schedule)).thenReturn(schedule);
 
-        scheduleService.updateSchedule(idToFind, mock(Date.class), mock(Date.class),
-                mock(Movie.class), mock(Cinema.class));
+        Schedule savedSchedule = scheduleService.updateSchedule(idToFind, start, end, movie, cinema);
 
         int expectedInvocations = 1;
 
         verify(scheduleRepository, times(expectedInvocations)).findOne(idToFind);
         verify(scheduleRepository, times(expectedInvocations)).save(schedule);
+
+        assert savedSchedule.getId().equals(idToFind);
+        assert savedSchedule.getStartDateTime().equals(start);
+        assert savedSchedule.getEndDateTime().equals(end);
+        assert savedSchedule.getMovie().equals(movie);
+        assert savedSchedule.getCinema().equals(cinema);
     }
 
     @Test
     public void deleteScheduleById_existing_shouldDeleteSchedule() throws Exception {
         Long idToFind = new Long(1);
 
-        Schedule schedule = mock(Schedule.class);
+        Schedule schedule = new Schedule();
 
         when(scheduleRepository.findOne(idToFind)).thenReturn(schedule);
 
