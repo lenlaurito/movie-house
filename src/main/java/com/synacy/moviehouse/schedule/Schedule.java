@@ -23,11 +23,11 @@ public class Schedule {
 	private Cinema cinema;
 
 	@NotNull @Setter @Getter
-	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm Z", timezone="GMT")
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone="GMT")
 	private Date startDateTime;
 
 	@NotNull @Setter @Getter
-	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm Z", timezone="GMT")
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone="GMT")
 	private Date endDateTime;
 
 }

@@ -44,6 +44,7 @@ public class ScheduleServiceTest {
     public void fetchAllSchedules_withNoFilter_shouldFindAll() throws Exception {
         int page = 0;
         int size = 10;
+
         String filter = null;
 
         Page pageOjb = mock(Page.class);
@@ -53,7 +54,7 @@ public class ScheduleServiceTest {
         when(scheduleRepository.findAll(pageRequest)).thenReturn(pageOjb);
         when(pageOjb.getContent()).thenReturn(schedules);
 
-        scheduleService.fetchAllSchedules(pageRequest, null);
+        scheduleService.fetchAllSchedules(pageRequest, null, null);
 
         int expectedInvoccations = 1;
 
@@ -65,23 +66,24 @@ public class ScheduleServiceTest {
         int page = 0;
         int size = 10;
 
-        Date date = mock(Date.class);
+        String date = "2017-01-01";
         String movieName = "matrix";
 
         Page pageOjb = mock(Page.class);
         PageRequest pageRequest = mock(PageRequest.class);
         List<Schedule> schedules = mock(List.class);
 
-        when(scheduleRepository.findAllByStartDateTime(date, pageRequest))
+        when(scheduleRepository.findAllWithinScheduleAndNameContaining(date, movieName, pageRequest))
                 .thenReturn(pageOjb);
         when(pageOjb.getContent()).thenReturn(schedules);
 
-        scheduleService.fetchAllSchedules(pageRequest, date);
+        scheduleService.fetchAllSchedules(pageRequest, date, movieName);
 
         int expectedInvoccations = 1;
 
-        verify(scheduleRepository, times(expectedInvoccations)).findAllByStartDateTime(
+        verify(scheduleRepository, times(expectedInvoccations)).findAllWithinScheduleAndNameContaining(
                 ArgumentMatchers.eq(date),
+                ArgumentMatchers.eq(movieName),
                 ArgumentMatchers.eq(pageRequest));
     }
 

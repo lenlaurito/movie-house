@@ -36,17 +36,17 @@ public class ScheduleControllerTest {
         scheduleController = new ScheduleController();
 
         scheduleController.scheduleService = scheduleService;
-        scheduleController.simpleDateFormat = simpleDateFormat;
     }
 
     @Test
     public void fetchAllSchedules() throws Exception {
         Pageable pageable = mock(Pageable.class);
 
-        scheduleController.fetchAllSchedules(pageable, null);
+        scheduleController.fetchAllSchedules(pageable, null, null);
 
         verify(scheduleService, times(1)).fetchAllSchedules(
                 ArgumentMatchers.eq(pageable),
+                ArgumentMatchers.eq(null),
                 ArgumentMatchers.eq(null)
         );
     }
@@ -55,14 +55,12 @@ public class ScheduleControllerTest {
     public void fetchAllSchedules_withFilterDate() throws Exception {
         String date = "2017-01-01";
         Pageable pageable = mock(Pageable.class);
-        Date d = mock(Date.class);
 
-        when(simpleDateFormat.parse(date)).thenReturn(d);
-
-        scheduleController.fetchAllSchedules(pageable, date);
+        scheduleController.fetchAllSchedules(pageable, date, "");
 
         verify(scheduleService, times(1)).fetchAllSchedules(ArgumentMatchers.eq(pageable),
-                ArgumentMatchers.eq(d));
+                ArgumentMatchers.eq(date),
+                ArgumentMatchers.eq(""));
     }
 
     @Test

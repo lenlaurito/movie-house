@@ -32,13 +32,16 @@ public class ScheduleService {
     @Autowired @Getter
     CinemaService cinemaService;
 
-    public List<Schedule> fetchAllSchedules(Pageable pageable, Date date) {
+    public List<Schedule> fetchAllSchedules(Pageable pageable, String date, String movieName) {
         Page<Schedule> schedulePage;
+
+        if (movieName == null)
+            movieName = "";
 
         if (date == null)
             schedulePage = scheduleRepository.findAll(pageable);
         else
-            schedulePage = scheduleRepository.findAllByStartDateTime(date, pageable);
+            schedulePage = scheduleRepository.findAllWithinScheduleAndNameContaining(date, movieName, pageable);
 
         return schedulePage.getContent();
 
