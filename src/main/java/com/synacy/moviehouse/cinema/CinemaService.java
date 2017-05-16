@@ -1,40 +1,19 @@
 package com.synacy.moviehouse.cinema;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import javax.transaction.Transactional;
 import java.util.List;
 
-@Service
-@Transactional
-public class CinemaService {
+public interface CinemaService {
 
-    @Autowired
-    CinemaRepository cinemaRepository;
+    Cinema fetchById(Long id);
 
-    public Cinema fetchById(Long id) {
-        return cinemaRepository.findOne(id);
-    }
+    List<Cinema> fetchAll();
 
-    public List<Cinema> fetchAll() {
-        return (List) cinemaRepository.findAll();
-    }
+    List<Cinema> fetchAllByType(String type);
 
-    public Cinema createCinema(String name, String type) {
-        Cinema cinema = new Cinema();
-        cinema.setName(name);
-        cinema.setType(type);
-        return cinemaRepository.save(cinema);
-    }
+    Cinema create(Cinema cinema);
 
-    public Cinema updateCinema(Cinema cinemaToBeUpdated, String name, String type) {
-        cinemaToBeUpdated.setName(name);
-        cinemaToBeUpdated.setType(type);
-        return cinemaRepository.save(cinemaToBeUpdated);
-    }
+    Cinema update(Cinema cinema, String name, CinemaType type);
 
-    public void deleteCinema(Cinema cinemaToBeDeleted) {
-        cinemaRepository.delete(cinemaToBeDeleted);
-    }
+    void delete(Cinema cinema);
+
 }

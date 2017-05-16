@@ -1,7 +1,11 @@
 package com.synacy.moviehouse.cinema;
 
-import org.springframework.data.repository.PagingAndSortingRepository;
+import org.springframework.data.repository.CrudRepository;
 
-public interface CinemaRepository extends PagingAndSortingRepository<Cinema, Long> {
+import java.util.List;
+
+public interface CinemaRepository extends CrudRepository<Cinema, Long> {
+
+    List<Cinema> findAllByType(CinemaType type);
 
 }
