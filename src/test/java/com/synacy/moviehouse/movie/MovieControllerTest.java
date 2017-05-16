@@ -39,7 +39,9 @@ public class MovieControllerTest {
         String genre = "sample";
         String name  = "sample";
 
-        PageRequest pageRequest = mock(PageRequest.class);
+        Sort sort = new Sort(Sort.Direction.ASC, "genre", "name");
+
+        PageRequest pageRequest = new PageRequest(0, 10, sort);
 
         movieController.fetchMovies(pageRequest, genre, name);
 
@@ -49,25 +51,19 @@ public class MovieControllerTest {
 
     @Test
     public void createMovie() throws Exception {
-        Movie movie = mock(Movie.class);
+        Movie movie = new Movie();
 
-        String name = "sample";
-        String genre = "sample";
-        Integer duration = 1;
-        String description = "sample";
-
-        when(movie.getName()).thenReturn(name);
-        when(movie.getGenre()).thenReturn(genre);
-        when(movie.getDuration()).thenReturn(1);
-        when(movie.getDescription()).thenReturn(description);
+        movie.setName("sample");
+        movie.setGenre("sample");
+        movie.setDuration(120);
 
         movieController.createMovie(movie);
 
         verify(movieService, times(1)).createMovie(
-                ArgumentMatchers.eq(name),
-                ArgumentMatchers.eq(genre),
-                ArgumentMatchers.eq(duration),
-                ArgumentMatchers.eq(description)
+                ArgumentMatchers.eq(movie.getName()),
+                ArgumentMatchers.eq(movie.getGenre()),
+                ArgumentMatchers.eq(movie.getDuration()),
+                ArgumentMatchers.eq(movie.getDescription())
         );
     }
 
@@ -88,26 +84,20 @@ public class MovieControllerTest {
     public void updateMovie() throws Exception {
         Long idToFind = new Long(1);
 
-        Movie movie = mock(Movie.class);
+        Movie movie = new Movie();
 
-        String name = "sample";
-        String genre = "sample";
-        Integer duration = 1;
-        String description = "sample";
+        movie.setName("sample");
+        movie.setGenre("sample");
+        movie.setDuration(120);
 
-        when(movie.getName()).thenReturn(name);
-        when(movie.getGenre()).thenReturn(genre);
-        when(movie.getDuration()).thenReturn(1);
-        when(movie.getDescription()).thenReturn(description);
-
-        movieController.updateMovie(idToFind, movie);
+        Movie updatedMovie = movieController.updateMovie(idToFind, movie);
 
         verify(movieService, times(1)).updateMovie(
                 ArgumentMatchers.eq(idToFind),
-                ArgumentMatchers.eq(name),
-                ArgumentMatchers.eq(genre),
-                ArgumentMatchers.eq(duration),
-                ArgumentMatchers.eq(description)
+                ArgumentMatchers.eq(movie.getName()),
+                ArgumentMatchers.eq(movie.getGenre()),
+                ArgumentMatchers.eq(movie.getDuration()),
+                ArgumentMatchers.eq(movie.getDescription())
         );
     }
 

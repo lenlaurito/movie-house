@@ -1,5 +1,6 @@
 package com.synacy.moviehouse.movie;
 
+import com.synacy.moviehouse.NotFoundException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -13,6 +14,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
 import javax.persistence.NoResultException;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.mockito.Mockito.*;
@@ -43,24 +45,29 @@ public class MovieServiceTest {
         int page = 0;
         int size = 10;
 
-        Page pageOjb = mock(Page.class);
+        Page<Movie> pageOjb = mock(Page.class);
 
-        List<Movie> movies = mock(List.class);
+        List<Movie> movies = new ArrayList<>();
 
-        movies.add(mock(Movie.class));
-        movies.add(mock(Movie.class));
+        Movie movie1 = new Movie();
+        Movie movie2 = new Movie();
 
+        movies.add(movie1);
+        movies.add(movie2);
 
         PageRequest pageRequest = new PageRequest(page, size);
 
         when(movieRepository.findAll(pageRequest)).thenReturn(pageOjb);
         when(pageOjb.getContent()).thenReturn(movies);
 
-        movieService.fetchMovies(pageRequest, null, null);
+        List<Movie> moviesFetched = movieService.fetchMovies(pageRequest, null, null);
 
         int expectedInvocation = 1;
 
         verify(movieRepository, times(expectedInvocation)).findAll(ArgumentMatchers.eq(pageRequest));
+        assert moviesFetched.size() == 2;
+        assert moviesFetched.get(0).equals(movie1);
+        assert moviesFetched.get(1).equals(movie2);
     }
 
     @Test
@@ -70,27 +77,45 @@ public class MovieServiceTest {
         String genre = "action";
         String name = "matrix";
 
-        Page pageOjb = mock(Page.class);
+        Page<Movie> pageOjb = mock(Page.class);
 
-        List<Movie> movies = mock(List.class);
+        List<Movie> movies = new ArrayList<>();
 
-        movies.add(mock(Movie.class));
-        movies.add(mock(Movie.class));
+        Movie movie1 = new Movie();
 
+        movie1.setName("matrix 1");
+        movie1.setGenre("action");
+        movie1.setDuration(120);
+
+        Movie movie2 = new Movie();
+
+        movie2.setName("matrix 1");
+        movie2.setGenre("action");
+        movie2.setDuration(120);
+
+        movies.add(movie1);
+        movies.add(movie2);
 
         PageRequest pageRequest = new PageRequest(page, size);
 
-        when(movieRepository.findMoviesByGenreContainingAndNameContaining(genre, name, pageRequest)).thenReturn(pageOjb);
+        when(movieRepository.findMoviesByGenreContainingAndNameContaining(genre, name, pageRequest))
+                .thenReturn(pageOjb);
+
         when(pageOjb.getContent()).thenReturn(movies);
 
-        movieService.fetchMovies(pageRequest, genre, name);
+        List<Movie> moviesFetched = movieService.fetchMovies(pageRequest, genre, name);
 
         int expectedInvocation = 1;
+
 
         verify(movieRepository, times(expectedInvocation)).findMoviesByGenreContainingAndNameContaining(
                 ArgumentMatchers.eq(genre),
                 ArgumentMatchers.eq(name),
                 ArgumentMatchers.eq(pageRequest));
+
+        assert moviesFetched.size() == 2;
+        assert moviesFetched.get(0).equals(movie1);
+        assert moviesFetched.get(1).equals(movie2);
     }
 
     @Test
@@ -121,7 +146,7 @@ public class MovieServiceTest {
         verify(movieRepository, times(expectedInvocations)).findOne(ArgumentMatchers.eq(idToFind));
     }
 
-    @Test(expected = NoResultException.class)
+    @Test(expected = NotFoundException.class)
     public void fetchMovieById_notExists_shouldThrowException() throws Exception {
         Long idToFind = new Long(-1);
 

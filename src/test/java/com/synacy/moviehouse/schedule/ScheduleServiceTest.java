@@ -15,6 +15,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
 import javax.persistence.NoResultException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -88,12 +89,31 @@ public class ScheduleServiceTest {
     }
 
     @Test
-    public void createSchedule() throws Exception {
-        scheduleService.createSchedule(mock(Date.class), mock(Date.class), mock(Movie.class), mock(Cinema.class));
+    public void createSchedule_nonOverLappingScheduleDates_shouldSaveMovie() throws Exception {
+        Date start = new SimpleDateFormat("yyyy-MM-dd").parse("2016-01-01");
+        Date end = new SimpleDateFormat("yyyy-MM-dd").parse("2016-01-31");
+        Movie movie = new Movie();
+        Cinema cinema = new Cinema();
+
+        when(scheduleRepository.isScheduleAvailable(start, end)).thenReturn(true);
+
+        scheduleService.createSchedule(start, end, movie, cinema);
 
         int expectedInvocations = 1;
 
         verify(scheduleRepository, times(1)).save(Mockito.any(Schedule.class));
+    }
+
+    @Test(expected = ScheduleNotAvailableException.class)
+    public void createSchedule_overLappingScheduleDates_shouldThrowException() throws Exception {
+        Date start = new SimpleDateFormat("yyyy-MM-dd").parse("2016-01-01");
+        Date end = new SimpleDateFormat("yyyy-MM-dd").parse("2016-01-31");
+        Movie movie = new Movie();
+        Cinema cinema = new Cinema();
+
+        when(scheduleRepository.isScheduleAvailable(start, end)).thenReturn(false);
+
+        scheduleService.createSchedule(start, end, movie, cinema);
     }
 
     @Test

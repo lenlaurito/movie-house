@@ -47,7 +47,10 @@ public class ScheduleService {
 
     }
 
-    public Schedule createSchedule(Date start, Date end, Movie movie, Cinema cinema) {
+    public Schedule createSchedule(Date start, Date end, Movie movie, Cinema cinema) throws ScheduleNotAvailableException {
+        if (scheduleRepository.isScheduleAvailable(start, end) == false)
+            throw new ScheduleNotAvailableException("schedule not available");
+
         Schedule schedule = new Schedule();
 
         schedule.setStartDateTime(start);

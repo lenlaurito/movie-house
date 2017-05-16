@@ -20,4 +20,9 @@ public interface ScheduleRepository extends PagingAndSortingRepository<Schedule,
                     "where cast(?1 as timestamp) between start_date_time and end_date_time " +
                     " and m.name like %?2%")
     Page<Schedule> findAllWithinScheduleAndNameContaining(String date, String name, Pageable pageable);
+
+    @Query(value = "select count(*) = 0 from Schedule " +
+                    "where (cast(?1 as timestamp), cast(?2 as timestamp)) overlaps (start_date_time, end_date_time) ",
+            nativeQuery = true)
+    boolean isScheduleAvailable(Date start, Date end);
 }

@@ -9,9 +9,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.bind.annotation.*;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -35,7 +32,7 @@ public class ScheduleController {
 
     @RequestMapping(method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.CREATED)
-    public Schedule createSchedule(@RequestBody Schedule scheduleRequest) {
+    public Schedule createSchedule(@RequestBody Schedule scheduleRequest) throws ScheduleNotAvailableException {
 
         return scheduleService.createSchedule(scheduleRequest.getStartDateTime(),
                 scheduleRequest.getEndDateTime(),

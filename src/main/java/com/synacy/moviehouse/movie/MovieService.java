@@ -1,5 +1,6 @@
 package com.synacy.moviehouse.movie;
 
+import com.synacy.moviehouse.NotFoundException;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,7 +9,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.NoResultException;
 import java.util.List;
 
 /**
@@ -29,6 +29,9 @@ public class MovieService {
         else
             moviePage = movieRepository.findMoviesByGenreContainingAndNameContaining(genre, name, pageable);
 
+        if (moviePage.getContent().size() == 0)
+            throw new NotFoundException("Empty results found.");
+
         return moviePage.getContent();
     }
 
@@ -47,7 +50,7 @@ public class MovieService {
         Movie movie = movieRepository.findOne(movieId);
 
         if (movie == null)
-            throw new NoResultException();
+            throw new NotFoundException("Movie not found");
 
         return movie;
     }
