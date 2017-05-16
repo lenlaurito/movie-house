@@ -91,7 +91,7 @@ public class ScheduleServiceImplTest {
         Movie movie = mock(Movie.class);
         Date date = mock(Date.class);
         List<Schedule> schedules = new ArrayList<>();
-        when(scheduleRepository.findAllByStartDateTimeAndMovie(date, movie)).thenReturn(schedules);
+        when(scheduleRepository.findAllByDateAndMovie(date, date, 100L)).thenReturn(schedules);
 
         List<Schedule> result = scheduleService.fetchAllByDateAndMovieId(date, null);
         assertEquals(0, result.size());

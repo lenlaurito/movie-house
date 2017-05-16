@@ -82,15 +82,21 @@ public class ScheduleServiceImpl implements ScheduleService {
 
     public List<Schedule> fetchAllByDateAndMovieId(Date date, Long movieId) {
         if (movieId == null) {
-            return scheduleRepository.findAllByStartDateTime(date);
+            Date begDate = DateUtils.getBegTimeOfDate(date);
+            Date endDate = DateUtils.getEndTimeOfDate(date);
+            System.out.println("Beg: " + begDate);
+            System.out.println("End: " + endDate);
+            return scheduleRepository.findAllByDate(begDate, endDate);
         }
         else if (date == null) {
             Movie movie = movieService.fetchById(movieId);
             return scheduleRepository.findAllByMovie(movie);
         }
         else {
+            Date begDate = DateUtils.getBegTimeOfDate(date);
+            Date endDate = DateUtils.getEndTimeOfDate(date);
             Movie movie = movieService.fetchById(movieId);
-            return scheduleRepository.findAllByStartDateTimeAndMovie(date, movie);
+            return scheduleRepository.findAllByDateAndMovie(begDate, endDate, movie.getId());
         }
     }
 

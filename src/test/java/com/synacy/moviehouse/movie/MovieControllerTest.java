@@ -9,6 +9,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -21,11 +22,23 @@ public class MovieControllerTest {
     MovieController movieController;
 
     @Test
-    public void fetchMovie() throws Exception {
-        movieController.fetchMovie(100L);
+    public void fetchMovie_shouldGetACorrectMovie() throws Exception {
+        Long movieId = 2L;
+        Movie movie = new Movie();
+        movie.setName("Movie");
+        movie.setGenre(Genre.ACTION);
+        movie.setDuration(128);
+        movie.setDescription("Description");
 
-        verify(movieService, times(1))
-                .fetchById(100L);
+        when(movieService.fetchById(movieId)).thenReturn(movie);
+
+        movieController.fetchMovie(movieId);
+
+        verify(movieService, times(1)).fetchById(movieId);
+        assertEquals("Movie", movie.getName());
+        assertEquals(Genre.ACTION, movie.getGenre());
+        assertEquals((Integer) 128, movie.getDuration());
+        assertEquals("Description", movie.getDescription());
     }
 
     @Test

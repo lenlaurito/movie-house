@@ -18,7 +18,7 @@ public class CinemaServiceImpl implements CinemaService {
     @Autowired
     CinemaRepository cinemaRepository;
 
-    public Cinema fetchById(Long id) {
+    public Cinema fetchCinemaById(Long id) {
         Cinema cinema = cinemaRepository.findOne(id);
         if (cinema == null) {
             throw new ResourceNotFoundException("Cinema " + id + " does not exist.");
@@ -26,28 +26,31 @@ public class CinemaServiceImpl implements CinemaService {
         return cinema;
     }
 
-    public List<Cinema> fetchAll() {
+    public List<Cinema> fetchAllCinemas() {
         return (List) cinemaRepository.findAll();
     }
 
-    public List<Cinema> fetchAllByType(String type) {
+    public List<Cinema> fetchAllCinemasByType(String type) {
         if (!CinemaType.contains(type.toUpperCase())) {
             throw new InvalidRequestException("Cinema Type " + type + " not found.");
         }
         return cinemaRepository.findAllByType(CinemaType.valueOf(type));
     }
 
-    public Cinema create(Cinema cinema) {
-        return cinemaRepository.save(cinema);
-    }
-
-    public Cinema update(Cinema cinema, String name, CinemaType type) {
+    public Cinema createCinema(String name, CinemaType type) {
+        Cinema cinema = new Cinema();
         cinema.setName(name);
         cinema.setType(type);
         return cinemaRepository.save(cinema);
     }
 
-    public void delete(Cinema cinema) {
+    public Cinema updateCinema(Cinema cinema, String name, CinemaType type) {
+        cinema.setName(name);
+        cinema.setType(type);
+        return cinemaRepository.save(cinema);
+    }
+
+    public void deleteCinema(Cinema cinema) {
         cinemaRepository.delete(cinema);
     }
 

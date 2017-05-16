@@ -14,10 +14,14 @@ public interface ScheduleRepository extends PagingAndSortingRepository<Schedule,
 
     List<Schedule> findAllByMovie(Movie movie);
 
-    @Query("from Schedule where start_date_time = :startDateTime")
-    List<Schedule> findAllByStartDateTime(@Param("startDateTime") Date startDateTime);
+    @Query("from Schedule where start_date_time between :begDateTime and :endDateTime")
+    List<Schedule> findAllByDate(@Param("begDateTime") Date begDateTime,
+                                 @Param("endDateTime") Date endDateTime);
 
-    List<Schedule> findAllByStartDateTimeAndMovie(Date startDateTime, Movie movie);
+    @Query("from Schedule where movie_id = :movieId and start_date_time between :begDateTime and :endDateTime")
+    List<Schedule> findAllByDateAndMovie(@Param("begDateTime") Date begDateTime,
+                                         @Param("endDateTime") Date endDateTime,
+                                         @Param("movieId") Long movieId);
 
     Page<Schedule> findAllByMovie(Movie movie, Pageable pageable);
 

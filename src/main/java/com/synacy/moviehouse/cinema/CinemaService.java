@@ -4,16 +4,16 @@ import java.util.List;
 
 public interface CinemaService {
 
-    Cinema fetchById(Long id);
+    Cinema fetchCinemaById(Long id);
 
-    List<Cinema> fetchAll();
+    List<Cinema> fetchAllCinemas();
 
-    List<Cinema> fetchAllByType(String type);
+    List<Cinema> fetchAllCinemasByType(String type);
 
-    Cinema create(Cinema cinema);
+    Cinema createCinema(String name, CinemaType type);
 
-    Cinema update(Cinema cinema, String name, CinemaType type);
+    Cinema updateCinema(Cinema cinema, String name, CinemaType type);
 
-    void delete(Cinema cinema);
+    void deleteCinema(Cinema cinema);
 
 }
