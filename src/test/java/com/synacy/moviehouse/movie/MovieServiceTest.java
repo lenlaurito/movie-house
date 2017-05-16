@@ -1,6 +1,5 @@
 package com.synacy.moviehouse.movie;
 
-import com.synacy.moviehouse.cinema.Cinema;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -8,10 +7,6 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.data.domain.PageRequest;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 /**

@@ -1,17 +1,11 @@
 package com.synacy.moviehouse.cinema;
 
 import com.synacy.moviehouse.ResourceNotFoundException;
-import com.synacy.moviehouse.schedule.Schedule;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import static org.mockito.Mockito.*;
 

@@ -1,11 +1,7 @@
 package com.synacy.moviehouse.cinema;
 
-import com.synacy.moviehouse.MissingParameterException;
 import com.synacy.moviehouse.ResourceNotFoundException;
-import com.synacy.moviehouse.movie.Movie;
-import com.synacy.moviehouse.movie.MovieService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

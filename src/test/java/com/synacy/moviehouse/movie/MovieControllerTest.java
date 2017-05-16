@@ -2,8 +2,6 @@ package com.synacy.moviehouse.movie;
 
 import com.synacy.moviehouse.MissingParameterException;
 import com.synacy.moviehouse.ResourceNotFoundException;
-import com.synacy.moviehouse.cinema.Cinema;
-import com.synacy.moviehouse.schedule.Schedule;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -15,7 +13,6 @@ import org.springframework.data.domain.PageRequest;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.*;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.*;
 

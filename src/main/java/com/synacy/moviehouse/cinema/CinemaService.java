@@ -1,7 +1,5 @@
 package com.synacy.moviehouse.cinema;
 
-import com.synacy.moviehouse.movie.Movie;
-import org.springframework.data.domain.Page;
 
 import java.util.List;
 

@@ -1,9 +1,5 @@
 package com.synacy.moviehouse.cinema;
 
-import com.synacy.moviehouse.movie.Movie;
-import com.synacy.moviehouse.movie.MovieRepo;
-import lombok.Getter;
-import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
