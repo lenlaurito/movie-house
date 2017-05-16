@@ -4,6 +4,8 @@ import com.synacy.moviehouse.cinema.Cinema;
 import com.synacy.moviehouse.exception.InvalidDataPassedException;
 import com.synacy.moviehouse.exception.NoContentFoundException;
 import com.synacy.moviehouse.movie.Movie;
+import com.synacy.moviehouse.movie.MovieService;
+import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -23,8 +25,14 @@ import java.util.List;
 @Transactional
 public class ScheduleService {
 
-    @Autowired
+    @Autowired @Setter
     ScheduleRepository scheduleRepository;
+
+    @Autowired @Setter
+    ScheduleUtils scheduleUtils;
+
+    @Autowired @Setter
+    MovieService movieService;
 
     public Schedule fetchById(Long id) {
         Schedule schedule = scheduleRepository.findOne(id);
@@ -35,32 +43,48 @@ public class ScheduleService {
             return schedule;
     }
 
-    public List<Schedule> fetchAll(String dateInString) throws ParseException {
+    public List<Schedule> fetchAll(String dateInString, Long movieId) throws ParseException {
         List<Schedule> scheduleList;
 
-        if(dateInString != null)
-           scheduleList = scheduleRepository.findAllByDate(dateFormatter(dateInString));
+        if(dateInString != null && movieId == null) {
+            Date date = scheduleUtils.dateStringParser(dateInString);
+            scheduleList = scheduleRepository.findAllByDate(date);
+        }
+        else if(dateInString == null && movieId != null) {
+            Movie movie = movieService.fetchById(movieId);
+            scheduleList = scheduleRepository.findAllByMovie(movie);
+        }
+        else if(dateInString != null && movieId != null){
+            Date date = scheduleUtils.dateStringParser(dateInString);
+            Movie movie = movieService.fetchById(movieId);
+            scheduleList = scheduleRepository.findAllByDateAndMovie(date,movie);
+        }
         else
             scheduleList = (List)scheduleRepository.findAll();
 
-        if(scheduleList.size() < 1)
-            throw new NoContentFoundException("Not content found");
-        else
-            return scheduleList;
+        return scheduleList;
     }
 
-    public Page<Schedule> fetchAllPaginated(String dateInString, Integer offset, Integer max) throws ParseException {
+    public Page<Schedule> fetchAllPaginated(String dateInString, Long movieId, Integer offset, Integer max) throws ParseException {
         Page<Schedule> page;
 
-        if(dateInString != null)
-            page = scheduleRepository.findAllByDate(dateFormatter(dateInString),new PageRequest(offset, max));
+        if(dateInString != null && movieId == null) {
+            Date date = scheduleUtils.dateStringParser(dateInString);
+            page = scheduleRepository.findAllByDate(date, new PageRequest(offset, max));
+        }
+        else if(dateInString == null && movieId != null){
+            Movie movie = movieService.fetchById(movieId);
+            page = scheduleRepository.findAllByMovie(movie,new PageRequest(offset, max));
+        }
+        else if(dateInString != null && movieId != null){
+            Date date = scheduleUtils.dateStringParser(dateInString);
+            Movie movie = movieService.fetchById(movieId);
+            page = scheduleRepository.findAllByDateAndMovie(date, movie, new PageRequest(offset, max));
+        }
         else
             page = scheduleRepository.findAll(new PageRequest(offset, max));
 
-        if(page.getTotalPages() < 1)
-            throw new NoContentFoundException("Not content found");
-        else
-            return page;
+        return page;
     }
 
     public Schedule createSchedule(Movie movie, Cinema cinema, Date startDateTime, Date endDateTime) throws ParseException {
@@ -68,13 +92,15 @@ public class ScheduleService {
         Schedule schedule = new Schedule();
         schedule.setMovie(movie);
         schedule.setCinema(cinema);
+
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         schedule.setDate(dateFormat.parse(dateFormat.format(startDateTime)));
+
         schedule.setStartDateTime(startDateTime);
         schedule.setEndDateTime(endDateTime);
 
-        if(isValidEndDateTime(schedule.getMovie().getDuration(),schedule.getStartDateTime(),schedule.getEndDateTime())
-                && !isDateOverlapping(schedule))
+        if(scheduleUtils.isValidEndDateTime(schedule.getMovie().getDuration(),startDateTime,endDateTime)
+                && !scheduleUtils.isDateOverlapping(schedule))
             return  scheduleRepository.save(schedule);
         else
             throw new InvalidDataPassedException("Invalid Date Input");
@@ -87,8 +113,8 @@ public class ScheduleService {
         schedule.setStartDateTime(startDateTime);
         schedule.setEndDateTime(endDateTime);
 
-        if(isValidEndDateTime(schedule.getMovie().getDuration(),schedule.getStartDateTime(),schedule.getEndDateTime())
-                && !isDateOverlapping(schedule))
+        if(scheduleUtils.isValidEndDateTime(schedule.getMovie().getDuration(),startDateTime,endDateTime)
+                && !scheduleUtils.isDateOverlapping(schedule))
             return  scheduleRepository.save(schedule);
         else
             throw new InvalidDataPassedException("Invalid Date Input");
@@ -98,33 +124,5 @@ public class ScheduleService {
         scheduleRepository.delete(schedule);
     }
 
-    private Date dateFormatter(String dateInString) throws ParseException {
-        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        return dateFormat.parse(dateInString);
-    }
-
-    private Boolean isValidEndDateTime(int duration, Date startTime, Date endTime){
-        int differenceInMinutes = ((int) (endTime.getTime() - startTime.getTime()))/60000;
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        if(differenceInMinutes >= duration && dateFormat.format(startTime).equals(dateFormat.format(endTime))) return true;
-        else return false;
-    }
-
-    private Boolean isDateOverlapping(Schedule schedule){
-        List<Schedule> scheduleList = (List)scheduleRepository.findAll();
-        for(Schedule scheduleInList : scheduleList){
-            if(scheduleInList.getCinema().getId() == schedule.getCinema().getId()){
-                if((schedule.getStartDateTime().after(scheduleInList.getStartDateTime())
-                        && schedule.getStartDateTime().before(scheduleInList.getEndDateTime()))
-                        || (schedule.getEndDateTime().after(scheduleInList.getStartDateTime())
-                        && schedule.getEndDateTime().before(scheduleInList.getEndDateTime()))
-                        || schedule.getStartDateTime().equals(scheduleInList.getStartDateTime())
-                        || schedule.getEndDateTime().equals(scheduleInList.getEndDateTime())){
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
 
 }

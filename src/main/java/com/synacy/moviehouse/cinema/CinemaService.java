@@ -1,6 +1,8 @@
 package com.synacy.moviehouse.cinema;
 
 import com.synacy.moviehouse.exception.NoContentFoundException;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,7 +17,7 @@ import java.util.List;
 @Transactional
 public class CinemaService {
 
-    @Autowired
+    @Autowired @Setter
     CinemaRepository cinemaRepository;
 
     public Cinema fetchById(Long id) {
@@ -25,7 +27,7 @@ public class CinemaService {
         if (cinema == null)
             throw new NoContentFoundException("Not content found");
         else
-            return cinemaRepository.findOne(id);
+            return cinema;
     }
 
     public List<Cinema> fetchAll() {

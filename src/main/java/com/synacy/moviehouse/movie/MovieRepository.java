@@ -13,9 +13,9 @@ import java.util.List;
 
 public interface MovieRepository extends PagingAndSortingRepository<Movie, Long> {
 
-    List<Movie> findByName(String name);
-    List<Movie> findByGenre(MovieGenre genre);
-    List<Movie> findByNameAndGenre(String name, MovieGenre genre);
+    List<Movie> findAllByName(String name);
+    List<Movie> findAllByGenre(MovieGenre genre);
+    List<Movie> findAllByNameAndGenre(String name, MovieGenre genre);
 
     Page<Movie> findAllByName(String name, Pageable pageable);
     Page<Movie> findAllByGenre(MovieGenre genre, Pageable pageable);

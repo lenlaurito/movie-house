@@ -2,6 +2,8 @@ package com.synacy.moviehouse.movie;
 
 import com.synacy.moviehouse.exception.IncompleteInformationException;
 import com.synacy.moviehouse.exception.InvalidParameterException;
+import com.synacy.moviehouse.exception.NoContentFoundException;
+import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -19,7 +21,7 @@ import java.util.List;
 @RequestMapping(value = "/api/v1/movie")
 public class MovieController {
 
-    @Autowired
+    @Autowired @Setter
     MovieService movieService;
 
     @RequestMapping(method = RequestMethod.GET, value = "/{movieId}")
@@ -32,13 +34,18 @@ public class MovieController {
                                         @RequestParam(value = "genre", required = false) MovieGenre genre,
                                         @RequestParam(value = "offset", required = false) Integer offset,
                                         @RequestParam(value = "max", required = false) Integer max){
+
         if (offset == null && max == null) {
             List<Movie> movieList =  movieService.fetchAll(name, genre);
             return ResponseEntity.ok().body(movieList);
         }
         else if(offset != null && max != null) {
             Page<Movie> moviePage =  movieService.fetchAllPaginated(name, genre, offset, max);
-            return ResponseEntity.ok().body(moviePage);
+
+            if(moviePage.getTotalPages() < 1)
+                throw new NoContentFoundException("Not content found");
+            else
+                return ResponseEntity.ok().body(moviePage);
         }
         else{
             throw new InvalidParameterException("Parameters incomplete or isn't acceptable");

@@ -1,6 +1,7 @@
 package com.synacy.moviehouse.movie;
 
 import com.synacy.moviehouse.exception.NoContentFoundException;
+import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -17,7 +18,7 @@ import java.util.List;
 @Transactional
 public class MovieService {
 
-    @Autowired
+    @Autowired @Setter
     MovieRepository movieRepository;
 
     public Movie fetchById(Long id) {
@@ -34,11 +35,11 @@ public class MovieService {
         List<Movie> movieList;
 
         if(name != null && genre == null)
-            movieList = movieRepository.findByName(name);
+            movieList = movieRepository.findAllByName(name);
         else if(name == null && genre != null)
-            movieList = movieRepository.findByGenre(genre);
+            movieList = movieRepository.findAllByGenre(genre);
         else if(name != null && genre != null)
-            movieList = movieRepository.findByNameAndGenre(name,genre);
+            movieList = movieRepository.findAllByNameAndGenre(name,genre);
         else
             movieList = (List) movieRepository.findAll();
 
@@ -61,10 +62,7 @@ public class MovieService {
         else
             moviePage = movieRepository.findAll(new PageRequest(offset, max));
 
-        if(moviePage.getTotalPages() < 1)
-            throw new NoContentFoundException("Not content found");
-        else
-            return moviePage;
+        return moviePage;
     }
 
     public Movie createMovie(String name, MovieGenre genre, int duration, String description) {

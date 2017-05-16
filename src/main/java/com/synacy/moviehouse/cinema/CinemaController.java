@@ -1,6 +1,7 @@
 package com.synacy.moviehouse.cinema;
 
 import com.synacy.moviehouse.exception.IncompleteInformationException;
+import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -15,7 +16,7 @@ import java.util.List;
 @RequestMapping(value = "/api/v1/cinema")
 public class CinemaController {
 
-    @Autowired
+    @Autowired @Setter
     CinemaService cinemaService;
 
     @RequestMapping(method = RequestMethod.GET, value = "/{cinemaId}")
