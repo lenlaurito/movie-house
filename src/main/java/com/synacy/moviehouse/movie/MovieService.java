@@ -1,44 +1,19 @@
 package com.synacy.moviehouse.movie;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import javax.transaction.Transactional;
 import java.util.List;
 
-@Service
-@Transactional
-public class MovieService {
+public interface MovieService {
 
-    @Autowired
-    MovieRepository movieRepository;
+    Movie fetchById(Long id);
 
-    public Movie fetchById(Long id) {
-        return movieRepository.findOne(id);
-    }
+    List<Movie> fetchAll();
 
-    public List<Movie> fetchAll() {
-        return (List) movieRepository.findAll();
-    }
+    List<Movie> fetchAll(String name, String genre, Integer offset, Integer max);
 
-    public Movie createMovie(String name, String genre, Integer duration, String description) {
-        Movie movie = new Movie();
-        movie.setName(name);
-        movie.setGenre(genre);
-        movie.setDuration(duration);
-        movie.setDescription(description);
-        return movieRepository.save(movie);
-    }
+    Movie create(Movie movie);
 
-    public Movie updateMovie(Movie movieToBeUpdated, String name, String genre, Integer duration, String description) {
-        movieToBeUpdated.setName(name);
-        movieToBeUpdated.setGenre(genre);
-        movieToBeUpdated.setDuration(duration);
-        movieToBeUpdated.setDescription(description);
-        return movieRepository.save(movieToBeUpdated);
-    }
+    Movie update(Movie movie, String name, Genre genre, Integer duration, String description);
 
-    public void deleteMovie(Movie movieToBeDeleted) {
-        movieRepository.delete(movieToBeDeleted);
-    }
+    void delete(Movie movie);
+
 }
