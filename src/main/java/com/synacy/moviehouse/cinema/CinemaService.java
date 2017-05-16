@@ -1,5 +1,6 @@
 package com.synacy.moviehouse.cinema;
 
+import com.synacy.moviehouse.NotFoundException;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +29,9 @@ public class CinemaService {
             cinemaPage = cinemaRepository.findAll(pageable);
         else
             cinemaPage = cinemaRepository.findAllCinemaByTypeContaining(type, pageable);
+
+        if (cinemaPage.getContent().size() == 0)
+            throw new NotFoundException("Empty results found.");
 
         return cinemaPage.getContent();
     }

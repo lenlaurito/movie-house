@@ -7,8 +7,13 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -34,14 +39,34 @@ public class CinemaControllerTest {
 
     @Test
     public void fetchAllCinema() throws Exception {
-        Pageable pageable = mock(Pageable.class);
+        Sort sort = new Sort(Sort.Direction.ASC, "name");
+        Pageable pageable = new PageRequest(0, 1, sort);
 
-        cinemaController.fetchAllCinema(pageable, null);
+        List<Cinema> cinemas = new ArrayList<>();
+
+        Cinema cinema1 = new Cinema();
+        cinema1.setName("zzz");
+        cinema1.setType("sample");
+
+        Cinema cinema2 = new Cinema();
+        cinema2.setName("aaa");
+        cinema2.setType("sample");
+
+        cinemas.add(cinema1);
+        cinemas.add(cinema2);
+
+        when(cinemaService.fetchAllCinema(pageable, null)).thenReturn(cinemas);
+
+        List<Cinema> fetchedCinema = cinemaController.fetchAllCinema(pageable, null);
 
         verify(cinemaService, times(1)).fetchAllCinema(
                 ArgumentMatchers.eq(pageable),
                 ArgumentMatchers.eq(null)
         );
+
+        assert fetchedCinema.size() == 2;
+        assert fetchedCinema.get(0).equals(cinema1) == true;
+        assert fetchedCinema.get(1).equals(cinema2) == true;
     }
 
     @Test

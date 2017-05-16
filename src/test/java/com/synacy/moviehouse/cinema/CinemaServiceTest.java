@@ -11,8 +11,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 
 import javax.persistence.NoResultException;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -41,12 +43,25 @@ public class CinemaServiceTest {
     public void fetchAllCinema_withNoFilter_shouldFindAll() throws Exception {
         String type = null;
 
-        PageRequest pageRequest = mock(PageRequest.class);
         Page<Cinema> page = mock(Page.class);
-        List<Cinema> movies = mock(List.class);
+        Sort sort = new Sort(Sort.Direction.ASC, "name");
+        PageRequest pageRequest = new PageRequest(0, 10, sort);
+
+        List<Cinema> cinemas = new ArrayList<>();
+
+        Cinema cinema1 = new Cinema();
+        cinema1.setName("sample1");
+        cinema1.setType("sample");
+
+        Cinema cinema2 = new Cinema();
+        cinema2.setName("sample2");
+        cinema2.setType("sample");
+
+        cinemas.add(cinema1);
+        cinemas.add(cinema2);
 
         when(cinemaRepository.findAll(pageRequest)).thenReturn(page);
-        when(page.getContent()).thenReturn(movies);
+        when(page.getContent()).thenReturn(cinemas);
 
         cinemaService.fetchAllCinema(pageRequest, type);
 
@@ -59,20 +74,37 @@ public class CinemaServiceTest {
     public void fetchAllCinema_withFilter_shouldFindAllCinemaByTypeContaining() throws Exception {
         String type = "3d";
 
-        PageRequest pageRequest = mock(PageRequest.class);
         Page<Cinema> page = mock(Page.class);
-        List<Cinema> movies = mock(List.class);
+        Sort sort = new Sort(Sort.Direction.ASC, "name");
+        PageRequest pageRequest = new PageRequest(0, 10, sort);
+
+        List<Cinema> cinemas = new ArrayList<>();
+
+        Cinema cinema1 = new Cinema();
+        cinema1.setName("sample1");
+        cinema1.setType("sample");
+
+        Cinema cinema2 = new Cinema();
+        cinema2.setName("sample2");
+        cinema2.setType("sample");
+
+        cinemas.add(cinema1);
+        cinemas.add(cinema2);
 
         when(cinemaRepository.findAllCinemaByTypeContaining(type, pageRequest)).thenReturn(page);
-        when(page.getContent()).thenReturn(movies);
+        when(page.getContent()).thenReturn(cinemas);
 
-        cinemaService.fetchAllCinema(pageRequest, type);
+        List<Cinema> fetchedCinemas = cinemaService.fetchAllCinema(pageRequest, type);
 
         int expectedInvoccations = 1;
 
         verify(cinemaRepository, times(expectedInvoccations)).findAllCinemaByTypeContaining(
                 ArgumentMatchers.eq(type),
                 ArgumentMatchers.eq(pageRequest));
+
+        assert  fetchedCinemas.size() == 2;
+        assert fetchedCinemas.get(0).equals(cinema1) == true;
+        assert fetchedCinemas.get(1).equals(cinema2) == true;
     }
 
     @Test

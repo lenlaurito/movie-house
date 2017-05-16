@@ -8,7 +8,9 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -40,7 +42,8 @@ public class ScheduleControllerTest {
 
     @Test
     public void fetchAllSchedules() throws Exception {
-        Pageable pageable = mock(Pageable.class);
+        Sort sort = new Sort(Sort.Direction.ASC, "start_date_time");
+        Pageable pageable = new PageRequest(0, 1, sort);
 
         scheduleController.fetchAllSchedules(pageable, null, null);
 
@@ -54,7 +57,9 @@ public class ScheduleControllerTest {
     @Test
     public void fetchAllSchedules_withFilterDate() throws Exception {
         String date = "2017-01-01";
-        Pageable pageable = mock(Pageable.class);
+
+        Sort sort = new Sort(Sort.Direction.ASC, "start_date_time");
+        Pageable pageable = new PageRequest(0, 1, sort);
 
         scheduleController.fetchAllSchedules(pageable, date, "");
 

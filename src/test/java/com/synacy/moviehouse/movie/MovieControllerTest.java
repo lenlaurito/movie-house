@@ -39,7 +39,7 @@ public class MovieControllerTest {
         String genre = "sample";
         String name  = "sample";
 
-        Sort sort = new Sort(Sort.Direction.ASC, "genre", "name");
+        Sort sort = new Sort(Sort.Direction.ASC, "name");
 
         PageRequest pageRequest = new PageRequest(0, 10, sort);
 

@@ -4,7 +4,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.bind.annotation.*;
@@ -27,7 +29,10 @@ public class ScheduleController {
                                             @RequestParam(value = "date", required = false) String date,
                                             @RequestParam(value = "movieName", required = false) String movieName) {
 
-        return scheduleService.fetchAllSchedules(pageable, date, movieName);
+        Sort sort = new Sort(Sort.Direction.ASC, "startDateTime");
+        PageRequest pageRequest = new PageRequest(pageable.getOffset(), pageable.getPageSize(), sort);
+
+        return scheduleService.fetchAllSchedules(pageRequest, date, movieName);
     }
 
     @RequestMapping(method = RequestMethod.POST)
