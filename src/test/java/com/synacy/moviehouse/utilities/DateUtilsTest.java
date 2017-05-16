@@ -44,4 +44,22 @@ public class DateUtilsTest {
         assertEquals(60, diffInMinutes);
     }
 
+    @Test
+    public void getBegDateTime() throws Exception {
+        Date dateToFormat = dateFormat.parse("2017-05-16 07:30:00");
+
+        Date formattedDate = DateUtils.getBegTimeOfDate(dateToFormat);
+
+        assertEquals("Tue May 16 00:00:00 PHT 2017", formattedDate.toString());
+    }
+
+    @Test
+    public void getEndDateTime() throws Exception {
+        Date dateToFormat = dateFormat.parse("2017-05-16 07:30:00");
+
+        Date formattedDate = DateUtils.getEndTimeOfDate(dateToFormat);
+
+        assertEquals("Tue May 16 23:59:59 PHT 2017", formattedDate.toString());
+    }
+
 }
