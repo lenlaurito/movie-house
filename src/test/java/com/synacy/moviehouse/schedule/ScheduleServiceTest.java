@@ -52,8 +52,12 @@ public class ScheduleServiceTest {
         PageRequest pageRequest = mock(PageRequest.class);
         List<Schedule> schedules = mock(List.class);
 
+        schedules.add(new Schedule());
+        schedules.add(new Schedule());
+
         when(scheduleRepository.findAll(pageRequest)).thenReturn(pageOjb);
         when(pageOjb.getContent()).thenReturn(schedules);
+        when(schedules.size()).thenReturn(2);
 
         scheduleService.fetchAllSchedules(pageRequest, null, null);
 
@@ -74,9 +78,13 @@ public class ScheduleServiceTest {
         PageRequest pageRequest = mock(PageRequest.class);
         List<Schedule> schedules = mock(List.class);
 
+        schedules.add(new Schedule());
+        schedules.add(new Schedule());
+
         when(scheduleRepository.findAllWithinScheduleAndNameContaining(date, movieName, pageRequest))
                 .thenReturn(pageOjb);
         when(pageOjb.getContent()).thenReturn(schedules);
+        when(schedules.size()).thenReturn(2);
 
         scheduleService.fetchAllSchedules(pageRequest, date, movieName);
 
@@ -95,7 +103,7 @@ public class ScheduleServiceTest {
         Movie movie = new Movie();
         Cinema cinema = new Cinema();
 
-        when(scheduleRepository.isScheduleAvailable(start, end)).thenReturn(true);
+        when(scheduleRepository.isScheduleAvailable(start, end, cinema.getId())).thenReturn(true);
 
         scheduleService.createSchedule(start, end, movie, cinema);
 
@@ -117,7 +125,7 @@ public class ScheduleServiceTest {
         schedule.setMovie(movie);
         schedule.setCinema(cinema);
 
-        when(scheduleRepository.isScheduleAvailable(start, end)).thenReturn(false);
+        when(scheduleRepository.isScheduleAvailable(start, end, cinema.getId())).thenReturn(false);
 
         Schedule createdSchedule = scheduleService.createSchedule(start, end, movie, cinema);
 
@@ -181,6 +189,7 @@ public class ScheduleServiceTest {
         schedule.setId(idToFind);
         schedule.setStartDateTime(start);
 
+        when(scheduleRepository.isScheduleAvailable(start, end, cinema.getId(), idToFind)).thenReturn(true);
         when(scheduleRepository.findOne(idToFind)).thenReturn(schedule);
         when(scheduleRepository.save(schedule)).thenReturn(schedule);
 

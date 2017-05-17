@@ -30,10 +30,12 @@ public class CinemaService {
         else
             cinemaPage = cinemaRepository.findAllCinemaByTypeContaining(type, pageable);
 
-        if (cinemaPage.getContent().size() == 0)
+        List<Cinema> cinemas = cinemaPage.getContent();
+
+        if (cinemas.size() == 0)
             throw new NotFoundException("Empty results found.");
 
-        return cinemaPage.getContent();
+        return cinemas;
     }
 
     public Cinema createCinema(String name, String type) {

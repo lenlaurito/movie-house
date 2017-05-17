@@ -29,10 +29,12 @@ public class MovieService {
         else
             moviePage = movieRepository.findMoviesByGenreContainingAndNameContaining(genre, name, pageable);
 
-        if (moviePage.getContent().size() == 0)
+        List<Movie> movies = moviePage.getContent();
+
+        if (movies.size() == 0)
             throw new NotFoundException("Empty results found.");
 
-        return moviePage.getContent();
+        return movies;
     }
 
     public Movie createMovie(String name, String genre, Integer duration, String description) {

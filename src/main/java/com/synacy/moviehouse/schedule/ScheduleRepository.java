@@ -22,7 +22,14 @@ public interface ScheduleRepository extends PagingAndSortingRepository<Schedule,
     Page<Schedule> findAllWithinScheduleAndNameContaining(String date, String name, Pageable pageable);
 
     @Query(value = "select count(*) = 0 from Schedule " +
-                    "where (cast(?1 as timestamp), cast(?2 as timestamp)) overlaps (start_date_time, end_date_time) ",
+            "where (cast(?1 as timestamp), cast(?2 as timestamp)) overlaps (start_date_time, end_date_time) " +
+            "and cinema_id = ?3",
             nativeQuery = true)
-    boolean isScheduleAvailable(Date start, Date end);
+    boolean isScheduleAvailable(Date start, Date end, Long cinemaId);
+
+    @Query(value = "select count(*) = 0 from Schedule " +
+                    "where (cast(?1 as timestamp), cast(?2 as timestamp)) overlaps (start_date_time, end_date_time) " +
+                    "and cinema_id = ?3 and case when ?4 is not null and ?4 != id then true else false end",
+            nativeQuery = true)
+    boolean isScheduleAvailable(Date start, Date end, Long cinemaId, Long id);
 }

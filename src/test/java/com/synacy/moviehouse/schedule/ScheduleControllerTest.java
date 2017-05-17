@@ -30,9 +30,6 @@ public class ScheduleControllerTest {
     @Mock
     ScheduleService scheduleService;
 
-    @Mock
-    SimpleDateFormat simpleDateFormat;
-
     @Before
     public void setUp() throws Exception {
         scheduleController = new ScheduleController();

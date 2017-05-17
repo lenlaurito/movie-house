@@ -1,5 +1,6 @@
 package com.synacy.moviehouse.schedule;
 
+import com.synacy.moviehouse.NotFoundException;
 import com.synacy.moviehouse.cinema.Cinema;
 import com.synacy.moviehouse.cinema.CinemaService;
 import com.synacy.moviehouse.movie.Movie;
@@ -43,12 +44,16 @@ public class ScheduleService {
         else
             schedulePage = scheduleRepository.findAllWithinScheduleAndNameContaining(date, movieName, pageable);
 
-        return schedulePage.getContent();
+        List<Schedule> schedules = schedulePage.getContent();
 
+        if (schedules.size() == 0)
+            throw new NotFoundException("Empty results found.");
+
+        return schedules;
     }
 
     public Schedule createSchedule(Date start, Date end, Movie movie, Cinema cinema) throws ScheduleNotAvailableException {
-        if (scheduleRepository.isScheduleAvailable(start, end) == false)
+        if (scheduleRepository.isScheduleAvailable(start, end, cinema.getId()) == false)
             throw new ScheduleNotAvailableException("schedule not available");
 
         Schedule schedule = new Schedule();
@@ -72,6 +77,9 @@ public class ScheduleService {
 
     public Schedule updateSchedule(Long scheduleId, Date start, Date end, Movie movie, Cinema cinema) {
         Schedule schedule = fetchScheduleById(scheduleId);
+
+        if (scheduleRepository.isScheduleAvailable(start, end, cinema.getId(), schedule.getId()) == false)
+            throw new ScheduleNotAvailableException("schedule not available");
 
         schedule.setStartDateTime(start);
         schedule.setEndDateTime(end);
