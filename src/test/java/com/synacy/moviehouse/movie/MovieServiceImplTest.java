@@ -70,15 +70,6 @@ public class MovieServiceImplTest {
     }
 
     @Test
-    public void fetchAllByGenre() throws Exception {
-        List<Movie> movies = new ArrayList<>();
-        when(movieRepository.findAllByGenre(Genre.ACTION)).thenReturn(movies);
-
-        List<Movie> result = movieService.fetchAllMovies(null, Genre.ACTION.name());
-        assertEquals(0, result.size());
-    }
-
-    @Test
     public void create() throws Exception {
         String name = "Movie X";
         Genre genre = Genre.ACTION;
