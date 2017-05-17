@@ -1,25 +1,31 @@
 package com.synacy.moviehouse.movie;
 
 
+import lombok.Getter;
+import lombok.Setter;
+
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.validation.constraints.NotNull;
 
 @Entity
 public class Movie {
 
-	@Id @NotNull
+	@Id @Setter @Getter @GeneratedValue
+	@NotNull
 	private Long id;
 
-	@NotNull
+	@Setter @Getter @NotNull
 	private String name;
 
-	@NotNull
+	@Setter @Getter @NotNull
 	private String genre;
 
-	@NotNull
+	@Setter @Getter @NotNull
 	private Integer duration;
 
+	@Setter @Getter
 	private String description;
 
 }
