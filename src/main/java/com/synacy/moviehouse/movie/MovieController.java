@@ -23,8 +23,8 @@ public class MovieController {
 
     @RequestMapping(method = RequestMethod.GET)
     public List<Movie> fetchMovies(Pageable pageable,
-                                   @RequestParam(value = "genre", required = false) String genre,
-                                   @RequestParam(value = "name", required = false) String name) {
+                                   @RequestParam(value = "genre", defaultValue = "", required = false) String genre,
+                                   @RequestParam(value = "name", defaultValue = "", required = false) String name) {
 
         Sort sort = new Sort(Sort.Direction.ASC, "name");
         PageRequest pageRequest = new PageRequest(pageable.getOffset(), pageable.getPageSize(), sort);
