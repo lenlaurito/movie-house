@@ -10,8 +10,8 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.http.ResponseEntity;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 
 /**
@@ -24,7 +24,6 @@ public class MovieControllerUnitTest {
     MovieController movieController;
 
     @Mock MovieService movieService;
-    @Mock ResponseEntity responseEntity;
 
     @Before
     public void setup(){
@@ -34,11 +33,14 @@ public class MovieControllerUnitTest {
 
     @Test
     public void fetchMovie_shouldReturnMovie() throws Exception{
+        Movie movie = new Movie();
         Long movieId = 1L;
+        when(movieService.fetchById(movieId)).thenReturn(movie);
 
         movieController.fetchMovie(movieId);
 
         verify(movieService, times(1)).fetchById(movieId);
+        assertEquals(movie,movieService.fetchById(movieId));
     }
 
     @Test
@@ -57,6 +59,7 @@ public class MovieControllerUnitTest {
         movieController.fetchAllMovie("name",MovieGenre.COMEDY,0,2);
 
         verify(movieService, times(1)).fetchAllPaginated("name",MovieGenre.COMEDY,0,2);
+        assertEquals(moviePage, movieService.fetchAllPaginated("name",MovieGenre.COMEDY,0,2));
     }
 
     @Test(expected = NoContentFoundException.class)
@@ -79,10 +82,12 @@ public class MovieControllerUnitTest {
         movie.setGenre(MovieGenre.COMEDY);
         movie.setDuration(20);
         movie.setDescription("");
+        when(movieService.createMovie(movie.getName(),movie.getGenre(),movie.getDuration(),movie.getDescription())).thenReturn(movie);
 
         movieController.createMovie(movie);
 
         verify(movieService, times(1)).createMovie(movie.getName(),movie.getGenre(),movie.getDuration(),movie.getDescription());
+        assertEquals(movie, movieService.createMovie(movie.getName(),movie.getGenre(),movie.getDuration(),movie.getDescription()));
     }
 
     @Test(expected = IncompleteInformationException.class)
@@ -106,10 +111,13 @@ public class MovieControllerUnitTest {
         movie.setDescription("");
         Movie movieToBeUpdated = new Movie();
         when(movieService.fetchById(movieId)).thenReturn(movieToBeUpdated);
+        when(movieService.updateMovie(movieToBeUpdated,movie.getName(),movie.getGenre(),movie.getDuration(),movie.getDescription())).thenReturn(movie);
 
         movieController.updateMovie(movieId,movie);
 
         verify(movieService, times(1)).updateMovie(movieToBeUpdated,movie.getName(),movie.getGenre(),movie.getDuration(),movie.getDescription());
+        assertEquals(movieToBeUpdated, movieService.fetchById(movieId));
+        assertEquals(movie, movieService.updateMovie(movieToBeUpdated,movie.getName(),movie.getGenre(),movie.getDuration(),movie.getDescription()));
     }
 
     @Test(expected = IncompleteInformationException.class)

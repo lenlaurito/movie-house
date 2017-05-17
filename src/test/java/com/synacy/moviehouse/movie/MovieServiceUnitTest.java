@@ -12,6 +12,7 @@ import org.springframework.data.domain.PageRequest;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 
 /**
@@ -39,6 +40,7 @@ public class MovieServiceUnitTest {
         movieService.fetchById(id);
 
         verify(movieRepository,times(1)).findOne(id);
+        assertEquals(movie, movieRepository.findOne(id));
     }
 
     @Test(expected = NoContentFoundException.class)
@@ -59,6 +61,7 @@ public class MovieServiceUnitTest {
         movieService.fetchAll("name",null);
 
         verify(movieRepository, times(1)).findAllByName("name");
+        assertEquals(movieList, movieRepository.findAllByName("name"));
     }
 
     @Test
@@ -71,6 +74,7 @@ public class MovieServiceUnitTest {
         movieService.fetchAll(null,MovieGenre.COMEDY);
 
         verify(movieRepository, times(1)).findAllByGenre(MovieGenre.COMEDY);
+        assertEquals(movieList, movieRepository.findAllByGenre(MovieGenre.COMEDY));
     }
 
     @Test
@@ -83,6 +87,7 @@ public class MovieServiceUnitTest {
         movieService.fetchAll("name",MovieGenre.COMEDY);
 
         verify(movieRepository, times(1)).findAllByNameAndGenre("name",MovieGenre.COMEDY);
+        assertEquals(movieList, movieRepository.findAllByNameAndGenre("name", MovieGenre.COMEDY));
     }
 
     @Test
@@ -95,6 +100,7 @@ public class MovieServiceUnitTest {
         movieService.fetchAll(null,null);
 
         verify(movieRepository, times(1)).findAll();
+        assertEquals(movieList, movieRepository.findAll());
     }
 
     @Test (expected = NoContentFoundException.class)
@@ -113,6 +119,7 @@ public class MovieServiceUnitTest {
         movieService.fetchAllPaginated("name",null,0,2);
 
         verify(movieRepository, times(1)).findAllByName("name", new PageRequest(0,2));
+        assertEquals(moviePage, movieRepository.findAllByName("name",new PageRequest(0,2)));
     }
 
     @Test
@@ -123,6 +130,7 @@ public class MovieServiceUnitTest {
         movieService.fetchAllPaginated(null,MovieGenre.COMEDY,0,2);
 
         verify(movieRepository, times(1)).findAllByGenre(MovieGenre.COMEDY, new PageRequest(0,2));
+        assertEquals(moviePage,movieRepository.findAllByGenre(MovieGenre.COMEDY,new PageRequest(0,2)));
     }
 
     @Test
@@ -133,6 +141,7 @@ public class MovieServiceUnitTest {
         movieService.fetchAllPaginated("name",MovieGenre.COMEDY,0,2);
 
         verify(movieRepository, times(1)).findAllByNameAndGenre("name",MovieGenre.COMEDY, new PageRequest(0,2));
+        assertEquals(moviePage, movieRepository.findAllByNameAndGenre("name",MovieGenre.COMEDY,new PageRequest(0,2)));
     }
 
     @Test
@@ -143,6 +152,7 @@ public class MovieServiceUnitTest {
         movieService.fetchAllPaginated(null,null,0,2);
 
         verify(movieRepository, times(1)).findAll(new PageRequest(0,2));
+        assertEquals(moviePage, movieRepository.findAll(new PageRequest(0,2)));
     }
 
     @Test
@@ -158,10 +168,12 @@ public class MovieServiceUnitTest {
         movie.setGenre(MovieGenre.COMEDY);
         movie.setDuration(20);
         movie.setDescription("");
+        when(movieRepository.save(movie)).thenReturn(movie);
 
         movieService.updateMovie(movie,"name",MovieGenre.COMEDY,20,"");
 
         verify(movieRepository,times(1)).save(movie);
+        assertEquals(movie, movieRepository.save(movie));
     }
 
     @Test

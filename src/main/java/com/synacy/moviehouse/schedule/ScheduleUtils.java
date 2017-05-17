@@ -2,7 +2,6 @@ package com.synacy.moviehouse.schedule;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -14,7 +13,6 @@ import java.util.List;
  * Created by steven on 5/16/17.
  */
 @Service
-@Transactional
 public class ScheduleUtils {
 
     @Autowired

@@ -103,6 +103,7 @@ public class ScheduleServiceUnitTest {
         scheduleList.add(new Schedule());
 
         when(scheduleUtils.dateStringParser("1995-2-2")).thenReturn(date);
+        when(movieService.fetchById(movieId)).thenReturn(movie);
         when(scheduleRepository.findAllByDateAndMovie(date,movie)).thenReturn(scheduleList);
 
         scheduleService.fetchAll("1995-2-2",movieId);
@@ -147,6 +148,7 @@ public class ScheduleServiceUnitTest {
         Page<Schedule> page = mock(Page.class);
         PageRequest pageRequest = new PageRequest(0, 2);
 
+        when(movieService.fetchById(movieId)).thenReturn(movie);
         when(scheduleRepository.findAllByMovie(movie, pageRequest)).thenReturn(page);
 
         scheduleService.fetchAllPaginated(null,movieId,0,2);
@@ -164,6 +166,7 @@ public class ScheduleServiceUnitTest {
         PageRequest pageRequest = new PageRequest(0, 2);
 
         when(scheduleUtils.dateStringParser("1995-2-2")).thenReturn(date);
+        when(movieService.fetchById(movieId)).thenReturn(movie);
         when(scheduleRepository.findAllByDateAndMovie(date, movie, pageRequest)).thenReturn(page);
 
         scheduleService.fetchAllPaginated("1995-2-2",movieId,0,2);
@@ -201,10 +204,12 @@ public class ScheduleServiceUnitTest {
 
         when(scheduleUtils.isValidEndDateTime(schedule.getMovie().getDuration(),startDateTime,endDateTime)).thenReturn(true);
         when(scheduleUtils.isDateOverlapping(schedule)).thenReturn(false);
+        when(scheduleRepository.save(schedule)).thenReturn(schedule);
 
         scheduleService.createSchedule(movie,cinema,startDateTime,endDateTime);
 
         verify(scheduleRepository, times(1)).save(schedule);
+        assertEquals(schedule,scheduleRepository.save(schedule));
     }
 
     @Test(expected = InvalidDataPassedException.class)
@@ -243,10 +248,12 @@ public class ScheduleServiceUnitTest {
 
         when(scheduleUtils.isValidEndDateTime(schedule.getMovie().getDuration(),startDateTime,endDateTime)).thenReturn(true);
         when(scheduleUtils.isDateOverlapping(schedule)).thenReturn(false);
+        when(scheduleRepository.save(schedule)).thenReturn(schedule);
 
         scheduleService.updateSchedule(schedule,movie,cinema,startDateTime,endDateTime);
 
         verify(scheduleRepository, times(1)).save(schedule);
+        assertEquals(schedule, scheduleRepository.save(schedule));
     }
 
     @Test(expected = InvalidDataPassedException.class)

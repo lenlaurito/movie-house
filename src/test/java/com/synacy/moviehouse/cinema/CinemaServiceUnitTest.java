@@ -10,6 +10,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 
 /**
@@ -37,30 +38,52 @@ public class CinemaServiceUnitTest {
         cinemaService.fetchById(id);
 
         verify(cinemaRepository,times(1)).findOne(id);
+        assertEquals(cinema, cinemaRepository.findOne(id));
     }
 
     @Test(expected = NoContentFoundException.class)
-    public void fetchById_noCinemaFound_shouldReturnNoContentFoundException() throws Exception{
+    public void fetchById_noCinemaFound_shouldThrowNoContentFoundException() throws Exception{
         long id = 1L;
-
         when(cinemaRepository.findOne(id)).thenReturn(null);
 
         cinemaService.fetchById(id);
     }
 
-    @Test(expected = NoContentFoundException.class)
-    public void fetchAll_noCinemaFound_shouldReturnNoContentFoundException() throws Exception{
+    @Test
+    public void fetchAll_cinemaFound_shouldReturnCinemaList() throws Exception{
         List<Cinema> cinemaList = new ArrayList<>();
+        cinemaList.add(new Cinema());
+        cinemaList.add(new Cinema());
+        when(cinemaRepository.findAll()).thenReturn(cinemaList);
 
+        cinemaService.fetchAll();
+
+        assertEquals(cinemaList, cinemaRepository.findAll());
+    }
+
+    @Test(expected = NoContentFoundException.class)
+    public void fetchAll_noCinemaFound_shouldThrowNoContentFoundException() throws Exception{
+        List<Cinema> cinemaList = new ArrayList<>();
         when(cinemaRepository.findAll()).thenReturn(cinemaList);
 
         cinemaService.fetchAll();
     }
 
-    @Test(expected = NoContentFoundException.class)
-    public void fetchAllByType_noCinemaFound_shouldReturnNoContentFoundException() throws Exception{
+    @Test
+    public void fetchAllByType_cinemaFound_shouldReturnCinemaListByType() throws Exception{
         List<Cinema> cinemaList = new ArrayList<>();
+        cinemaList.add(new Cinema());
+        cinemaList.add(new Cinema());
+        when(cinemaRepository.findAllByType(CinemaType.STANDARD)).thenReturn(cinemaList);
 
+        cinemaService.fetchAllByType(CinemaType.STANDARD);
+
+        assertEquals(cinemaList, cinemaRepository.findAllByType(CinemaType.STANDARD));
+    }
+
+    @Test(expected = NoContentFoundException.class)
+    public void fetchAllByType_noCinemaFound_shouldThrowNoContentFoundException() throws Exception{
+        List<Cinema> cinemaList = new ArrayList<>();
         when(cinemaRepository.findAllByType(CinemaType.STANDARD)).thenReturn(cinemaList);
 
         cinemaService.fetchAllByType(CinemaType.STANDARD);
@@ -68,26 +91,30 @@ public class CinemaServiceUnitTest {
 
     @Test
     public void createCinema_shouldCreateAndSaveCinema() throws Exception{
+        Cinema cinema = new Cinema();
+        when(cinemaRepository.save(cinema)).thenReturn(cinema);
+
         cinemaService.createCinema("name",CinemaType.IMAX);
 
-        verify(cinemaRepository).save(any(Cinema.class));
+        verify(cinemaRepository).save(cinema);
+        assertEquals(cinema, cinemaRepository.save(cinema));
     }
 
     @Test
     public void updateCinema_shouldUpdateAndSaveCinema() throws Exception{
         Cinema cinema = new Cinema();
-        cinema.setName("name");
-        cinema.setType(CinemaType.IMAX);
+        when(cinemaRepository.save(cinema)).thenReturn(cinema);
 
         cinemaService.updateCinema(cinema,"name",CinemaType.IMAX);
 
         verify(cinemaRepository,times(1)).save(cinema);
+        assertEquals(cinema, cinemaRepository.save(cinema));
     }
 
     @Test
     public void deleteCinema_shouldDeleteCinema() throws Exception{
-        Cinema cinema = new Cinema()
-                ;
+        Cinema cinema = new Cinema();
+
         cinemaService.deleteCinema(cinema);
 
         verify(cinemaRepository,times(1)).delete(cinema);

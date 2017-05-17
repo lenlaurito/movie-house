@@ -1,7 +1,6 @@
 package com.synacy.moviehouse.cinema;
 
 import com.synacy.moviehouse.exception.NoContentFoundException;
-import lombok.Getter;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
