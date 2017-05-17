@@ -22,14 +22,8 @@ public class MovieService {
     private MovieRepository movieRepository;
 
     public List<Movie> fetchMovies(Pageable pageable, String genre, String name) {
-        Page<Movie> moviePage = null;
-
-        if (genre == null && name == null)
-            moviePage = movieRepository.findAll(pageable);
-        else
-            moviePage = movieRepository.findMoviesByGenreContainingAndNameContaining(genre, name, pageable);
-
-        List<Movie> movies = moviePage.getContent();
+        List<Movie> movies = movieRepository.findMoviesByGenreContainingAndNameContaining(genre, name, pageable)
+                .getContent();
 
         if (movies.size() == 0)
             throw new NotFoundException("Empty results found.");

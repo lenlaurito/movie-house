@@ -57,14 +57,18 @@ public class MovieServiceTest {
 
         PageRequest pageRequest = new PageRequest(page, size);
 
-        when(movieRepository.findAll(pageRequest)).thenReturn(pageOjb);
+        when(movieRepository.findMoviesByGenreContainingAndNameContaining("", "", pageRequest))
+                .thenReturn(pageOjb);
         when(pageOjb.getContent()).thenReturn(movies);
 
-        List<Movie> moviesFetched = movieService.fetchMovies(pageRequest, null, null);
+        List<Movie> moviesFetched = movieService.fetchMovies(pageRequest, "", "");
 
         int expectedInvocation = 1;
 
-        verify(movieRepository, times(expectedInvocation)).findAll(ArgumentMatchers.eq(pageRequest));
+        verify(movieRepository, times(expectedInvocation)).findMoviesByGenreContainingAndNameContaining(
+                ArgumentMatchers.eq(""),
+                ArgumentMatchers.eq(""),
+                ArgumentMatchers.eq(pageRequest));
         assert moviesFetched.size() == 2;
         assert moviesFetched.get(0).equals(movie1);
         assert moviesFetched.get(1).equals(movie2);
