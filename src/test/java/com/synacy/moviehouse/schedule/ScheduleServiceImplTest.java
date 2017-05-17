@@ -44,7 +44,7 @@ public class ScheduleServiceImplTest {
         schedule.setEndDateTime(endDateTime);
         when(scheduleRepository.findOne(100L)).thenReturn(schedule);
 
-        scheduleService.fetchById(100L);
+        scheduleService.fetchScheduleById(100L);
 
         assertEquals(movie, schedule.getMovie());
         assertEquals(cinema, schedule.getCinema());
@@ -55,7 +55,7 @@ public class ScheduleServiceImplTest {
     @Test(expected = ResourceNotFoundException.class)
     public void fetchById_scheduleNotFound_throwException() throws Exception {
         when(scheduleRepository.findOne(100L)).thenReturn(null);
-        scheduleService.fetchById(100L);
+        scheduleService.fetchScheduleById(100L);
         fail();
     }
 
@@ -82,7 +82,7 @@ public class ScheduleServiceImplTest {
         Page<Schedule> movies = new PageImpl<>(scheduleList, pageable, scheduleList.size());
         when(scheduleRepository.findAll(pageable)).thenReturn(movies);
 
-        Page<Schedule> response = scheduleService.fetchPaginatedSchedules(null, null, 0, 2);
+        Page<Schedule> response = scheduleService.fetchAllSchedulesWithPagination(null, null, 0, 2);
         assertEquals(3, response.getTotalElements());
     }
 
@@ -91,9 +91,9 @@ public class ScheduleServiceImplTest {
         Movie movie = mock(Movie.class);
         Date date = mock(Date.class);
         List<Schedule> schedules = new ArrayList<>();
-        when(scheduleRepository.findAllByDateAndMovie(date, date, 100L)).thenReturn(schedules);
+        when(scheduleRepository.findAllByMovieAndStartDateTimeBetween(movie, date, date)).thenReturn(schedules);
 
-        List<Schedule> result = scheduleService.fetchAllByDateAndMovieId(date, null);
+        List<Schedule> result = scheduleService.fetchAllSchedules(date, null);
         assertEquals(0, result.size());
     }
 
@@ -102,7 +102,7 @@ public class ScheduleServiceImplTest {
         Schedule schedule = mock(Schedule.class);
         Movie movie = mock(Movie.class);
         Cinema cinema = mock(Cinema.class);
-        scheduleService.update(schedule, movie, cinema, new Date(), new Date());
+        scheduleService.updateSchedule(schedule, movie, cinema, new Date(), new Date());
         verify(scheduleRepository, times(1))
                 .save(schedule);
     }
@@ -110,7 +110,7 @@ public class ScheduleServiceImplTest {
     @Test
     public void deleteSchedule() throws Exception {
         Schedule schedule = mock(Schedule.class);
-        scheduleService.delete(schedule);
+        scheduleService.deleteSchedule(schedule);
         verify(scheduleRepository, times(1))
                 .delete(schedule);
     }

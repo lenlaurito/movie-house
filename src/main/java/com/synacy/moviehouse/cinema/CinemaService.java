@@ -6,9 +6,7 @@ public interface CinemaService {
 
     Cinema fetchCinemaById(Long id);
 
-    List<Cinema> fetchAllCinemas();
-
-    List<Cinema> fetchAllCinemasByType(String type);
+    List<Cinema> fetchAllCinemas(String type);
 
     Cinema createCinema(String name, CinemaType type);
 

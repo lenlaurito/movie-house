@@ -2,6 +2,7 @@ package com.synacy.moviehouse.cinema;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -13,36 +14,37 @@ public class CinemaController {
     @Autowired
     private CinemaService cinemaService;
 
-    @RequestMapping(method = RequestMethod.GET, value = "/{cinemaId}")
-    public Cinema fetchCinema(@PathVariable(value="cinemaId") Long cinemaId) {
-        return cinemaService.fetchCinemaById(cinemaId);
-    }
-
-    @RequestMapping(method = RequestMethod.GET)
-    public List<Cinema> fetchAllCinemas(@RequestParam(value = "type", required = false) String type) {
-        return (type == null) ? cinemaService.fetchAllCinemas() : cinemaService.fetchAllCinemasByType(type);
-    }
-
-    @RequestMapping(method = RequestMethod.POST)
-    @ResponseStatus(HttpStatus.CREATED)
-    public Cinema createNewCinema(@RequestBody Cinema cinema) {
-        return  cinemaService.createCinema(cinema.getName(), cinema.getType());
-    }
-
-    @RequestMapping(method = RequestMethod.PUT, value="/{cinemaId}")
-    public Cinema updateCinema(@PathVariable(value="cinemaId") Long cinemaId,
-                               @RequestBody Cinema cinemaRequest) {
-
+    @GetMapping("/{cinemaId}")
+    public ResponseEntity fetchCinema(@PathVariable(value="cinemaId") Long cinemaId) {
         Cinema cinema = cinemaService.fetchCinemaById(cinemaId);
-        return cinemaService.updateCinema(cinema, cinemaRequest.getName(), cinemaRequest.getType());
+        return ResponseEntity.ok().body(cinema);
     }
 
-    @RequestMapping(method = RequestMethod.DELETE, value="/{cinemaId}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteCinema(@PathVariable(value="cinemaId") Long cinemaId) {
+    @GetMapping
+    public ResponseEntity fetchAllCinemas(@RequestParam(value = "type", required = false) String type) {
+        List<Cinema> cinemas = cinemaService.fetchAllCinemas(type);
+        return ResponseEntity.ok().body(cinemas);
+    }
 
+    @PostMapping
+    public ResponseEntity createNewCinema(@RequestBody Cinema cinemaToCreate) {
+        Cinema cinema = cinemaService.createCinema(cinemaToCreate.getName(), cinemaToCreate.getType());
+        return ResponseEntity.status(HttpStatus.CREATED).body(cinema);
+    }
+
+    @PutMapping("/{cinemaId}")
+    public ResponseEntity updateCinema(@PathVariable(value="cinemaId") Long cinemaId,
+                                       @RequestBody Cinema cinemaRequest) {
+        Cinema cinemaToBeUpdated = cinemaService.fetchCinemaById(cinemaId);
+        Cinema cinema = cinemaService.updateCinema(cinemaToBeUpdated, cinemaRequest.getName(), cinemaRequest.getType());
+        return ResponseEntity.ok().body(cinema);
+    }
+
+    @DeleteMapping("/{cinemaId}")
+    public ResponseEntity deleteCinema(@PathVariable(value="cinemaId") Long cinemaId) {
         Cinema cinema = cinemaService.fetchCinemaById(cinemaId);
         cinemaService.deleteCinema(cinema);
+        return ResponseEntity.noContent().build();
     }
 
 }

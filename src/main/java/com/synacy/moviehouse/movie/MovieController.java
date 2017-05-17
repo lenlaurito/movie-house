@@ -1,7 +1,10 @@
 package com.synacy.moviehouse.movie;
 
+import com.synacy.moviehouse.exception.InvalidRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -13,43 +16,50 @@ public class MovieController {
     @Autowired
     private MovieService movieService;
 
-    @RequestMapping(method = RequestMethod.GET, value = "/{movieId}")
-    public Movie fetchMovie(@PathVariable(value="movieId") Long movieId) {
-        return movieService.fetchById(movieId);
+    @GetMapping("/{movieId}")
+    public ResponseEntity fetchMovie(@PathVariable(value="movieId") Long movieId) {
+        Movie movie =  movieService.fetchMovieById(movieId);
+        return ResponseEntity.ok().body(movie);
     }
 
-    @RequestMapping(method = RequestMethod.GET)
-    public List<Movie> fetchAllMovies(@RequestParam(value = "name", required = false) String name,
+    @GetMapping
+    public ResponseEntity fetchAllMovies(@RequestParam(value = "name", required = false) String name,
                                          @RequestParam(value = "genre", required = false) String genre,
                                          @RequestParam(value = "offset", required = false) Integer offset,
                                          @RequestParam(value = "max", required = false) Integer max) {
-        if (genre == null && name == null && offset == null && max == null) {
-            return movieService.fetchAll();
+        if (offset == null && max == null) {
+            List<Movie> movies = movieService.fetchAllMovies(name, genre);
+            return ResponseEntity.ok().body(movies);
+        } else if (offset != null && max != null) {
+            Page<Movie> movies = movieService.fetchAllMoviesWithPagination(name, genre, offset, max);
+            return ResponseEntity.ok().body(movies);
         } else {
-            return movieService.fetchAll(name, genre, offset, max);
+            // return ResponseEntity.unprocessableEntity();
+            throw new InvalidRequestException("Offset and max should both be used as parameters.");
         }
     }
 
-    @RequestMapping(method = RequestMethod.POST)
-    @ResponseStatus(HttpStatus.CREATED)
-    public Movie createNewMovie(@RequestBody Movie movie) {
-        return  movieService.create(movie);
+    @PostMapping
+    public ResponseEntity createNewMovie(@RequestBody Movie movieRequest) {
+        Movie movie = movieService.createMovie(movieRequest.getName(), movieRequest.getGenre(),
+                movieRequest.getDuration(), movieRequest.getDescription());
+         return ResponseEntity.status(HttpStatus.CREATED).body(movie);
     }
 
     @RequestMapping(method = RequestMethod.PUT, value="/{movieId}")
-    public Movie updateMovie(@PathVariable(value="movieId") Long movieId,
-                             @RequestBody Movie movieRequest) {
-
-        Movie movie = movieService.fetchById(movieId);
-        return movieService.update(movie, movieRequest.getName(), movieRequest.getGenre(),
+    public ResponseEntity updateMovie(@PathVariable(value="movieId") Long movieId,
+                                      @RequestBody Movie movieRequest) {
+        Movie movieToUpdate = movieService.fetchMovieById(movieId);
+        Movie movie = movieService.updateMovie(movieToUpdate, movieRequest.getName(), movieRequest.getGenre(),
                 movieRequest.getDuration(), movieRequest.getDescription());
+        return ResponseEntity.ok().body(movie);
     }
 
     @RequestMapping(method = RequestMethod.DELETE, value="/{movieId}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteMovie(@PathVariable(value="movieId") Long movieId) {
-        Movie movie = movieService.fetchById(movieId);
-        movieService.delete(movie);
+    public ResponseEntity deleteMovie(@PathVariable(value="movieId") Long movieId) {
+        Movie movie = movieService.fetchMovieById(movieId);
+        movieService.deleteMovie(movie);
+        return ResponseEntity.noContent().build();
     }
 
 }

@@ -1,6 +1,5 @@
 package com.synacy.moviehouse.utilities;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -15,7 +14,7 @@ public class DateUtils {
         start.setTime(startDateTime);
         end.setTime(endDateTime);
         return start.get(Calendar.YEAR) == end.get(Calendar.YEAR) &&
-               start.get(Calendar.DAY_OF_YEAR) == end.get(Calendar.DAY_OF_YEAR);
+                start.get(Calendar.DAY_OF_YEAR) == end.get(Calendar.DAY_OF_YEAR);
     }
 
     public static String formatDateAsString(Date date) {

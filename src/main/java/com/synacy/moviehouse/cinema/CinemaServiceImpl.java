@@ -2,10 +2,8 @@ package com.synacy.moviehouse.cinema;
 
 import com.synacy.moviehouse.exception.InvalidRequestException;
 import com.synacy.moviehouse.exception.ResourceNotFoundException;
-import lombok.Getter;
-import lombok.Setter;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -26,15 +24,19 @@ public class CinemaServiceImpl implements CinemaService {
         return cinema;
     }
 
-    public List<Cinema> fetchAllCinemas() {
+    public List<Cinema> fetchAll() {
         return (List) cinemaRepository.findAll();
     }
 
-    public List<Cinema> fetchAllCinemasByType(String type) {
-        if (!CinemaType.contains(type.toUpperCase())) {
-            throw new InvalidRequestException("Cinema Type " + type + " not found.");
+    public List<Cinema> fetchAllCinemas(String type) {
+        if (type == null) {
+            return (List) cinemaRepository.findAll();
+        } else {
+            if (!CinemaType.contains(type.toUpperCase())) {
+                throw new InvalidRequestException("Cinema Type " + type + " not found.");
+            }
+            return cinemaRepository.findAllByType(CinemaType.valueOf(type));
         }
-        return cinemaRepository.findAllByType(CinemaType.valueOf(type));
     }
 
     public Cinema createCinema(String name, CinemaType type) {

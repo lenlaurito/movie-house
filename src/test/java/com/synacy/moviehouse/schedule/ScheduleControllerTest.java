@@ -1,17 +1,23 @@
 package com.synacy.moviehouse.schedule;
 
 import com.synacy.moviehouse.cinema.Cinema;
+import com.synacy.moviehouse.cinema.CinemaService;
+import com.synacy.moviehouse.cinema.CinemaType;
 import com.synacy.moviehouse.movie.Movie;
+import com.synacy.moviehouse.movie.MovieService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -20,60 +26,146 @@ public class ScheduleControllerTest {
     @Mock
     private ScheduleService scheduleService;
 
+    @Mock
+    private MovieService movieService;
+
+    @Mock
+    private CinemaService cinemaService;
+
     @InjectMocks
     ScheduleController scheduleController;
 
     @Test
-    public void fetchSchedule() throws Exception {
-        scheduleController.fetchSchedule(100L);
-        verify(scheduleService, times(1))
-                .fetchById(100L);
+    public void fetchSchedule_shouldGetACorrectSchedule() throws Exception {
+        Movie movie = mock(Movie.class);
+        Cinema cinema = mock(Cinema.class);
+
+        Long movieId = movie.getId();
+        Long cinemaId = cinema.getId();
+
+        Date startDateTime = mock(Date.class);
+        Date endDateTime = mock(Date.class);
+        when(movieService.fetchMovieById(movieId)).thenReturn(movie);
+        when(cinemaService.fetchCinemaById(cinemaId)).thenReturn(cinema);
+
+        Long scheduleId = 2L;
+        Schedule schedule = new Schedule();
+        schedule.setMovie(movie);
+        schedule.setCinema(cinema);
+        schedule.setStartDateTime(startDateTime);
+        schedule.setEndDateTime(endDateTime);
+
+        when(scheduleService.fetchScheduleById(scheduleId)).thenReturn(schedule);
+
+        ResponseEntity<Schedule> response = scheduleController.fetchSchedule(scheduleId);
+
+        assertEquals(HttpStatus.OK.value(), response.getStatusCodeValue());
+        assertEquals(movie, schedule.getMovie());
+        assertEquals(cinema, schedule.getCinema());
+        assertEquals(startDateTime, schedule.getStartDateTime());
+        assertEquals(endDateTime, schedule.getEndDateTime());
     }
 
     @Test
     public void fetchAllSchedules() throws Exception {
+        Movie movie = mock(Movie.class);
+        Cinema cinema = mock(Cinema.class);
+        Date startDateTime = mock(Date.class);
+        Date endDateTime = mock(Date.class);
+
+        Schedule schedule1 = new Schedule();
+        schedule1.setMovie(movie);
+        schedule1.setCinema(cinema);
+        schedule1.setStartDateTime(startDateTime);
+        schedule1.setEndDateTime(endDateTime);
+
+        Schedule schedule2 = new Schedule();
+        schedule2.setMovie(movie);
+        schedule2.setCinema(cinema);
+        schedule2.setStartDateTime(startDateTime);
+        schedule2.setEndDateTime(endDateTime);
+
         List<Schedule> schedules = new ArrayList<>();
-        when(scheduleService.fetchAll()).thenReturn(schedules);
-        scheduleController.fetchAllSchedules(null, null, null, null);
-        verify(scheduleService, times(1))
-                .fetchAll();
+        schedules.add(schedule1);
+        schedules.add(schedule2);
+
+        when(scheduleService.fetchAllSchedules(startDateTime, null)).thenReturn(schedules);
+
+        ResponseEntity<Schedule> response = scheduleController.fetchAllSchedules(null, null, null,null);
+
+        assertEquals(HttpStatus.OK.value(), response.getStatusCodeValue());
+//        assertEquals(movie, response.getBody().getMovie());
+//        assertEquals(cinema, response.getBody().getCinema());
+//        assertEquals(startDateTime, response.getBody().getStartDateTime());
+//        assertEquals(endDateTime, response.getBody().getEndDateTime());
+//
+//        assertEquals(movie, response.getBody().getMovie());
+//        assertEquals(cinema, response.getBody().getCinema());
+//        assertEquals(startDateTime, response.getBody().getStartDateTime());
+//        assertEquals(endDateTime, response.getBody().getEndDateTime());
     }
 
     @Test
     public void createNewSchedule() throws Exception {
-        Schedule newSchedule = mock(Schedule.class);
-        scheduleController.createNewSchedule(newSchedule);
-        verify(scheduleService, times(1))
-                .create(newSchedule);
+        Movie movie = mock(Movie.class);
+        Cinema cinema = mock(Cinema.class);
+        Date startDateTime = mock(Date.class);
+        Date endDateTime = mock(Date.class);
+
+        Schedule newSchedule = new Schedule();
+        newSchedule.setMovie(movie);
+        newSchedule.setCinema(cinema);
+        newSchedule.setStartDateTime(startDateTime);
+        newSchedule.setEndDateTime(endDateTime);
+
+        when(scheduleService.createSchedule(movie, cinema, startDateTime, endDateTime)).thenReturn(newSchedule);
+
+        ResponseEntity<Schedule> response = scheduleController.createNewSchedule(newSchedule);
+
+        assertEquals(HttpStatus.CREATED.value(), response.getStatusCodeValue());
+        assertEquals(movie, response.getBody().getMovie());
+        assertEquals(cinema, response.getBody().getCinema());
+        assertEquals(startDateTime, response.getBody().getStartDateTime());
+        assertEquals(endDateTime, response.getBody().getEndDateTime());
     }
 
     @Test
     public void updateSchedule() throws Exception {
-        Schedule schedule = mock(Schedule.class);
+        Long cinemaId = 2L;
         Movie movie = mock(Movie.class);
         Cinema cinema = mock(Cinema.class);
-        Date date = mock(Date.class);
-        when(scheduleService.fetchById(100L)).thenReturn(schedule);
-        when(schedule.getMovie()).thenReturn(movie);
-        when(schedule.getCinema()).thenReturn(cinema);
-        when(schedule.getStartDateTime()).thenReturn(date);
-        when(schedule.getEndDateTime()).thenReturn(date);
+        Date startDateTime = mock(Date.class);
+        Date endDateTime = mock(Date.class);
 
-        scheduleController.updateSchedule(100L, schedule);
+        Schedule scheduleToUpdate = new Schedule();
+        scheduleToUpdate.setMovie(movie);
+        scheduleToUpdate.setCinema(cinema);
+        scheduleToUpdate.setStartDateTime(startDateTime);
+        scheduleToUpdate.setEndDateTime(endDateTime);
 
-        verify(scheduleService, times(1))
-                .update(schedule, movie, cinema, date, date);
+        when(scheduleService.fetchScheduleById(cinemaId)).thenReturn(scheduleToUpdate);
+        when(scheduleService.updateSchedule(scheduleToUpdate, movie, cinema, startDateTime, endDateTime)).thenReturn(scheduleToUpdate);
+
+        ResponseEntity<Schedule> response = scheduleController.updateSchedule(cinemaId, scheduleToUpdate);
+
+        assertEquals(HttpStatus.OK.value(), response.getStatusCodeValue());
+        assertEquals(movie, response.getBody().getMovie());
+        assertEquals(cinema, response.getBody().getCinema());
+        assertEquals(startDateTime, response.getBody().getStartDateTime());
+        assertEquals(endDateTime, response.getBody().getEndDateTime());
     }
 
     @Test
     public void deleteSchedule() throws Exception {
-        Schedule schedule = mock(Schedule.class);
-        when(scheduleService.fetchById(100L)).thenReturn(schedule);
+        Long scheduleId = 100L;
 
-        scheduleController.deleteSchedule(100L);
+        Schedule schedule = new Schedule();
 
-        verify(scheduleService, times(1))
-                .delete(schedule);
+        when(scheduleService.fetchScheduleById(100L)).thenReturn(schedule);
+
+        ResponseEntity<Cinema> response = scheduleController.deleteSchedule(scheduleId);
+
+        assertEquals(HttpStatus.NO_CONTENT.value(), response.getStatusCodeValue());
     }
 
 }

@@ -1,19 +1,21 @@
 package com.synacy.moviehouse.movie;
 
+import org.springframework.data.domain.Page;
+
 import java.util.List;
 
 public interface MovieService {
 
-    Movie fetchById(Long id);
+    Movie fetchMovieById(Long id);
 
-    List<Movie> fetchAll();
+    List<Movie> fetchAllMovies(String name, String genre);
 
-    List<Movie> fetchAll(String name, String genre, Integer offset, Integer max);
+    Page<Movie> fetchAllMoviesWithPagination(String name, String genre, Integer offset, Integer max);
 
-    Movie create(Movie movie);
+    Movie createMovie(String name, Genre genre, Integer duration, String description);
 
-    Movie update(Movie movie, String name, Genre genre, Integer duration, String description);
+    Movie updateMovie(Movie movie, String name, Genre genre, Integer duration, String description);
 
-    void delete(Movie movie);
+    void deleteMovie(Movie movie);
 
 }

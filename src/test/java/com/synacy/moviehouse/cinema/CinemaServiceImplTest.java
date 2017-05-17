@@ -42,7 +42,7 @@ public class CinemaServiceImplTest {
         cinemas.add(mock(Cinema.class));
         when(cinemaRepository.findAll()).thenReturn(cinemas);
 
-        List<Cinema> result = cinemaService.fetchAllCinemas();
+        List<Cinema> result = cinemaService.fetchAllCinemas(null);
         assertEquals(3, result.size());
     }
 
@@ -51,7 +51,7 @@ public class CinemaServiceImplTest {
         List<Cinema> cinemas = new ArrayList<>();
         when(cinemaRepository.findAll()).thenReturn(cinemas);
 
-        List<Cinema> result = cinemaService.fetchAllCinemas();
+        List<Cinema> result = cinemaService.fetchAllCinemas(null);
         assertEquals(true, result.isEmpty());
     }
 
@@ -59,7 +59,7 @@ public class CinemaServiceImplTest {
     public void fetchAllByType_shouldThrowInvalidRequestException() throws Exception {
         String notACinemaType = "SUB-STANDARD";
 
-        cinemaService.fetchAllCinemasByType(notACinemaType);
+        cinemaService.fetchAllCinemas(notACinemaType);
     }
 
     @Test
@@ -80,7 +80,7 @@ public class CinemaServiceImplTest {
 
         when(cinemaRepository.findAllByType(type)).thenReturn(cinemas);
 
-        List<Cinema> resultCinemas = cinemaService.fetchAllCinemasByType(type.name());
+        List<Cinema> resultCinemas = cinemaService.fetchAllCinemas(type.name());
 
         verify(cinemaRepository, times(0)).findAllByType(null);
         assertEquals("Cinema 1", resultCinemas.get(0).getName());

@@ -1,6 +1,7 @@
 package com.synacy.moviehouse.schedule;
 
 import com.synacy.moviehouse.cinema.Cinema;
+import com.synacy.moviehouse.cinema.CinemaService;
 import com.synacy.moviehouse.exception.InvalidRequestException;
 import com.synacy.moviehouse.exception.ResourceNotFoundException;
 import com.synacy.moviehouse.movie.Movie;
@@ -28,7 +29,10 @@ public class ScheduleServiceImpl implements ScheduleService {
     @Autowired
     private MovieService movieService;
 
-    public Schedule fetchById(Long id) {
+    @Autowired
+    private CinemaService cinemaService;
+
+    public Schedule fetchScheduleById(Long id) {
         Schedule schedule = scheduleRepository.findOne(id);
         if (schedule == null) {
             throw new ResourceNotFoundException("Schedule with id " + id + " does not exist.");
@@ -40,35 +44,58 @@ public class ScheduleServiceImpl implements ScheduleService {
         return (List) scheduleRepository.findAll();
     }
 
-    public List<Schedule> fetchAllSchedules(Date date, Long movieId, Integer offset, Integer max) {
-        if (offset != null && max != null) {
-            return this.fetchPaginatedSchedules(date, movieId, offset, max).getContent();
-        }
-        else {
-            if (date != null && movieId != null) {
-                if (offset == null && max == null) {
-                    return this.fetchAllByDateAndMovieId(date, movieId);
-                }
-                else {
-                    throw new InvalidRequestException("Offset and max should both be used as parameters.");
-                }
-            } else {
-                if (offset == null && max == null) {
-                    return this.fetchAllByDateAndMovieId(date, movieId);
-                }
-                else {
-                    throw new InvalidRequestException("Offset and max should both be used as parameters.");
-                }
-            }
+    public List<Schedule> fetchAllSchedules(Date date, Long movieId) {
+        if (date == null && movieId == null) {
+            return (List) scheduleRepository.findAll();
+        } else if (movieId == null) {
+            Date begDate = DateUtils.getBegTimeOfDate(date);
+            Date endDate = DateUtils.getEndTimeOfDate(date);
+            return scheduleRepository.findAllByStartDateTimeBetween(begDate, endDate);
+        } else if (date == null) {
+            Movie movie = movieService.fetchMovieById(movieId);
+            return scheduleRepository.findAllByMovie(movie);
+        } else {
+            Date begDate = DateUtils.getBegTimeOfDate(date);
+            Date endDate = DateUtils.getEndTimeOfDate(date);
+            Movie movie = movieService.fetchMovieById(movieId);
+            return scheduleRepository.findAllByMovieAndStartDateTimeBetween(movie, begDate, endDate);
         }
     }
 
-    public Schedule create(Schedule schedule) {
-        Schedule validatedSchedule = this.validateSchedule(schedule);
-        return scheduleRepository.save(validatedSchedule);
+    public Page<Schedule> fetchAllSchedulesWithPagination(Date date, Long movieId, Integer offset, Integer max) {
+        Pageable pageable = new PageRequest(offset, max, Sort.Direction.ASC, "startDateTime");
+        if (date == null && movieId == null) {
+            return scheduleRepository.findAll(pageable);
+        } else if (movieId == null) {
+            Date begDate = DateUtils.getBegTimeOfDate(date);
+            Date endDate = DateUtils.getEndTimeOfDate(date);
+            return scheduleRepository.findAllByStartDateTimeBetween(begDate, endDate, pageable);
+        } else if (date == null) {
+            Movie movie = movieService.fetchMovieById(movieId);
+            return scheduleRepository.findAllByMovie(movie, pageable);
+        } else {
+            Date begDate = DateUtils.getBegTimeOfDate(date);
+            Date endDate = DateUtils.getEndTimeOfDate(date);
+            Movie movie = movieService.fetchMovieById(movieId);
+            return scheduleRepository.findAllByMovieAndStartDateTimeBetween(movie, begDate, endDate, pageable);
+        }
     }
 
-    public Schedule update(Schedule schedule, Movie movie, Cinema cinema, Date startDateTime, Date endDateTime) {
+    public Schedule createSchedule(Movie movieToCreate, Cinema cinemaToCreate, Date startDateTime, Date endDateTime) {
+        Movie movie = movieService.fetchMovieById(movieToCreate.getId());
+        Cinema cinema = cinemaService.fetchCinemaById(cinemaToCreate.getId());
+
+        Schedule schedule = new Schedule();
+        schedule.setMovie(movie);
+        schedule.setCinema(cinema);
+        schedule.setStartDateTime(startDateTime);
+        schedule.setEndDateTime(endDateTime);
+
+        this.validateSchedule(cinema, movie, startDateTime, endDateTime);
+        return scheduleRepository.save(schedule);
+    }
+
+    public Schedule updateSchedule(Schedule schedule, Movie movie, Cinema cinema, Date startDateTime, Date endDateTime) {
         schedule.setMovie(movie);
         schedule.setCinema(cinema);
         schedule.setStartDateTime(startDateTime);
@@ -76,70 +103,27 @@ public class ScheduleServiceImpl implements ScheduleService {
         return scheduleRepository.save(schedule);
     }
 
-    public void delete(Schedule schedule) {
+    public void deleteSchedule(Schedule schedule) {
         scheduleRepository.delete(schedule);
     }
 
-    public List<Schedule> fetchAllByDateAndMovieId(Date date, Long movieId) {
-        if (movieId == null) {
-            Date begDate = DateUtils.getBegTimeOfDate(date);
-            Date endDate = DateUtils.getEndTimeOfDate(date);
-            System.out.println("Beg: " + begDate);
-            System.out.println("End: " + endDate);
-            return scheduleRepository.findAllByDate(begDate, endDate);
-        }
-        else if (date == null) {
-            Movie movie = movieService.fetchById(movieId);
-            return scheduleRepository.findAllByMovie(movie);
-        }
-        else {
-            Date begDate = DateUtils.getBegTimeOfDate(date);
-            Date endDate = DateUtils.getEndTimeOfDate(date);
-            Movie movie = movieService.fetchById(movieId);
-            return scheduleRepository.findAllByDateAndMovie(begDate, endDate, movie.getId());
-        }
-    }
-
-    public Page<Schedule> fetchPaginatedSchedules(Date date, Long movieId, Integer offset, Integer max) {
-        Pageable pageable = new PageRequest(offset, max, Sort.Direction.ASC, "startDateTime");
-        if (date == null && movieId == null) {
-            return scheduleRepository.findAll(pageable);
-        } else if (date == null) {
-            Movie movie = movieService.fetchById(movieId);
-            return scheduleRepository.findAllByMovie(movie, pageable);
-        } else if (movieId == null) {
-            return scheduleRepository.findAllByStartDateTime(date, pageable);
-        } else {
-            Movie movie = movieService.fetchById(movieId);
-            return scheduleRepository.findAllByStartDateTimeAndMovie(date, movie, pageable);
-        }
-    }
-
-    protected Schedule validateSchedule(Schedule schedule) {
-        Long movieId = schedule.getMovie().getId();
-        Long cinemaId = schedule.getCinema().getId();
-        Date startDateTime = schedule.getStartDateTime();
-        Date endDateTime = schedule.getEndDateTime();
-        Movie movie = movieService.fetchById(movieId);
-
+    protected boolean validateSchedule(Cinema cinema, Movie movie, Date startDateTime, Date endDateTime) {
         if (!startDateTime.before(endDateTime)) {
             throw new InvalidRequestException("Start date should be before the end date.");
         }
 
         if (DateUtils.onSameDate(startDateTime, endDateTime)) {
-            List<Schedule> schedules = scheduleRepository.findAllByDateWithinRange(cinemaId, startDateTime, endDateTime);
+            List<Schedule> schedules = scheduleRepository.findAllByCinemaAndStartDateTimeLessThanAndEndDateTimeGreaterThanEqual(cinema, startDateTime, endDateTime);
             if (!schedules.isEmpty()) {
                 throw new InvalidRequestException("Dates are overlapping with other schedules.");
             }
-
             if (movie.getDuration() > DateUtils.getDiffInMinutes(startDateTime, endDateTime)) {
                 throw new InvalidRequestException("Movie duration does not fit to the schedule. Movie Duration is " + movie.getDuration());
             }
-        }
-        else {
+        } else {
             throw new InvalidRequestException("Start and end date should be on the same day.");
         }
-        return schedule;
+        return true;
     }
 
 }

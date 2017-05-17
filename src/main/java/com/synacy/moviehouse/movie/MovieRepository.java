@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface MovieRepository extends PagingAndSortingRepository<Movie, Long> {
 
-    List<Movie> findMoviesByNameContainingIgnoreCase(String name);
+    List<Movie> findAllByNameContainingIgnoreCase(String name);
 
     List<Movie> findAllByGenre(Genre genre);
 
