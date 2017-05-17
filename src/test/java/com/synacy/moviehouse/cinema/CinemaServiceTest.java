@@ -41,7 +41,7 @@ public class CinemaServiceTest {
 
     @Test
     public void fetchAllCinema_withNoFilter_shouldFindAll() throws Exception {
-        String type = null;
+        String type = "";
 
         Page<Cinema> page = mock(Page.class);
         Sort sort = new Sort(Sort.Direction.ASC, "name");
@@ -60,14 +60,16 @@ public class CinemaServiceTest {
         cinemas.add(cinema1);
         cinemas.add(cinema2);
 
-        when(cinemaRepository.findAll(pageRequest)).thenReturn(page);
+        when(cinemaRepository.findAllCinemaByTypeContaining(type, pageRequest)).thenReturn(page);
         when(page.getContent()).thenReturn(cinemas);
 
         List<Cinema> fetchedCinema = cinemaService.fetchAllCinema(pageRequest, type);
 
         int expectedInvoccations = 1;
 
-        verify(cinemaRepository, times(expectedInvoccations)).findAll(ArgumentMatchers.eq(pageRequest));
+        verify(cinemaRepository, times(expectedInvoccations)).findAllCinemaByTypeContaining(
+                ArgumentMatchers.eq(type),
+                ArgumentMatchers.eq(pageRequest));
 
         assert fetchedCinema.get(0).equals(cinema1);
         assert fetchedCinema.get(1).equals(cinema2);

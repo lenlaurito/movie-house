@@ -21,7 +21,7 @@ public class CinemaController {
 
     @RequestMapping(method = RequestMethod.GET)
     public List<Cinema> fetchAllCinema(Pageable pageable,
-                                       @RequestParam(value = "type", required = false) String type) {
+                                       @RequestParam(value = "type", defaultValue = "", required = false) String type) {
 
         Sort sort = new Sort(Sort.Direction.ASC, "name");
         PageRequest pageRequest = new PageRequest(pageable.getOffset(), pageable.getPageSize(), sort);

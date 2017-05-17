@@ -23,14 +23,7 @@ public class CinemaService {
     CinemaRepository cinemaRepository;
 
     public List<Cinema> fetchAllCinema(Pageable pageable, String type) {
-        Page<Cinema> cinemaPage;
-
-        if (type == null)
-            cinemaPage = cinemaRepository.findAll(pageable);
-        else
-            cinemaPage = cinemaRepository.findAllCinemaByTypeContaining(type, pageable);
-
-        List<Cinema> cinemas = cinemaPage.getContent();
+        List<Cinema> cinemas = cinemaRepository.findAllCinemaByTypeContaining(type, pageable).getContent();
 
         if (cinemas.size() == 0)
             throw new NotFoundException("Empty results found.");
