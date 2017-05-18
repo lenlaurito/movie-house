@@ -1,8 +1,11 @@
 package com.synacy.moviehouse.schedule;
 
 import com.synacy.moviehouse.cinema.Cinema;
+import com.synacy.moviehouse.cinema.CinemaService;
 import com.synacy.moviehouse.exception.ResourceNotFoundException;
 import com.synacy.moviehouse.movie.Movie;
+import com.synacy.moviehouse.movie.MovieService;
+import com.synacy.moviehouse.utilities.DateUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -24,6 +27,12 @@ public class ScheduleServiceImplTest {
 
     @Mock
     private ScheduleRepository scheduleRepository;
+
+    @Mock
+    private MovieService movieService;
+
+    @Mock
+    private CinemaService cinemaService;
 
     @InjectMocks
     private ScheduleServiceImpl scheduleService;
@@ -55,64 +64,191 @@ public class ScheduleServiceImplTest {
     @Test(expected = ResourceNotFoundException.class)
     public void fetchById_scheduleNotFound_throwException() throws Exception {
         when(scheduleRepository.findOne(100L)).thenReturn(null);
+
         scheduleService.fetchScheduleById(100L);
         fail();
     }
 
     @Test
-    public void fetchAllSchedules_nonEmptyData_returnCollectionOfSchedules() throws Exception {
+    public void fetchAllSchedules_withEmptySchedulesAndNullParameters() throws Exception {
         List<Schedule> schedules = new ArrayList<>();
-        schedules.add(mock(Schedule.class));
-        schedules.add(mock(Schedule.class));
-        schedules.add(mock(Schedule.class));
         when(scheduleRepository.findAll()).thenReturn(schedules);
 
-        List<Schedule> result = scheduleService.fetchAll();
-        assertEquals(3, result.size());
-    }
+        List<Schedule> result = scheduleService.fetchAllSchedules(null, null);
 
-    @Test
-    public void fetchPaginatedSchedules() throws Exception {
-        Pageable pageable = new PageRequest(0, 2, Sort.Direction.ASC, "startDateTime");
-        List<Schedule> scheduleList = new ArrayList<>();
-        scheduleList.add(mock(Schedule.class));
-        scheduleList.add(mock(Schedule.class));
-        scheduleList.add(mock(Schedule.class));
-
-        Page<Schedule> movies = new PageImpl<>(scheduleList, pageable, scheduleList.size());
-        when(scheduleRepository.findAll(pageable)).thenReturn(movies);
-
-        Page<Schedule> response = scheduleService.fetchAllSchedulesWithPagination(null, null, 0, 2);
-        assertEquals(3, response.getTotalElements());
-    }
-
-    @Test
-    public void fetchAllByDateAndMovieId() throws Exception {
-        Movie movie = mock(Movie.class);
-        Date date = mock(Date.class);
-        List<Schedule> schedules = new ArrayList<>();
-        when(scheduleRepository.findAllByMovieAndStartDateTimeBetween(movie, date, date)).thenReturn(schedules);
-
-        List<Schedule> result = scheduleService.fetchAllSchedules(date, null);
+        verify(scheduleRepository, times(1)).findAll();
         assertEquals(0, result.size());
     }
 
     @Test
-    public void updateSchedule() throws Exception {
-        Schedule schedule = mock(Schedule.class);
-        Movie movie = mock(Movie.class);
-        Cinema cinema = mock(Cinema.class);
-        scheduleService.updateSchedule(schedule, movie, cinema, new Date(), new Date());
-        verify(scheduleRepository, times(1))
-                .save(schedule);
+    public void fetchAllSchedules_withNullMovieId_returnCollectionOfSchedules() throws Exception {
+        Date date = DateUtils.formatStringAsDate("2017-05-10 07:30:00");
+        Date begDate = DateUtils.getBegTimeOfDate(date);
+        Date endDate = DateUtils.getEndTimeOfDate(date);
+        List<Schedule> schedules = new ArrayList<>();
+        schedules.add(mock(Schedule.class));
+        schedules.add(mock(Schedule.class));
+        schedules.add(mock(Schedule.class));
+        when(scheduleRepository.findAllByStartDateTimeBetween(begDate, endDate)).thenReturn(schedules);
+
+        List<Schedule> result = scheduleService.fetchAllSchedules(date, null);
+
+        verify(scheduleRepository, times(1)).findAllByStartDateTimeBetween(begDate, endDate);
+        assertEquals(3, result.size());
     }
 
     @Test
-    public void deleteSchedule() throws Exception {
+    public void fetchAllSchedules_withNullDate_returnCollectionOfSchedules() throws Exception {
+        Long movieId = 100L;
+        Movie movie = mock(Movie.class);
+        List<Schedule> schedules = new ArrayList<>();
+        schedules.add(mock(Schedule.class));
+        schedules.add(mock(Schedule.class));
+        when(movieService.fetchMovieById(movieId)).thenReturn(movie);
+        when(scheduleRepository.findAllByMovie(movie)).thenReturn(schedules);
+
+        List<Schedule> result = scheduleService.fetchAllSchedules(null, movieId);
+
+        verify(scheduleRepository, times(1)).findAllByMovie(movie);
+        assertEquals(2, result.size());
+    }
+
+    @Test
+    public void fetchAllSchedules_withSpecifiedParameters_returnCollectionOfSchedules() throws Exception {
+        Long movieId = 100L;
+        Date date = DateUtils.formatStringAsDate("2017-05-10 07:30:00");
+        Date begDate = DateUtils.getBegTimeOfDate(date);
+        Date endDate = DateUtils.getEndTimeOfDate(date);
+
+        Movie movie = mock(Movie.class);
+        List<Schedule> schedules = new ArrayList<>();
+        schedules.add(mock(Schedule.class));
+        schedules.add(mock(Schedule.class));
+        when(movieService.fetchMovieById(movieId)).thenReturn(movie);
+        when(scheduleRepository.findAllByMovieAndStartDateTimeBetween(movie, begDate, endDate)).thenReturn(schedules);
+
+        List<Schedule> result = scheduleService.fetchAllSchedules(date, movieId);
+
+        verify(scheduleRepository, times(1)).findAllByMovieAndStartDateTimeBetween(movie, begDate, endDate);
+        assertEquals(2, result.size());
+    }
+
+    @Test
+    public void fetchAllSchedulesWithPagination_withEmptySchedulesAndNullParameters() throws Exception {
+        Pageable pageable = new PageRequest(0, 2, Sort.Direction.ASC, "startDateTime");
+        List<Schedule> schedules = new ArrayList<>();
+
+        Page<Schedule> schedulePage = new PageImpl<>(schedules, pageable, schedules.size());
+        when(scheduleRepository.findAll(pageable)).thenReturn(schedulePage);
+
+        Page<Schedule> response = scheduleService.fetchAllSchedulesWithPagination(null, null, 0, 2);
+
+        verify(scheduleRepository, times(1)).findAll(pageable);
+        assertEquals(0, response.getTotalElements());
+    }
+
+    @Test
+    public void fetchAllSchedulesWithPagination_withNullMovieId_returnCollectionOfSchedules() throws Exception {
+        Pageable pageable = new PageRequest(0, 2, Sort.Direction.ASC, "startDateTime");
+        Date date = DateUtils.formatStringAsDate("2017-05-10 07:30:00");
+        Date begDate = DateUtils.getBegTimeOfDate(date);
+        Date endDate = DateUtils.getEndTimeOfDate(date);
+        List<Schedule> schedules = new ArrayList<>();
+        schedules.add(mock(Schedule.class));
+        schedules.add(mock(Schedule.class));
+        schedules.add(mock(Schedule.class));
+
+        Page<Schedule> schedulePage = new PageImpl<>(schedules, pageable, schedules.size());
+        when(scheduleRepository.findAllByStartDateTimeBetween(begDate, endDate, pageable)).thenReturn(schedulePage);
+
+        Page<Schedule> response = scheduleService.fetchAllSchedulesWithPagination(date, null, 0, 2);
+
+        verify(scheduleRepository, times(1)).findAllByStartDateTimeBetween(begDate, endDate, pageable);
+        assertEquals(3, response.getTotalElements());
+    }
+
+    @Test
+    public void fetchAllSchedulesWithPagination_withNullDate_returnCollectionOfSchedules() throws Exception {
+        Pageable pageable = new PageRequest(0, 2, Sort.Direction.ASC, "startDateTime");
+        Long movieId = 100L;
+        Movie movie = mock(Movie.class);
+        List<Schedule> schedules = new ArrayList<>();
+        schedules.add(mock(Schedule.class));
+        schedules.add(mock(Schedule.class));
+
+        Page<Schedule> schedulePage = new PageImpl<>(schedules, pageable, schedules.size());
+        when(movieService.fetchMovieById(movieId)).thenReturn(movie);
+        when(scheduleRepository.findAllByMovie(movie, pageable)).thenReturn(schedulePage);
+
+        Page<Schedule> response = scheduleService.fetchAllSchedulesWithPagination(null, movieId, 0, 2);
+
+        verify(scheduleRepository, times(1)).findAllByMovie(movie, pageable);
+        assertEquals(2, response.getTotalElements());
+    }
+
+    @Test
+    public void fetchAllSchedulesWithPagination_withSpecifiedParameters_returnCollectionOfSchedules() throws Exception {
+        Pageable pageable = new PageRequest(0, 2, Sort.Direction.ASC, "startDateTime");
+        Long movieId = 100L;
+        Date date = DateUtils.formatStringAsDate("2017-05-10 07:30:00");
+        Date begDate = DateUtils.getBegTimeOfDate(date);
+        Date endDate = DateUtils.getEndTimeOfDate(date);
+
+        Movie movie = mock(Movie.class);
+        List<Schedule> schedules = new ArrayList<>();
+        schedules.add(mock(Schedule.class));
+        schedules.add(mock(Schedule.class));
+
+        Page<Schedule> schedulePage = new PageImpl<>(schedules, pageable, schedules.size());
+        when(movieService.fetchMovieById(movieId)).thenReturn(movie);
+        when(scheduleRepository.findAllByMovieAndStartDateTimeBetween(movie, begDate, endDate, pageable)).thenReturn(schedulePage);
+
+        Page<Schedule> response = scheduleService.fetchAllSchedulesWithPagination(date, movieId, 0, 2);
+
+        verify(scheduleRepository, times(1)).findAllByMovieAndStartDateTimeBetween(movie, begDate, endDate, pageable);
+        assertEquals(2, response.getTotalElements());
+    }
+
+    @Test
+    public void createSchedule_shouldAssertWithNewlyCreatedSchedule_withSpecifiedDetails() throws Exception {
+        Movie movie = mock(Movie.class);
+        Cinema cinema = mock(Cinema.class);
+        Date startDateTime = DateUtils.formatStringAsDate("2017-05-10 07:30:00");
+        Date endDateTime = DateUtils.formatStringAsDate("2017-05-10 08:30:00");
+
+        Schedule schedule = new Schedule();
+        schedule.setMovie(movie);
+        schedule.setCinema(cinema);
+        schedule.setStartDateTime(startDateTime);
+        schedule.setEndDateTime(endDateTime);
+
+        scheduleService.createSchedule(movie, cinema, startDateTime, endDateTime);
+
+        verify(scheduleRepository, times(1)).save(schedule);
+    }
+
+    @Test
+    public void updateSchedule_shouldUpdateAnExistingSchedule() throws Exception {
         Schedule schedule = mock(Schedule.class);
+        Movie movie = mock(Movie.class);
+        Cinema cinema = mock(Cinema.class);
+        Date mockDate = mock(Date.class);
+
+        when(movieService.fetchMovieById(movie.getId())).thenReturn(movie);
+        when(cinemaService.fetchCinemaById(cinema.getId())).thenReturn(cinema);
+
+        scheduleService.updateSchedule(schedule, movie, cinema, mockDate, mockDate);
+
+        verify(scheduleRepository, times(1)).save(schedule);
+    }
+
+    @Test
+    public void deleteSchedule_shouldDeleteAnExistingSchedule() throws Exception {
+        Schedule schedule = new Schedule();
+
         scheduleService.deleteSchedule(schedule);
-        verify(scheduleRepository, times(1))
-                .delete(schedule);
+
+        verify(scheduleRepository, times(1)).delete(schedule);
     }
 
 }

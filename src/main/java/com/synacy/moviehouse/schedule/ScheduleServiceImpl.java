@@ -82,16 +82,13 @@ public class ScheduleServiceImpl implements ScheduleService {
     }
 
     public Schedule createSchedule(Movie movieToCreate, Cinema cinemaToCreate, Date startDateTime, Date endDateTime) {
-        Movie movie = movieService.fetchMovieById(movieToCreate.getId());
-        Cinema cinema = cinemaService.fetchCinemaById(cinemaToCreate.getId());
-
         Schedule schedule = new Schedule();
-        schedule.setMovie(movie);
-        schedule.setCinema(cinema);
+        schedule.setMovie(movieToCreate);
+        schedule.setCinema(cinemaToCreate);
         schedule.setStartDateTime(startDateTime);
         schedule.setEndDateTime(endDateTime);
 
-        this.validateSchedule(cinema, movie, startDateTime, endDateTime);
+        this.validateSchedule(cinemaToCreate, movieToCreate, startDateTime, endDateTime);
         return scheduleRepository.save(schedule);
     }
 

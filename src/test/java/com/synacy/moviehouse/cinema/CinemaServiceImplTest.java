@@ -55,8 +55,8 @@ public class CinemaServiceImplTest {
         assertEquals(true, result.isEmpty());
     }
 
-    @Test(expected = InvalidRequestException.class)
-    public void fetchAllByType_shouldThrowInvalidRequestException() throws Exception {
+    @Test(expected = IllegalArgumentException.class)
+    public void fetchAllByType_shouldThrowIllegalArgumentException() throws Exception {
         String notACinemaType = "SUB-STANDARD";
 
         cinemaService.fetchAllCinemas(notACinemaType);

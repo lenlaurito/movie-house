@@ -1,5 +1,6 @@
 package com.synacy.moviehouse.movie;
 
+import com.synacy.moviehouse.exception.InvalidRequestException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -78,7 +79,7 @@ public class MovieControllerTest {
     }
 
     @Test
-    public void fetchAllMovies_shouldRetrieveMoviesWithSpecifiedNameAndGenre() throws Exception {
+    public void fetchAllMovies_shouldRetrieveMovies_withSpecifiedNameAndGenre_noPagination() throws Exception {
         Movie movie1 = new Movie();
         movie1.setName("Movie 1");
         movie1.setGenre(Genre.ACTION);
@@ -111,7 +112,7 @@ public class MovieControllerTest {
     }
 
     @Test
-    public void fetchAllMovies_shouldRetrieveMoviesWithSpecifiedNameAndGenreAndPagination() throws Exception {
+    public void fetchAllMovies_shouldRetrieveMovies_withValidParametersAndPagination() throws Exception {
         Movie movie1 = new Movie();
         movie1.setName("Movie 1");
         movie1.setGenre(Genre.ACTION);
@@ -146,9 +147,19 @@ public class MovieControllerTest {
         assertEquals("Description", response.getBody().getContent().get(1).getDescription());
     }
 
+    @Test(expected = InvalidRequestException.class)
+    public void fetchAllMovies_shouldThrowInvalidRequestExceptionWhenMissingOneParameterForPagination() throws Exception {
+        String movieName = "Movie";
+        String genreString = Genre.ACTION.name();
+        int offset = 0;
+        Integer max = null;
+
+        movieController.fetchAllMovies(movieName, genreString, offset, max);
+    }
+
     @Test
     public void createNewMovie_shouldAssertWithNewlyCreatedMovieWithSpecifiedDetails() throws Exception {
-        String name = "Movie X";
+        String name = "Sample Movie";
         Genre genre = Genre.ACTION;
         Integer duration = 160;
         String description = "Description";

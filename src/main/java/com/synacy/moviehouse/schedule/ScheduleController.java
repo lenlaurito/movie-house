@@ -71,10 +71,21 @@ public class ScheduleController {
 
     @PutMapping("/{scheduleId}")
     public ResponseEntity updateSchedule(@PathVariable(value="scheduleId") Long scheduleId,
-                                   @RequestBody Schedule scheduleRequest) {
+                                   @RequestBody Map<String, Object> scheduleRequest) {
         Schedule scheduleToUpdate = scheduleService.fetchScheduleById(scheduleId);
-        Schedule schedule = scheduleService.updateSchedule(scheduleToUpdate, scheduleRequest.getMovie(), scheduleRequest.getCinema(),
-                scheduleRequest.getStartDateTime(), scheduleRequest.getEndDateTime());
+        Integer movieId, cinemaId;
+        Date startDateTime, endDateTime;
+        try {
+            movieId = (Integer) scheduleRequest.get("movieId");
+            cinemaId = (Integer) scheduleRequest.get("cinemaId");
+            startDateTime = DateUtils.formatStringAsDate((String) scheduleRequest.get("startDateTime"));
+            endDateTime = DateUtils.formatStringAsDate((String) scheduleRequest.get("endDateTime"));
+        } catch (ClassCastException cce) {
+            throw new InvalidRequestException("Cannot parse the request with its type. Kindly follow the allowed type in each fields.");
+        }
+        Movie movie = movieService.fetchMovieById(movieId.longValue());
+        Cinema cinema = cinemaService.fetchCinemaById(cinemaId.longValue());
+        Schedule schedule = scheduleService.updateSchedule(scheduleToUpdate, movie, cinema, startDateTime, endDateTime);
         return ResponseEntity.ok().body(schedule);
     }
 

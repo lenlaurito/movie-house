@@ -14,9 +14,6 @@ public class ScheduleSerializer extends JsonObjectSerializer<Schedule> {
 	@Override
 	protected void serializeObject(Schedule schedule, JsonGenerator jgen, SerializerProvider provider) throws IOException {
 		jgen.writeNumberField("id", schedule.getId());
-//		jgen.writeObjectField("movie", schedule.getMovie());
-//		jgen.writeObjectField("cinema", schedule.getCinema());
-
 		jgen.writeObjectField("movieId", schedule.getMovie().getId());
 		jgen.writeObjectField("cinemaId", schedule.getCinema().getId());
 		jgen.writeObjectField("startDateTime", DateUtils.formatDateAsString(schedule.getStartDateTime()));

@@ -49,9 +49,9 @@ public class MovieServiceImpl implements MovieService {
         Pageable pageable = new PageRequest(offset, max, Sort.Direction.ASC, "name");
         if (name == null && genre == null) {
             return movieRepository.findAll(pageable);
-        } else if (name != null) {
+        } else if (genre == null) {
             return movieRepository.findAllByNameContainingIgnoreCase(name, pageable);
-        } else if (genre != null) {
+        } else if (name == null) {
             return movieRepository.findAllByGenre(Genre.valueOf(genre.toUpperCase()), pageable);
         } else {
             return movieRepository.findAllByNameContainingIgnoreCaseAndGenre(name, Genre.valueOf(genre.toUpperCase()), pageable);
