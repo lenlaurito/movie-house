@@ -2,14 +2,15 @@ package com.synacy.moviehouse.schedule;
 
 import com.synacy.moviehouse.cinema.Cinema;
 import com.synacy.moviehouse.cinema.CinemaService;
-import com.synacy.moviehouse.cinema.CinemaType;
 import com.synacy.moviehouse.movie.Movie;
 import com.synacy.moviehouse.movie.MovieService;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -67,7 +68,7 @@ public class ScheduleControllerTest {
     }
 
     @Test
-    public void fetchAllSchedules() throws Exception {
+    public void fetchAllSchedules_shouldRetrieveAllSchedules_withNullParameters() throws Exception {
         Movie movie = mock(Movie.class);
         Cinema cinema = mock(Cinema.class);
         Date startDateTime = mock(Date.class);
@@ -89,15 +90,65 @@ public class ScheduleControllerTest {
         schedules.add(schedule1);
         schedules.add(schedule2);
 
-        when(scheduleService.fetchAllSchedules(startDateTime, null)).thenReturn(schedules);
+        when(scheduleService.fetchAllSchedules(null, null)).thenReturn(schedules);
 
         ResponseEntity<List<Schedule>> response = scheduleController.fetchAllSchedules(null, null, null,null);
 
         assertEquals(HttpStatus.OK.value(), response.getStatusCodeValue());
+        assertEquals(movie, response.getBody().get(0).getMovie());
+        assertEquals(cinema, response.getBody().get(0).getCinema());
+        assertEquals(startDateTime, response.getBody().get(0).getStartDateTime());
+        assertEquals(endDateTime, response.getBody().get(0).getEndDateTime());
+
+        assertEquals(movie, response.getBody().get(1).getMovie());
+        assertEquals(cinema, response.getBody().get(1).getCinema());
+        assertEquals(startDateTime, response.getBody().get(1).getStartDateTime());
+        assertEquals(endDateTime, response.getBody().get(1).getEndDateTime());
     }
 
     @Test
-    public void createNewSchedule() throws Exception {
+    public void fetchAllSchedules_shouldRetrieveAllSchedules_withValidParametersAndPagination() throws Exception {
+        Movie movie = mock(Movie.class);
+        Cinema cinema = mock(Cinema.class);
+        Date startDateTime = mock(Date.class);
+        Date endDateTime = mock(Date.class);
+
+        Schedule schedule1 = new Schedule();
+        schedule1.setMovie(movie);
+        schedule1.setCinema(cinema);
+        schedule1.setStartDateTime(startDateTime);
+        schedule1.setEndDateTime(endDateTime);
+
+        Schedule schedule2 = new Schedule();
+        schedule2.setMovie(movie);
+        schedule2.setCinema(cinema);
+        schedule2.setStartDateTime(startDateTime);
+        schedule2.setEndDateTime(endDateTime);
+
+        List<Schedule> schedules = new ArrayList<>();
+        schedules.add(schedule1);
+        schedules.add(schedule2);
+
+        Page<Schedule> paginatedSchedules = mock(Page.class);
+        when(paginatedSchedules.getContent()).thenReturn(schedules);
+
+        when(scheduleService.fetchAllSchedulesWithPagination(startDateTime, 1L, 0, 2)).thenReturn(paginatedSchedules);
+
+        ResponseEntity<Page<Schedule>> response = scheduleController.fetchAllSchedules(startDateTime, 1L, 0,2);
+
+        assertEquals(HttpStatus.OK.value(), response.getStatusCodeValue());
+        assertEquals(movie, response.getBody().getContent().get(0).getMovie());
+        assertEquals(cinema, response.getBody().getContent().get(0).getCinema());
+        assertEquals(startDateTime, response.getBody().getContent().get(0).getStartDateTime());
+        assertEquals(endDateTime, response.getBody().getContent().get(0).getEndDateTime());
+        assertEquals(movie, response.getBody().getContent().get(1).getMovie());
+        assertEquals(cinema, response.getBody().getContent().get(1).getCinema());
+        assertEquals(startDateTime, response.getBody().getContent().get(1).getStartDateTime());
+        assertEquals(endDateTime, response.getBody().getContent().get(1).getEndDateTime());
+    }
+
+    @Test
+    public void createNewSchedule_shouldAssertWithNewlyCreatedScheduleWithSpecifiedDetails() throws Exception {
         Movie movie = mock(Movie.class);
         Cinema cinema = mock(Cinema.class);
         Date startDateTime = mock(Date.class);
@@ -121,7 +172,7 @@ public class ScheduleControllerTest {
     }
 
     @Test
-    public void updateSchedule() throws Exception {
+    public void updateSchedule_shouldUpdateAnExistingSchedule() throws Exception {
         Long cinemaId = 2L;
         Movie movie = mock(Movie.class);
         Cinema cinema = mock(Cinema.class);
@@ -147,7 +198,7 @@ public class ScheduleControllerTest {
     }
 
     @Test
-    public void deleteSchedule() throws Exception {
+    public void deleteSchedule_shouldDeleteAnExistingScheduleGivenThatScheduleIdExist() throws Exception {
         Long scheduleId = 100L;
 
         Schedule schedule = new Schedule();
