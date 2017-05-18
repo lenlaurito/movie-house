@@ -33,7 +33,8 @@ public class ScheduleUtils {
     public Boolean isDateOverlapping(Schedule schedule){
         List<Schedule> scheduleList = (List)scheduleRepository.findAll();
         for(Schedule scheduleInList : scheduleList){
-            if(scheduleInList.getCinema().getId() == schedule.getCinema().getId()){
+            if(scheduleInList.getCinema().getId() == schedule.getCinema().getId()
+                    && schedule.getId() != scheduleInList.getId()){
                 if((schedule.getStartDateTime().after(scheduleInList.getStartDateTime())
                         && schedule.getStartDateTime().before(scheduleInList.getEndDateTime()))
                         || (schedule.getEndDateTime().after(scheduleInList.getStartDateTime())

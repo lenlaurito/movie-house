@@ -1,12 +1,7 @@
 package com.synacy.moviehouse.schedule;
 
-import com.synacy.moviehouse.cinema.Cinema;
-import com.synacy.moviehouse.cinema.CinemaService;
 import com.synacy.moviehouse.exception.IncompleteInformationException;
 import com.synacy.moviehouse.exception.InvalidParameterException;
-import com.synacy.moviehouse.exception.NoContentFoundException;
-import com.synacy.moviehouse.movie.Movie;
-import com.synacy.moviehouse.movie.MovieService;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -27,12 +22,6 @@ public class ScheduleController {
     @Autowired @Setter
     ScheduleService scheduleService;
 
-    @Autowired @Setter
-    MovieService movieService;
-
-    @Autowired @Setter
-    CinemaService cinemaService;
-
     @RequestMapping(method = RequestMethod.GET, value = "/{scheduleId}")
     public Schedule fetchSchedule(@PathVariable(value = "scheduleId") Long scheduleId){
         return scheduleService.fetchById(scheduleId);
@@ -44,56 +33,39 @@ public class ScheduleController {
                                            @RequestParam(value = "date", required = false) String dateInString,
                                            @RequestParam(value = "movieId", required = false) Long movieId) throws ParseException {
 
-        if (offset == null && max == null) {
-            List<Schedule> scheduleList =  scheduleService.fetchAll(dateInString, movieId);
-            if(scheduleList.size() < 1)
-                throw new NoContentFoundException("Not content found");
-            else
-                return ResponseEntity.ok().body(scheduleList);
-        }
-        else if(offset != null && max != null) {
-            Page<Schedule> schedulePage =  scheduleService.fetchAllPaginated(dateInString, movieId, offset, max);
-            if(schedulePage.getTotalPages() < 1)
-                throw new NoContentFoundException("Not content found");
-            else
-                return ResponseEntity.ok().body(schedulePage);
-        }
-        else
+        ResponseEntity responseEntity = null;
+
+        if (offset == null && max == null)
+            responseEntity = ResponseEntity.ok().body(scheduleService.fetchAll(dateInString, movieId));
+        else if(offset != null && max != null)
+            responseEntity = ResponseEntity.ok().body(scheduleService.fetchAllPaginated(dateInString, movieId, offset, max));
+        else if((offset != null && max == null) || (offset == null && max != null))
             throw new InvalidParameterException("Parameters incomplete or isn't acceptable");
 
+        return responseEntity;
     }
 
     @RequestMapping(method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.CREATED)
     public Schedule createSchedule(@RequestBody Schedule schedule) throws ParseException {
-
         if(schedule.getMovie() == null || schedule.getCinema() == null || schedule.getStartDateTime() == null || schedule.getEndDateTime() == null)
             throw new IncompleteInformationException("Missing some required information");
-        else{
-            Movie movie = movieService.fetchById(schedule.getMovie().getId());
-            Cinema cinema = cinemaService.fetchById(schedule.getCinema().getId());
-            return  scheduleService.createSchedule(movie,cinema,schedule.getStartDateTime(),schedule.getEndDateTime());
-        }
+
+        return scheduleService.createSchedule(schedule.getMovie().getId(), schedule.getCinema().getId(), schedule.getStartDateTime(), schedule.getEndDateTime());
     }
 
     @RequestMapping(method = RequestMethod.PUT, value = "/{scheduleId}")
-    public Schedule updateSchedule(@PathVariable(value = "scheduleId") Long scheduleId, @RequestBody Schedule schedule) {
-
+    public Schedule updateSchedule(@PathVariable(value = "scheduleId") Long scheduleId, @RequestBody Schedule schedule) throws ParseException {
         if(schedule.getMovie() == null || schedule.getCinema() == null || schedule.getStartDateTime() == null || schedule.getEndDateTime() == null)
             throw new IncompleteInformationException("Missing some required information");
-        else{
-            Movie movie = movieService.fetchById(schedule.getMovie().getId());
-            Cinema cinema = cinemaService.fetchById(schedule.getCinema().getId());
-            Schedule scheduleToBeUpdated = scheduleService.fetchById(scheduleId);
-            return scheduleService.updateSchedule(scheduleToBeUpdated, movie, cinema, schedule.getStartDateTime(), schedule.getEndDateTime());
-        }
+
+        return scheduleService.updateSchedule(scheduleId, schedule.getMovie().getId(), schedule.getCinema().getId(), schedule.getStartDateTime(), schedule.getEndDateTime());
     }
 
     @RequestMapping(method = RequestMethod.DELETE, value = "/{scheduleId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteSchedule(@PathVariable(value = "scheduleId") Long scheduleId){
-        Schedule schedule = scheduleService.fetchById(scheduleId);
-        scheduleService.deleteSchedule(schedule);
+        scheduleService.deleteSchedule(scheduleId);
     }
 
 }

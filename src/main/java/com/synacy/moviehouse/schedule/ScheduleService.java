@@ -1,6 +1,7 @@
 package com.synacy.moviehouse.schedule;
 
 import com.synacy.moviehouse.cinema.Cinema;
+import com.synacy.moviehouse.cinema.CinemaService;
 import com.synacy.moviehouse.exception.InvalidDataPassedException;
 import com.synacy.moviehouse.exception.NoContentFoundException;
 import com.synacy.moviehouse.movie.Movie;
@@ -34,13 +35,15 @@ public class ScheduleService {
     @Autowired @Setter
     MovieService movieService;
 
+    @Autowired @Setter
+    CinemaService cinemaService;
+
     public Schedule fetchById(Long id) {
         Schedule schedule = scheduleRepository.findOne(id);
 
-        if(schedule == null)
-            throw new NoContentFoundException("Not content found");
-        else
-            return schedule;
+        if(schedule == null) throw new NoContentFoundException("Not content found");
+
+        return schedule;
     }
 
     public List<Schedule> fetchAll(String dateInString, Long movieId) throws ParseException {
@@ -61,6 +64,8 @@ public class ScheduleService {
         }
         else
             scheduleList = (List)scheduleRepository.findAll();
+
+        if(scheduleList.size() < 1) throw new NoContentFoundException("Not content found");
 
         return scheduleList;
     }
@@ -84,21 +89,25 @@ public class ScheduleService {
         else
             page = scheduleRepository.findAll(new PageRequest(offset, max));
 
+        if(page.getTotalPages() < 1) throw new NoContentFoundException("Not content found");
+
         return page;
     }
 
-    public Schedule createSchedule(Movie movie, Cinema cinema, Date startDateTime, Date endDateTime) throws ParseException {
+    public Schedule createSchedule(Long movieId, Long cinemaId, Date startDateTime, Date endDateTime) throws ParseException {
+
+        Movie movie = movieService.fetchById(movieId);
+        Cinema cinema = cinemaService.fetchById(cinemaId);
 
         Schedule schedule = new Schedule();
         schedule.setMovie(movie);
         schedule.setCinema(cinema);
+        schedule.setStartDateTime(startDateTime);
+        schedule.setEndDateTime(endDateTime);
 
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         schedule.setDate(dateFormat.parse(dateFormat.format(startDateTime)));
 
-        schedule.setStartDateTime(startDateTime);
-        schedule.setEndDateTime(endDateTime);
-
         if(scheduleUtils.isValidEndDateTime(schedule.getMovie().getDuration(),startDateTime,endDateTime)
                 && !scheduleUtils.isDateOverlapping(schedule))
             return  scheduleRepository.save(schedule);
@@ -106,21 +115,29 @@ public class ScheduleService {
             throw new InvalidDataPassedException("Invalid Date Input");
     }
 
-    public Schedule updateSchedule(Schedule schedule, Movie movie, Cinema cinema, Date startDateTime, Date endDateTime){
+    public Schedule updateSchedule(Long scheduleId, Long movieId, Long cinemaId, Date startDateTime, Date endDateTime) throws ParseException {
 
-        schedule.setMovie(movie);
-        schedule.setCinema(cinema);
-        schedule.setStartDateTime(startDateTime);
-        schedule.setEndDateTime(endDateTime);
+        Schedule scheduleToBeUpdated = fetchById(scheduleId);
+        Movie movie = movieService.fetchById(movieId);
+        Cinema cinema = cinemaService.fetchById(cinemaId);
 
-        if(scheduleUtils.isValidEndDateTime(schedule.getMovie().getDuration(),startDateTime,endDateTime)
-                && !scheduleUtils.isDateOverlapping(schedule))
-            return  scheduleRepository.save(schedule);
+        scheduleToBeUpdated.setMovie(movie);
+        scheduleToBeUpdated.setCinema(cinema);
+        scheduleToBeUpdated.setStartDateTime(startDateTime);
+        scheduleToBeUpdated.setEndDateTime(endDateTime);
+
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        scheduleToBeUpdated.setDate(dateFormat.parse(dateFormat.format(startDateTime)));
+
+        if(scheduleUtils.isValidEndDateTime(scheduleToBeUpdated.getMovie().getDuration(),startDateTime,endDateTime)
+                && !scheduleUtils.isDateOverlapping(scheduleToBeUpdated))
+            return  scheduleRepository.save(scheduleToBeUpdated);
         else
             throw new InvalidDataPassedException("Invalid Date Input");
     }
 
-    public void deleteSchedule(Schedule schedule){
+    public void deleteSchedule(Long scheduleId){
+        Schedule schedule = fetchById(scheduleId);
         scheduleRepository.delete(schedule);
     }
 
