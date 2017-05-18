@@ -37,25 +37,23 @@ public class CinemaController {
     public Cinema createCinema(@RequestBody Cinema cinema){
         if(cinema.getName() == null || cinema.getType() == null)
             throw new IncompleteInformationException("Missing some required information");
-        else
-            return cinemaService.createCinema(cinema.getName(),cinema.getType());
+
+        return cinemaService.createCinema(cinema.getName(),cinema.getType());
     }
 
     @RequestMapping(method = RequestMethod.PUT, value = "/{cinemaId}")
     public Cinema updateCinema(@PathVariable(value = "cinemaId") Long cinemaId, @RequestBody Cinema cinema){
         if(cinema.getName() == null || cinema.getType() == null)
             throw new IncompleteInformationException("Missing some required information");
-        else{
-            Cinema cinemaToBeUpdate = cinemaService.fetchById(cinemaId);
-            return cinemaService.updateCinema(cinemaToBeUpdate, cinema.getName(), cinema.getType());
-        }
+
+        return cinemaService.updateCinema(cinemaId, cinema.getName(), cinema.getType());
+
     }
 
     @RequestMapping(method = RequestMethod.DELETE, value = {"/{cinemaId}"})
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteCinema(@PathVariable(value = "cinemaId") Long cinemaId){
-        Cinema cinema = cinemaService.fetchById(cinemaId);
-        cinemaService.deleteCinema(cinema);
+        cinemaService.deleteCinema(cinemaId);
     }
 
 }

@@ -20,49 +20,44 @@ public class CinemaService {
     CinemaRepository cinemaRepository;
 
     public Cinema fetchById(Long id) {
-
         Cinema cinema = cinemaRepository.findOne(id);
+        if (cinema == null) throw new NoContentFoundException("Not content found");
 
-        if (cinema == null)
-            throw new NoContentFoundException("Not content found");
-        else
-            return cinema;
+        return cinema;
     }
 
     public List<Cinema> fetchAll() {
-
         List<Cinema> cinemas = (List) cinemaRepository.findAll();
+        if(cinemas.size() < 1) throw new NoContentFoundException("Not content found");
 
-        if(cinemas.size() < 1)
-            throw new NoContentFoundException("Not content found");
-        else
-            return cinemas;
+        return cinemas;
     }
 
     public List<Cinema> fetchAllByType(CinemaType cinemaType) {
+        List<Cinema> cinemas = cinemaRepository.findAllByType(cinemaType);
+        if(cinemas.size() < 1) throw new NoContentFoundException("Not content found");
 
-        List<Cinema> cinemas = (List) cinemaRepository.findAllByType(cinemaType);
-
-        if(cinemas.size() < 1)
-            throw new NoContentFoundException("Not content found");
-        else
-            return cinemas;
+        return cinemas;
     }
 
     public Cinema createCinema(String name, CinemaType type) {
         Cinema cinema = new Cinema();
         cinema.setName(name);
         cinema.setType(type);
+
         return cinemaRepository.save(cinema);
     }
 
-    public Cinema updateCinema(Cinema cinema, String name, CinemaType type){
-        cinema.setName(name);
-        cinema.setType(type);
-        return cinemaRepository.save(cinema);
+    public Cinema updateCinema(Long cinemaId, String name, CinemaType type){
+        Cinema cinemaToBeUpdate = fetchById(cinemaId);
+        cinemaToBeUpdate.setName(name);
+        cinemaToBeUpdate.setType(type);
+
+        return cinemaRepository.save(cinemaToBeUpdate);
     }
 
-    public void deleteCinema(Cinema cinema){
+    public void deleteCinema(Long cinemaId){
+        Cinema cinema = fetchById(cinemaId);
         cinemaRepository.delete(cinema);
     }
 
