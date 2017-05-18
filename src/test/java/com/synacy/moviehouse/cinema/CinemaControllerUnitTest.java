@@ -34,53 +34,58 @@ public class CinemaControllerUnitTest {
     @Test
     public void fetchCinema_shouldReturnCinema() throws Exception{
         long cinemaId = 1L;
-        Cinema cinema = new Cinema();
-        when(cinemaService.fetchById(cinemaId)).thenReturn(cinema);
+        Cinema expectedCinema = new Cinema();
 
-        cinemaController.fetchCinema(cinemaId);
+        when(cinemaService.fetchById(cinemaId)).thenReturn(expectedCinema);
+
+        Cinema actualCinema = cinemaController.fetchCinema(cinemaId);
 
         verify(cinemaService, times(1)).fetchById(cinemaId);
-        assertEquals(cinema, cinemaService.fetchById(cinemaId));
+        assertEquals(expectedCinema, actualCinema);
     }
 
     @Test
     public void fetchAllCinema_withNullCinemaType_shouldReturnListOfAllCinema() throws Exception{
-        List<Cinema> cinemaList = new ArrayList<>();
-        cinemaList.add(new Cinema());
-        cinemaList.add(new Cinema());
-        when(cinemaService.fetchAll()).thenReturn(cinemaList);
+        List<Cinema> expectedCinemaList = new ArrayList<>();
+        expectedCinemaList.add(new Cinema());
+        expectedCinemaList.add(new Cinema());
 
-        cinemaController.fetchAllCinema(null);
+        when(cinemaService.fetchAll()).thenReturn(expectedCinemaList);
+
+        List<Cinema> actualCinemaList = cinemaController.fetchAllCinema(null);
 
         verify(cinemaService, times(1)).fetchAll();
-        assertEquals(cinemaList, cinemaService.fetchAll());
+        assertEquals(expectedCinemaList.size(), actualCinemaList.size());
     }
 
     @Test
     public void fetchAllCinema_withValidCinemaType_shouldReturnListOfCinemaByType() throws Exception{
-        List<Cinema> cinemaList = new ArrayList<>();
-        cinemaList.add(new Cinema());
-        cinemaList.add(new Cinema());
         CinemaType cinemaType = CinemaType.STANDARD;
-        when(cinemaService.fetchAllByType(cinemaType)).thenReturn(cinemaList);
+        List<Cinema> expectedCinemaList = new ArrayList<>();
+        expectedCinemaList.add(new Cinema());
+        expectedCinemaList.add(new Cinema());
 
-        cinemaController.fetchAllCinema(cinemaType);
+        when(cinemaService.fetchAllByType(cinemaType)).thenReturn(expectedCinemaList);
+
+        List<Cinema> actualCinemaList = cinemaController.fetchAllCinema(cinemaType);
 
         verify(cinemaService, times(1)).fetchAllByType(cinemaType);
-        assertEquals(cinemaList, cinemaService.fetchAllByType(cinemaType));
+        assertEquals(expectedCinemaList.size(), actualCinemaList.size());
     }
 
     @Test
     public void createCinema_shouldCreateAndReturnCinema() throws Exception{
-        Cinema cinema = new Cinema();
-        cinema.setName("name");
-        cinema.setType(CinemaType.IMAX);
-        when(cinemaService.createCinema(cinema.getName(),cinema.getType())).thenReturn(cinema);
+        Cinema expectedCinema = new Cinema();
+        expectedCinema.setName("name");
+        expectedCinema.setType(CinemaType.IMAX);
 
-        cinemaController.createCinema(cinema);
+        when(cinemaService.createCinema(expectedCinema.getName(),expectedCinema.getType())).thenReturn(expectedCinema);
 
-        verify(cinemaService, times(1)).createCinema(cinema.getName(),cinema.getType());
-        assertEquals(cinema, cinemaService.createCinema(cinema.getName(),cinema.getType()));
+        Cinema actualCinema = cinemaController.createCinema(expectedCinema);
+
+        verify(cinemaService, times(1)).createCinema(expectedCinema.getName(),expectedCinema.getType());
+        assertEquals(expectedCinema.getName(), actualCinema.getName());
+        assertEquals(expectedCinema.getType(), actualCinema.getType());
     }
 
     @Test(expected = IncompleteInformationException.class)
@@ -90,42 +95,27 @@ public class CinemaControllerUnitTest {
     }
 
     @Test
-    public void createUpdate_shouldUpdateAndReturnCinema() throws Exception{
+    public void updateCinema_shouldUpdateAndReturnCinema() throws Exception{
         Long cinemaId = 1L;
-        Cinema cinema = new Cinema();
-        cinema.setName("name");
-        cinema.setType(CinemaType.IMAX);
-        Cinema cinemaToBeUpdated = new Cinema();
-        when(cinemaService.fetchById(cinemaId)).thenReturn(cinemaToBeUpdated);
-        when(cinemaService.updateCinema(cinemaToBeUpdated,cinema.getName(),cinema.getType())).thenReturn(cinema);
+        Cinema expectedCinema = new Cinema();
+        expectedCinema.setName("name");
+        expectedCinema.setType(CinemaType.IMAX);
 
-        cinemaController.updateCinema(cinemaId,cinema);
+        when(cinemaService.updateCinema(cinemaId,expectedCinema.getName(),expectedCinema.getType())).thenReturn(expectedCinema);
 
-        verify(cinemaService, times(1)).updateCinema(cinemaToBeUpdated,cinema.getName(),cinema.getType());
-        assertEquals(cinemaToBeUpdated, cinemaService.fetchById(cinemaId));
-        assertEquals(cinema, cinemaService.updateCinema(cinemaToBeUpdated,cinema.getName(),cinema.getType()));
+        Cinema actualCinema = cinemaController.updateCinema(cinemaId,expectedCinema);
+
+        verify(cinemaService, times(1)).updateCinema(cinemaId,expectedCinema.getName(),expectedCinema.getType());
+        assertEquals(expectedCinema.getId(), actualCinema.getId());
+        assertEquals(expectedCinema.getName(), actualCinema.getName());
+        assertEquals(expectedCinema.getType(), actualCinema.getType());
     }
 
     @Test(expected = IncompleteInformationException.class)
-    public void createUpdate_withNullJsonInputs_shouldThrowIncompleteInformationException() throws Exception{
+    public void updateCinema_withNullJsonInputs_shouldThrowIncompleteInformationException() throws Exception{
         Long cinemaId = 1L;
         Cinema cinema = new Cinema();
-        Cinema cinemaToBeUpdated = new Cinema();
-        when(cinemaService.fetchById(cinemaId)).thenReturn(cinemaToBeUpdated);
 
         cinemaController.updateCinema(cinemaId,cinema);
-   }
-
-   @Test
-    public void deleteCinema_shouldDeleteCinema() throws Exception{
-       Long cinemaId = 1L;
-       Cinema cinema = new Cinema();
-
-       when(cinemaService.fetchById(cinemaId)).thenReturn(cinema);
-
-       cinemaController.deleteCinema(cinemaId);
-
-       verify(cinemaService, times(1)).deleteCinema(cinema);
-       assertEquals(cinema, cinemaService.fetchById(cinemaId));
    }
 }
