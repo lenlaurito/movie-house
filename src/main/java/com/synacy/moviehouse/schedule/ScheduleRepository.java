@@ -23,6 +23,6 @@ public interface ScheduleRepository extends PagingAndSortingRepository<Schedule,
 
     Page<Schedule> findAllByMovieAndStartDateTimeBetween(Movie movie, Date begDateTime, Date endDateTime, Pageable pageable);
 
-    List<Schedule> findAllByCinemaAndStartDateTimeLessThanAndEndDateTimeGreaterThanEqual(Cinema cinema, Date startDateTime, Date endDateTime);
+    List<Schedule> findAllByCinemaAndStartDateTimeGreaterThanEqualAndEndDateTimeLessThanEqual(Cinema cinema, Date startDateTime, Date endDateTime);
 
 }

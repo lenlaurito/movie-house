@@ -1,6 +1,11 @@
 package com.synacy.moviehouse.schedule;
 
+import com.synacy.moviehouse.cinema.Cinema;
+import com.synacy.moviehouse.cinema.CinemaService;
 import com.synacy.moviehouse.exception.InvalidRequestException;
+import com.synacy.moviehouse.movie.Movie;
+import com.synacy.moviehouse.movie.MovieService;
+import com.synacy.moviehouse.utilities.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -16,6 +21,12 @@ public class ScheduleController {
 
     @Autowired
     private ScheduleService scheduleService;
+
+    @Autowired
+    private MovieService movieService;
+
+    @Autowired
+    private CinemaService cinemaService;
 
     @GetMapping("/{scheduleId}")
     public ResponseEntity fetchSchedule(@PathVariable(value="scheduleId") Long scheduleId) {
@@ -41,9 +52,20 @@ public class ScheduleController {
     }
 
     @PostMapping
-    public ResponseEntity createNewSchedule(@RequestBody Schedule scheduleRequest) {
-        Schedule schedule = scheduleService.createSchedule(scheduleRequest.getMovie(), scheduleRequest.getCinema(),
-                scheduleRequest.getStartDateTime(), scheduleRequest.getEndDateTime());
+    public ResponseEntity createNewSchedule(@RequestBody Map<String, Object> scheduleRequest) {
+        Integer movieId, cinemaId;
+        Date startDateTime, endDateTime;
+        try {
+            movieId = (Integer) scheduleRequest.get("movieId");
+            cinemaId = (Integer) scheduleRequest.get("cinemaId");
+            startDateTime = DateUtils.formatStringAsDate((String) scheduleRequest.get("startDateTime"));
+            endDateTime = DateUtils.formatStringAsDate((String) scheduleRequest.get("endDateTime"));
+        } catch (ClassCastException cce) {
+            throw new InvalidRequestException("Cannot parse the request with its type. Kindly follow the allowed type in each fields.");
+        }
+        Movie movie = movieService.fetchMovieById(movieId.longValue());
+        Cinema cinema = cinemaService.fetchCinemaById(cinemaId.longValue());
+        Schedule schedule = scheduleService.createSchedule(movie, cinema, startDateTime, endDateTime);
         return ResponseEntity.status(HttpStatus.CREATED).body(schedule);
     }
 

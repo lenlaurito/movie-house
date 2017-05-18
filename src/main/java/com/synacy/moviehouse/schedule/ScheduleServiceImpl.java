@@ -113,7 +113,9 @@ public class ScheduleServiceImpl implements ScheduleService {
         }
 
         if (DateUtils.onSameDate(startDateTime, endDateTime)) {
-            List<Schedule> schedules = scheduleRepository.findAllByCinemaAndStartDateTimeLessThanAndEndDateTimeGreaterThanEqual(cinema, startDateTime, endDateTime);
+            List<Schedule> schedules = scheduleRepository.findAllByCinemaAndStartDateTimeGreaterThanEqualAndEndDateTimeLessThanEqual(cinema, startDateTime, endDateTime);
+
+            System.out.println("schedule: " + schedules.size());
             if (!schedules.isEmpty()) {
                 throw new InvalidRequestException("Dates are overlapping with other schedules.");
             }

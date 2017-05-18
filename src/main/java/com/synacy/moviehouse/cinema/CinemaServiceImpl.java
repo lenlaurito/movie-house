@@ -32,10 +32,7 @@ public class CinemaServiceImpl implements CinemaService {
         if (type == null) {
             return (List) cinemaRepository.findAll();
         } else {
-            if (!CinemaType.contains(type.toUpperCase())) {
-                throw new InvalidRequestException("Cinema Type " + type + " not found.");
-            }
-            return cinemaRepository.findAllByType(CinemaType.valueOf(type));
+            return cinemaRepository.findAllByType(CinemaType.valueOf(type.toUpperCase()));
         }
     }
 

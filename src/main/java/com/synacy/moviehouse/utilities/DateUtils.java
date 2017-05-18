@@ -1,5 +1,8 @@
 package com.synacy.moviehouse.utilities;
 
+import com.synacy.moviehouse.exception.InvalidRequestException;
+
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -24,6 +27,17 @@ public class DateUtils {
     public static String formatDateAsString(Date date, String pattern) {
         SimpleDateFormat dateFormat = new SimpleDateFormat(pattern);
         return dateFormat.format(date);
+    }
+
+    public static Date formatStringAsDate(String dateStr) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat(DEFAULT_PATTERN);
+        Date dateToParse;
+        try {
+            dateToParse = dateFormat.parse(dateStr);
+        } catch (ParseException pe) {
+            throw new InvalidRequestException("Cannot format the string into date. Kindly use this format 'yyyy-MM-dd HH:mm:ss' instead");
+        }
+        return dateToParse;
     }
 
     public static int getDiffInMinutes(Date startDateTime, Date endDateTime) {
