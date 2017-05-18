@@ -34,20 +34,13 @@ public class MovieServiceImpl implements MovieService {
     public List<Movie> fetchAllMovies(String name, String genre) {
         List<Movie> movies;
         if (name == null && genre == null) {
-            System.out.println("A");
             movies = (List) movieRepository.findAll();
         } else if (genre == null) {
-            System.out.println("B");
             movies = movieRepository.findAllByNameContainingIgnoreCase(name);
         } else if (name == null) {
-            System.out.println("C");
             movies = movieRepository.findAllByGenre(Genre.valueOf(genre.toUpperCase()));
         } else {
-            System.out.println("D");
             movies = movieRepository.findAllByNameContainingIgnoreCaseAndGenre(name, Genre.valueOf(genre.toUpperCase()));
-        }
-        if (movies.isEmpty()) {
-            throw new InvalidRequestException("Movies is empty.");
         }
         return movies;
     }

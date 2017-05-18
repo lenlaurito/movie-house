@@ -55,13 +55,13 @@ public class CinemaControllerTest {
 
         when(cinemaService.fetchAllCinemas(null)).thenReturn(cinemas);
 
-        ResponseEntity<Cinema> response = cinemaController.fetchAllCinemas(null);
+        ResponseEntity<List<Cinema>> response = cinemaController.fetchAllCinemas(null);
 
         assertEquals(HttpStatus.OK.value(), response.getStatusCodeValue());
-//        assertEquals("Cinema 1", response.getBody().getName());
-//        assertEquals(CinemaType.STANDARD, response.getBody().getType());
-//        assertEquals("Cinema 2", response.getBody().getName());
-//        assertEquals(CinemaType.SPECIAL, response.getBody().getType());
+        assertEquals("Cinema 1", response.getBody().get(0).getName());
+        assertEquals(CinemaType.STANDARD, response.getBody().get(0).getType());
+        assertEquals("Cinema 2", response.getBody().get(1).getName());
+        assertEquals(CinemaType.SPECIAL, response.getBody().get(1).getType());
     }
 
     @Test
@@ -82,13 +82,13 @@ public class CinemaControllerTest {
 
         when(cinemaService.fetchAllCinemas(type.name())).thenReturn(cinemas);
 
-        ResponseEntity<Cinema> response = cinemaController.fetchAllCinemas("STANDARD");
+        ResponseEntity<List<Cinema>> response = cinemaController.fetchAllCinemas("STANDARD");
 
         assertEquals(HttpStatus.OK.value(), response.getStatusCodeValue());
-//        assertEquals("Cinema 1", response.getBody().getName());
-//        assertEquals(type, response.getBody().getType());
-//        assertEquals("Cinema 2", response.getBody().getName());
-//        assertEquals(type, response.getBody().getType());
+        assertEquals("Cinema 1", response.getBody().get(0).getName());
+        assertEquals(type, response.getBody().get(0).getType());
+        assertEquals("Cinema 2", response.getBody().get(1).getName());
+        assertEquals(type, response.getBody().get(1).getType());
     }
 
     @Test

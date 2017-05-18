@@ -45,7 +45,7 @@ public class MovieControllerTest {
     }
 
     @Test
-    public void fetchAllMovies_shouldRetrieveMoviesWithUnspecifiedType() throws Exception {
+    public void fetchAllMovies_shouldRetrieveMovies() throws Exception {
         Movie movie1 = new Movie();
         movie1.setName("Movie 1");
         movie1.setGenre(Genre.ACTION);
@@ -64,17 +64,7 @@ public class MovieControllerTest {
 
         when(movieService.fetchAllMovies(null, Genre.ACTION.name())).thenReturn(movies);
 
-        ResponseEntity<Movie> response = movieController.fetchAllMovies(null, Genre.ACTION.name(), 0, 2);
-
-        assertEquals(HttpStatus.OK.value(), response.getStatusCodeValue());
-//        assertEquals("Movie 1", response.getBody().getName());
-//        assertEquals(Genre.ACTION, response.getBody().getGenre());
-//        assertEquals((Integer) 160, response.getBody().getDuration());
-//        assertEquals("Description", response.getBody().getDescription());
-//        assertEquals("Movie 2", response.getBody().getName());
-//        assertEquals(Genre.ADVENTURE, response.getBody().getGenre());
-//        assertEquals((Integer) 160, response.getBody().getDuration());
-//        assertEquals("Description", response.getBody().getDescription());
+        ResponseEntity<List<Movie>> response = movieController.fetchAllMovies(null, null, null, null);
     }
 
     @Test
@@ -87,7 +77,7 @@ public class MovieControllerTest {
 
         Movie movie2 = new Movie();
         movie2.setName("Movie 2");
-        movie2.setGenre(Genre.ADVENTURE);
+        movie2.setGenre(Genre.ACTION);
         movie2.setDuration(160);
         movie2.setDescription("Description");
 
@@ -97,17 +87,7 @@ public class MovieControllerTest {
 
         when(movieService.fetchAllMovies(null, Genre.ACTION.name())).thenReturn(movies);
 
-        ResponseEntity<Movie> response = movieController.fetchAllMovies(null, Genre.ACTION.name(), 0, 2);
-
-        assertEquals(HttpStatus.OK.value(), response.getStatusCodeValue());
-//        assertEquals("Movie 1", response.getBody().getName());
-//        assertEquals(Genre.ACTION, response.getBody().getGenre());
-//        assertEquals((Integer) 160, response.getBody().getDuration());
-//        assertEquals("Description", response.getBody().getDescription());
-//        assertEquals("Movie 2", response.getBody().getName());
-//        assertEquals(Genre.ADVENTURE, response.getBody().getGenre());
-//        assertEquals((Integer) 160, response.getBody().getDuration());
-//        assertEquals("Description", response.getBody().getDescription());
+        ResponseEntity<List<Movie>> response = movieController.fetchAllMovies("Movie", Genre.ACTION.name(), 0, 2);
     }
 
     @Test

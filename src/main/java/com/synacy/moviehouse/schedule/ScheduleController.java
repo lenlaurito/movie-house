@@ -17,15 +17,15 @@ public class ScheduleController {
     @Autowired
     private ScheduleService scheduleService;
 
-    @RequestMapping(method = RequestMethod.GET, value = "/{scheduleId}")
+    @GetMapping("/{scheduleId}")
     public ResponseEntity fetchSchedule(@PathVariable(value="scheduleId") Long scheduleId) {
         Schedule schedule =  scheduleService.fetchScheduleById(scheduleId);
         return ResponseEntity.ok().body(schedule);
     }
 
-    @RequestMapping(method = RequestMethod.GET)
+    @GetMapping
     public ResponseEntity fetchAllSchedules(@RequestParam(value = "date", required = false)
-                                            @DateTimeFormat(pattern = "yyyy-MM-dd") Date date,
+                                                @DateTimeFormat(pattern = "yyyy-MM-dd") Date date,
                                             @RequestParam(value = "movieId", required = false) Long movieId,
                                             @RequestParam(value = "offset", required = false) Integer offset,
                                             @RequestParam(value = "max", required = false) Integer max) {
@@ -40,14 +40,14 @@ public class ScheduleController {
         }
     }
 
-    @RequestMapping(method = RequestMethod.POST)
+    @PostMapping
     public ResponseEntity createNewSchedule(@RequestBody Schedule scheduleRequest) {
         Schedule schedule = scheduleService.createSchedule(scheduleRequest.getMovie(), scheduleRequest.getCinema(),
                 scheduleRequest.getStartDateTime(), scheduleRequest.getEndDateTime());
         return ResponseEntity.status(HttpStatus.CREATED).body(schedule);
     }
 
-    @RequestMapping(method = RequestMethod.PUT, value="/{scheduleId}")
+    @PutMapping("/{scheduleId}")
     public ResponseEntity updateSchedule(@PathVariable(value="scheduleId") Long scheduleId,
                                    @RequestBody Schedule scheduleRequest) {
         Schedule scheduleToUpdate = scheduleService.fetchScheduleById(scheduleId);
@@ -56,7 +56,7 @@ public class ScheduleController {
         return ResponseEntity.ok().body(schedule);
     }
 
-    @RequestMapping(method = RequestMethod.DELETE, value="/{scheduleId}")
+    @DeleteMapping("/{scheduleId}")
     public ResponseEntity deleteSchedule(@PathVariable(value="scheduleId") Long scheduleId) {
         Schedule schedule = scheduleService.fetchScheduleById(scheduleId);
         scheduleService.deleteSchedule(schedule);

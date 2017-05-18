@@ -34,7 +34,6 @@ public class MovieController {
             Page<Movie> movies = movieService.fetchAllMoviesWithPagination(name, genre, offset, max);
             return ResponseEntity.ok().body(movies);
         } else {
-            // return ResponseEntity.unprocessableEntity();
             throw new InvalidRequestException("Offset and max should both be used as parameters.");
         }
     }
@@ -46,7 +45,7 @@ public class MovieController {
          return ResponseEntity.status(HttpStatus.CREATED).body(movie);
     }
 
-    @RequestMapping(method = RequestMethod.PUT, value="/{movieId}")
+    @PutMapping("/{movieId}")
     public ResponseEntity updateMovie(@PathVariable(value="movieId") Long movieId,
                                       @RequestBody Movie movieRequest) {
         Movie movieToUpdate = movieService.fetchMovieById(movieId);
@@ -55,7 +54,7 @@ public class MovieController {
         return ResponseEntity.ok().body(movie);
     }
 
-    @RequestMapping(method = RequestMethod.DELETE, value="/{movieId}")
+    @DeleteMapping("/{movieId}")
     public ResponseEntity deleteMovie(@PathVariable(value="movieId") Long movieId) {
         Movie movie = movieService.fetchMovieById(movieId);
         movieService.deleteMovie(movie);

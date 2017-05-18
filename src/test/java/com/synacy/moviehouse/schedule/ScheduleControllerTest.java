@@ -91,18 +91,9 @@ public class ScheduleControllerTest {
 
         when(scheduleService.fetchAllSchedules(startDateTime, null)).thenReturn(schedules);
 
-        ResponseEntity<Schedule> response = scheduleController.fetchAllSchedules(null, null, null,null);
+        ResponseEntity<List<Schedule>> response = scheduleController.fetchAllSchedules(null, null, null,null);
 
         assertEquals(HttpStatus.OK.value(), response.getStatusCodeValue());
-//        assertEquals(movie, response.getBody().getMovie());
-//        assertEquals(cinema, response.getBody().getCinema());
-//        assertEquals(startDateTime, response.getBody().getStartDateTime());
-//        assertEquals(endDateTime, response.getBody().getEndDateTime());
-//
-//        assertEquals(movie, response.getBody().getMovie());
-//        assertEquals(cinema, response.getBody().getCinema());
-//        assertEquals(startDateTime, response.getBody().getStartDateTime());
-//        assertEquals(endDateTime, response.getBody().getEndDateTime());
     }
 
     @Test
