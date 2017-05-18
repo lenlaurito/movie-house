@@ -39,15 +39,10 @@ public class MovieController {
         }
         else if(offset != null && max != null) {
             Page<Movie> moviePage =  movieService.fetchAllPaginated(name, genre, offset, max);
-
-            if(moviePage.getTotalPages() < 1)
-                throw new NoContentFoundException("Not content found");
-            else
-                return ResponseEntity.ok().body(moviePage);
+            return ResponseEntity.ok().body(moviePage);
         }
-        else{
+        else
             throw new InvalidParameterException("Parameters incomplete or isn't acceptable");
-        }
     }
 
     @RequestMapping(method = RequestMethod.POST)
@@ -55,24 +50,21 @@ public class MovieController {
     public Movie createMovie(@RequestBody Movie movie){
         if(movie.getName() == null || movie.getGenre() == null || movie.getDuration() == null)
             throw new IncompleteInformationException("Missing some required information");
-        else
-            return movieService.createMovie(movie.getName(),movie.getGenre(),movie.getDuration(),movie.getDescription());
+
+        return movieService.createMovie(movie.getName(),movie.getGenre(),movie.getDuration(),movie.getDescription());
     }
 
     @RequestMapping(method = RequestMethod.PUT, value = "/{movieId}")
     public Movie updateMovie(@PathVariable(value = "movieId") Long movieId, @RequestBody Movie movie){
         if(movie.getName() == null || movie.getGenre() == null || movie.getDuration() == null)
             throw new IncompleteInformationException("Missing some required information");
-        else {
-            Movie movieToBeUpdated = movieService.fetchById(movieId);
-            return movieService.updateMovie(movieToBeUpdated, movie.getName(), movie.getGenre(), movie.getDuration(), movie.getDescription());
-        }
+
+        return movieService.updateMovie(movieId, movie.getName(), movie.getGenre(), movie.getDuration(), movie.getDescription());
     }
 
     @RequestMapping(method = RequestMethod.DELETE, value = "/{movieId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteMovie(@PathVariable(value = "movieId") Long movieId){
-        Movie movie = movieService.fetchById(movieId);
-        movieService.deleteMovie(movie);
+        movieService.deleteMovie(movieId);
     }
 }
