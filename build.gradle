@@ -24,6 +24,5 @@ dependencies {
     compile("org.springframework.boot:spring-boot-starter-data-jpa")
     compile("org.projectlombok:lombok")
     compile("postgresql:postgresql:9.4.1208-jdbc42-atlassian-hosted")
-    compile("org.springframework.boot:spring-boot-devtools")
     testCompile("org.springframework.boot:spring-boot-starter-test")
 }
