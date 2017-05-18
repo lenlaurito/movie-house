@@ -13,7 +13,8 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
+import org.springframework.data.domain.*;
+import org.springframework.http.ResponseEntity;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -34,103 +35,110 @@ public class ScheduleControllerUnitTest {
     ScheduleController scheduleController;
 
     @Mock ScheduleService scheduleService;
-    @Mock MovieService movieService;
-    @Mock CinemaService cinemaService;
 
     @Before
     public void setUp() throws Exception {
        scheduleController = new ScheduleController();
 
        scheduleController.setScheduleService(scheduleService);
-       scheduleController.setMovieService(movieService);
-       scheduleController.setCinemaService(cinemaService);
     }
 
     @Test
     public void fetchSchedule_shouldReturnSchedule() throws Exception {
         Long scheduleId = 1L;
+        Schedule expectedSchedule = new Schedule();
+        Movie movie = new Movie();
+        Cinema cinema = new Cinema();
+        Date startDateTime = mock(Date.class);
+        Date endDateTime = mock(Date.class);
 
-        scheduleController.fetchSchedule(scheduleId);
+        expectedSchedule.setMovie(movie);
+        expectedSchedule.setCinema(cinema);
+        expectedSchedule.setStartDateTime(startDateTime);
+        expectedSchedule.setEndDateTime(endDateTime);
+
+        when(scheduleService.fetchById(scheduleId)).thenReturn(expectedSchedule);
+
+        Schedule actualSchedule = scheduleController.fetchSchedule(scheduleId);
 
         verify(scheduleService,times(1)).fetchById(scheduleId);
+        assertEquals(expectedSchedule, actualSchedule);
+        assertEquals(expectedSchedule.getMovie().getId(), actualSchedule.getMovie().getId());
+        assertEquals(expectedSchedule.getCinema().getId(), actualSchedule.getCinema().getId());
+        assertEquals(expectedSchedule.getStartDateTime(), actualSchedule.getStartDateTime());
+        assertEquals(expectedSchedule.getEndDateTime(), actualSchedule.getEndDateTime());
     }
 
     @Test
     public void fetchAllSchedule_offsetAndMaxAreNull_shouldReturnListOfAllSchedule() throws Exception{
-        Schedule schedule = new Schedule();
-        String dateInString = "2015-2-18";
         long movieId = 1L;
+        String dateInString = "2015-2-18";
 
         List<Schedule> scheduleList = new ArrayList<>();
-        scheduleList.add(schedule);
+        scheduleList.add(new Schedule());
+        scheduleList.add(new Schedule());
+
+        ResponseEntity expectedResponseEntity = ResponseEntity.ok().body(scheduleList);
 
         when(scheduleService.fetchAll(dateInString, movieId)).thenReturn(scheduleList);
 
-        scheduleController.fetchAllSchedule(null,null, dateInString, movieId);
+        ResponseEntity actualResponseEntity = scheduleController.fetchAllSchedule(null,null, dateInString, movieId);
 
         verify(scheduleService, times(1)).fetchAll(dateInString, movieId);
-        assertEquals(scheduleList, scheduleService.fetchAll(dateInString, movieId));
+        assertEquals(expectedResponseEntity, actualResponseEntity);
+        assertEquals(expectedResponseEntity.getStatusCode(), actualResponseEntity.getStatusCode());
     }
 
     @Test
     public void fetchAllSchedule_offsetAndMaxAreNotNullSchedulesFound_shouldReturnListOfAllPaginatedSchedule() throws Exception{
-
-        String dateInString = "2015-2-18";
         long movieId = 1L;
+        String dateInString = "2015-2-18";
 
-        Page<Schedule> schedulePage = mock(Page.class);
+        Pageable pageable = new PageRequest(0, 2, Sort.Direction.ASC, "name");
+        List<Schedule> scheduleList = new ArrayList<>();
+        scheduleList.add(new Schedule());
+        scheduleList.add(new Schedule());
+        Page<Schedule> schedulePage = new PageImpl<>(scheduleList, pageable, scheduleList.size());
 
-        when(schedulePage.getTotalPages()).thenReturn(1);
+        ResponseEntity expectedResponseEntity = ResponseEntity.ok().body(schedulePage);
+
         when(scheduleService.fetchAllPaginated(dateInString, movieId,0,2)).thenReturn(schedulePage);
 
-        scheduleController.fetchAllSchedule(0,2, dateInString, movieId);
+        ResponseEntity actualResponseEntity = scheduleController.fetchAllSchedule(0,2, dateInString, movieId);
 
         verify(scheduleService, times(1)).fetchAllPaginated(dateInString, movieId,0,2);
-        assertEquals(schedulePage, scheduleService.fetchAllPaginated(dateInString, movieId,0,2));
-    }
-
-    @Test(expected = NoContentFoundException.class)
-    public void fetchAllSchedule_offsetAndMaxAreNotNullSchedulesNotFound_shouldThrowNoContentFoundException() throws Exception{
-        String dateInString = "2015-2-18";
-        long movieId = 1L;
-        Page<Schedule> schedulePage = mock(Page.class);
-
-        when(scheduleService.fetchAllPaginated(dateInString, movieId,0,2)).thenReturn(schedulePage);
-
-        scheduleController.fetchAllSchedule(0,2, dateInString, movieId);
+        assertEquals(expectedResponseEntity, actualResponseEntity);
+        assertEquals(expectedResponseEntity.getStatusCode(), actualResponseEntity.getStatusCode());
     }
 
     @Test(expected = InvalidParameterException.class)
     public void fetchAllSchedule_offsetNullAndMaxNotNullViceVersa_shouldThrowInvalidParameterException() throws Exception{
-        String dateInString = "2015-2-18";
-        long movieId = 1L;
-        Page<Schedule> schedulePage = mock(Page.class);
-
-        when(scheduleService.fetchAllPaginated(dateInString, movieId,null,2)).thenReturn(schedulePage);
-
-        scheduleController.fetchAllSchedule(null,2, dateInString, movieId);
+        scheduleController.fetchAllSchedule(null,2, "2015-2-18", 1L);
     }
 
     @Test
     public void createSchedule_scheduleHasAllValidInputs_shouldCreateAndReturnSchedule() throws Exception{
-        Schedule schedule = mock(Schedule.class);
-
+        Schedule expectedSchedule = new Schedule();
         Movie movie = new Movie();
         Cinema cinema = new Cinema();
-
         Date startDateTime = mock(Date.class);
         Date endDateTime = mock(Date.class);
 
-        when(schedule.getMovie()).thenReturn(movie);
-        when(schedule.getCinema()).thenReturn(cinema);
-        when(schedule.getStartDateTime()).thenReturn(startDateTime);
-        when(schedule.getEndDateTime()).thenReturn(endDateTime);
-        when(movieService.fetchById(schedule.getMovie().getId())).thenReturn(movie);
-        when(cinemaService.fetchById(schedule.getCinema().getId())).thenReturn(cinema);
+        expectedSchedule.setMovie(movie);
+        expectedSchedule.setCinema(cinema);
+        expectedSchedule.setStartDateTime(startDateTime);
+        expectedSchedule.setEndDateTime(endDateTime);
 
-        scheduleController.createSchedule(schedule);
+        when(scheduleService.createSchedule(movie.getId(),cinema.getId(),startDateTime,endDateTime)).thenReturn(expectedSchedule);
 
-        verify(scheduleService, times(1)).createSchedule(movie,cinema,startDateTime,endDateTime);
+        Schedule actualSchedule = scheduleController.createSchedule(expectedSchedule);
+
+        verify(scheduleService, times(1)).createSchedule(movie.getId(),cinema.getId(),startDateTime,endDateTime);
+        assertEquals(expectedSchedule,actualSchedule);
+        assertEquals(expectedSchedule.getMovie().getId(), actualSchedule.getMovie().getId());
+        assertEquals(expectedSchedule.getCinema().getId(), actualSchedule.getCinema().getId());
+        assertEquals(expectedSchedule.getStartDateTime(), actualSchedule.getStartDateTime());
+        assertEquals(expectedSchedule.getEndDateTime(), actualSchedule.getEndDateTime());
     }
 
     @Test(expected = IncompleteInformationException.class)
@@ -141,42 +149,43 @@ public class ScheduleControllerUnitTest {
 
     @Test
     public void updateSchedule_updateScheduleAllInputsValid_shouldUpdateAndReturnSchedule() throws  Exception{
-        Schedule schedule = mock(Schedule.class);
-        Schedule scheduleToBeUpdated = mock(Schedule.class);
-
+        Long scheduleId = 1L;
+        Schedule expectedSchedule = new Schedule();
         Movie movie = new Movie();
         Cinema cinema = new Cinema();
-
         Date startDateTime = mock(Date.class);
         Date endDateTime = mock(Date.class);
 
-        when(schedule.getMovie()).thenReturn(movie);
-        when(schedule.getCinema()).thenReturn(cinema);
-        when(schedule.getStartDateTime()).thenReturn(startDateTime);
-        when(schedule.getEndDateTime()).thenReturn(endDateTime);
-        when(movieService.fetchById(schedule.getMovie().getId())).thenReturn(movie);
-        when(cinemaService.fetchById(schedule.getCinema().getId())).thenReturn(cinema);
-        when(scheduleService.fetchById(1L)).thenReturn(scheduleToBeUpdated);
+        expectedSchedule.setMovie(movie);
+        expectedSchedule.setCinema(cinema);
+        expectedSchedule.setStartDateTime(startDateTime);
+        expectedSchedule.setEndDateTime(endDateTime);
 
-        scheduleController.updateSchedule(1L, schedule);
-        verify(scheduleService, times(1)).updateSchedule(scheduleToBeUpdated, movie,cinema,startDateTime,endDateTime);
+        when(scheduleService.updateSchedule(scheduleId, movie.getId(), cinema.getId(), startDateTime, endDateTime)).thenReturn(expectedSchedule);
+
+        Schedule actualSchedule = scheduleController.updateSchedule(scheduleId, expectedSchedule);
+
+        verify(scheduleService, times(1)).updateSchedule(scheduleId, movie.getId(), cinema.getId(), startDateTime, endDateTime);
+        assertEquals(expectedSchedule,actualSchedule);
+        assertEquals(expectedSchedule.getMovie().getId(), actualSchedule.getMovie().getId());
+        assertEquals(expectedSchedule.getCinema().getId(), actualSchedule.getCinema().getId());
+        assertEquals(expectedSchedule.getStartDateTime(), actualSchedule.getStartDateTime());
+        assertEquals(expectedSchedule.getEndDateTime(), actualSchedule.getEndDateTime());
     }
 
     @Test(expected = IncompleteInformationException.class)
     public void updateSchedule_scheduleHasEitherAllInputsAreInvalid_shouldThrowIncompleteInformationException() throws Exception{
-        Schedule schedule = mock(Schedule.class);
+        Schedule schedule = new Schedule();
         scheduleController.updateSchedule(1L,schedule);
     }
 
     @Test
     public void deleteSchedule_shouldDeleteSchedule() throws Exception{
-        Schedule schedule = new Schedule();
         long scheduleId = 1L;
-        when(scheduleService.fetchById(scheduleId)).thenReturn(schedule);
 
         scheduleController.deleteSchedule(scheduleId);
 
-        verify(scheduleService, times(1)).deleteSchedule(schedule);
+        verify(scheduleService, times(1)).deleteSchedule(scheduleId);
     }
 
 }

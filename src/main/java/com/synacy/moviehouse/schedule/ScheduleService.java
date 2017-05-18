@@ -95,11 +95,10 @@ public class ScheduleService {
     }
 
     public Schedule createSchedule(Long movieId, Long cinemaId, Date startDateTime, Date endDateTime) throws ParseException {
-
+        Schedule schedule = new Schedule();
         Movie movie = movieService.fetchById(movieId);
         Cinema cinema = cinemaService.fetchById(cinemaId);
 
-        Schedule schedule = new Schedule();
         schedule.setMovie(movie);
         schedule.setCinema(cinema);
         schedule.setStartDateTime(startDateTime);
