@@ -1,7 +1,6 @@
 package com.synacy.moviehouse.cinema;
 
 import com.synacy.moviehouse.exception.IncompleteInformationException;
-import com.synacy.moviehouse.movie.Movie;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

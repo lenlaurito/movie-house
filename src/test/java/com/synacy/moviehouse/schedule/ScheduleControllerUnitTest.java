@@ -1,12 +1,9 @@
 package com.synacy.moviehouse.schedule;
 
 import com.synacy.moviehouse.cinema.Cinema;
-import com.synacy.moviehouse.cinema.CinemaService;
 import com.synacy.moviehouse.exception.IncompleteInformationException;
 import com.synacy.moviehouse.exception.InvalidParameterException;
-import com.synacy.moviehouse.exception.NoContentFoundException;
 import com.synacy.moviehouse.movie.Movie;
-import com.synacy.moviehouse.movie.MovieService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -16,13 +13,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.http.ResponseEntity;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 
 /**

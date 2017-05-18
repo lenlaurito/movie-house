@@ -2,7 +2,6 @@ package com.synacy.moviehouse.movie;
 
 import com.synacy.moviehouse.exception.IncompleteInformationException;
 import com.synacy.moviehouse.exception.InvalidParameterException;
-import com.synacy.moviehouse.exception.NoContentFoundException;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;

@@ -6,7 +6,6 @@ import com.synacy.moviehouse.exception.InvalidDataPassedException;
 import com.synacy.moviehouse.exception.NoContentFoundException;
 import com.synacy.moviehouse.movie.Movie;
 import com.synacy.moviehouse.movie.MovieService;
-import javafx.scene.input.DataFormat;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

@@ -2,7 +2,6 @@ package com.synacy.moviehouse.movie;
 
 import com.synacy.moviehouse.exception.IncompleteInformationException;
 import com.synacy.moviehouse.exception.InvalidParameterException;
-import com.synacy.moviehouse.exception.NoContentFoundException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
