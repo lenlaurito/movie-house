@@ -42,6 +42,8 @@ public class CinemaControllerUnitTest {
 
         verify(cinemaService, times(1)).fetchById(cinemaId);
         assertEquals(expectedCinema, actualCinema);
+        assertEquals(expectedCinema.getName(), actualCinema.getName());
+        assertEquals(expectedCinema.getType(), actualCinema.getType());
     }
 
     @Test
@@ -55,6 +57,7 @@ public class CinemaControllerUnitTest {
         List<Cinema> actualCinemaList = cinemaController.fetchAllCinema(null);
 
         verify(cinemaService, times(1)).fetchAll();
+        assertEquals(expectedCinemaList, actualCinemaList);
         assertEquals(expectedCinemaList.size(), actualCinemaList.size());
     }
 
