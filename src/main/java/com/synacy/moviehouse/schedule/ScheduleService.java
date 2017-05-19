@@ -18,6 +18,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -29,29 +30,33 @@ import java.util.List;
 @Transactional
 public class ScheduleService {
 
+    private Date startOfDay = null;
+    private Date endOfDay = null;
+
     @Autowired
     ScheduleRepository scheduleRepository;
 
     @Bean
-    public SessionFactory sessionFactory(HibernateEntityManagerFactory hemf) {
-        return hemf.getSessionFactory();
+    public SessionFactory sessionFactory(HibernateEntityManagerFactory hibernateEntityManagerFactory) {
+        return hibernateEntityManagerFactory.getSessionFactory();
     }
 
     @Autowired
     SessionFactory sessionFactory;
 
-    public List<Schedule> fetchAll(Date date) {
-        List<Schedule> schedules;
+    public List<Schedule> fetchAll(String date, Long movieId) {
 
-        if(date != null)
-            schedules = scheduleRepository.findByStartDateTime(date);
-        else
-            schedules = (List) scheduleRepository.findAll();
+        setStartAndEndTimeOfDay(date);
 
-        if(schedules.isEmpty())
-            throw new NoContentException("No schedules exist.");
-        else
-            return schedules;
+        if(startOfDay == null && endOfDay == null && movieId == null) {
+            return (List<Schedule>) scheduleRepository.findAll();
+        }else if(startOfDay == null && endOfDay == null) {
+            return scheduleRepository.findAllByMovieId(movieId);
+        }else if(movieId == null) {
+            return scheduleRepository.findAllByStartDateTimeBetween(startOfDay, endOfDay);
+        }else {
+            return scheduleRepository.findAllByStartDateTimeBetweenAndMovieId(startOfDay, endOfDay, movieId);
+        }
     }
 
     public Schedule fetchById(Long id) {
@@ -135,18 +140,29 @@ public class ScheduleService {
         }
     }
 
-    public Page<Schedule> fetchAllPaginated(Date date, Integer offset, Integer max) {
+    public Page<Schedule> fetchAllPaginated(String date, Long movieId, Integer offset, Integer max) {
 
-        Page<Schedule> pages;
+        setStartAndEndTimeOfDay(date);
 
-        if(date != null)
-            pages = scheduleRepository.findAllByStartDateTime(date, new PageRequest(offset, max));
-        else
-            pages = scheduleRepository.findAll(new PageRequest(offset, max));
+        if(startOfDay == null && endOfDay == null && movieId == null) {
+            return scheduleRepository.findAll(new PageRequest(offset, max));
+        }else if(startOfDay == null && endOfDay == null) {
+            return scheduleRepository.findAllByMovieId(movieId, new PageRequest(offset, max));
+        }else if(movieId == null) {
+            return scheduleRepository.findAllByStartDateTimeBetween(startOfDay, endOfDay, new PageRequest(offset, max));
+        }else {
+            return scheduleRepository.findAllByStartDateTimeBetweenAndMovieId(startOfDay, endOfDay, movieId, new PageRequest(offset, max));
+        }
+    }
 
-        if(pages.getTotalPages() == 0)
-            throw new NoContentException("No schedules exist.");
-        else
-            return pages;
+    private void setStartAndEndTimeOfDay(String date) {
+        try {
+            if(date != null) {
+                String startOfDayString = date.substring(0, 10) + " 00:00:00";
+                String endOfDayString = date.substring(0, 10) + " 23:59:00";
+                startOfDay = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(startOfDayString);
+                endOfDay = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(endOfDayString);
+            }
+        }catch (Exception e) {}
     }
 }

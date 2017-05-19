@@ -14,7 +14,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.InvalidParameterException;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -36,15 +35,16 @@ public class ScheduleController {
 
     @GetMapping
     public ResponseEntity fetchAllSchedules(@RequestParam(value = "date", required = false)
-                                                @DateTimeFormat(pattern = "yyyy-MM-dd") Date date,
+                                                @DateTimeFormat(pattern = "yyyy-MM-dd") String date,
                                             @RequestParam(value = "offset", required = false) Integer offset,
-                                            @RequestParam(value = "max", required = false) Integer max) {
+                                            @RequestParam(value = "max", required = false) Integer max,
+                                            @RequestParam(value = "movie", required = false) Long movieId) {
         if (offset == null && max == null) {
-            List<Schedule> schedules =  scheduleService.fetchAll(date);
+            List<Schedule> schedules =  scheduleService.fetchAll(date, movieId);
             return ResponseEntity.ok().body(schedules);
         }
         else if(offset != null && max != null) {
-            Page<Schedule> schedules =  scheduleService.fetchAllPaginated(date, offset, max);
+            Page<Schedule> schedules =  scheduleService.fetchAllPaginated(date, movieId, offset, max);
             return ResponseEntity.ok().body(schedules);
         }
         else{
