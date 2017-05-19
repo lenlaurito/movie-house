@@ -99,7 +99,7 @@ public class CinemaServiceTest {
 
     @Test
     public void createCinema_shouldCreateCinemaWithCorrectFields() throws Exception {
-        
+
     }
 
     @Test
