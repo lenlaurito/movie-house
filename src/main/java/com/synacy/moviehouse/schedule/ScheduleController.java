@@ -8,6 +8,7 @@ import com.synacy.moviehouse.movie.Movie;
 import com.synacy.moviehouse.movie.MovieService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -34,9 +35,10 @@ public class ScheduleController {
     CinemaService cinemaService;
 
     @GetMapping
-    public ResponseEntity fetchAllSchedules(@RequestParam(value = "date", required = false) Date date,
-                                                            @RequestParam(value = "offset", required = false) Integer offset,
-                                                            @RequestParam(value = "max", required = false) Integer max) {
+    public ResponseEntity fetchAllSchedules(@RequestParam(value = "date", required = false)
+                                                @DateTimeFormat(pattern = "yyyy-MM-dd") Date date,
+                                            @RequestParam(value = "offset", required = false) Integer offset,
+                                            @RequestParam(value = "max", required = false) Integer max) {
         if (offset == null && max == null) {
             List<Schedule> schedules =  scheduleService.fetchAll(date);
             return ResponseEntity.ok().body(schedules);
