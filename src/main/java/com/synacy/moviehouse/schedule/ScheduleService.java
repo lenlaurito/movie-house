@@ -5,16 +5,19 @@ import com.synacy.moviehouse.cinema.Cinema;
 import com.synacy.moviehouse.exceptions.NoContentException;
 import com.synacy.moviehouse.movie.Movie;
 import org.hibernate.Criteria;
+import org.hibernate.Hibernate;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Restrictions;
+import org.hibernate.jpa.HibernateEntityManagerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.PersistenceContext;
 import java.util.Date;
 import java.util.List;
 
@@ -29,6 +32,12 @@ public class ScheduleService {
     @Autowired
     ScheduleRepository scheduleRepository;
 
+    @Bean
+    public SessionFactory sessionFactory(HibernateEntityManagerFactory hemf) {
+        return hemf.getSessionFactory();
+    }
+
+    @Autowired
     SessionFactory sessionFactory;
 
     public List<Schedule> fetchAll(Date date) {
@@ -101,24 +110,24 @@ public class ScheduleService {
     public Boolean scheduleConflicts(Cinema cinema, Date startDateTime, Date endDateTime) {
         Session session = this.sessionFactory.openSession();
         Criteria cr = session.createCriteria(Schedule.class);
-        cr.add(Restrictions.eq("cinema", cinema.getId()));
+        cr.add(Restrictions.eq("cinema", cinema));
         cr.add(Restrictions.le("startDateTime", endDateTime));
         cr.add(Restrictions.ge("endDateTime", startDateTime));
-        List<Schedule> list = cr.list();
+        List list = cr.list();
         if(scheduleIsEmpty()) {
             return false;
         } else {
             if(list.isEmpty()) {
-                return true;
-            }else {
                 return false;
+            }else {
+                return true;
             }
         }
     }
 
     private Boolean scheduleIsEmpty() {
         Session session = this.sessionFactory.openSession();
-        List<Schedule> list = (List<Schedule>) session.createQuery("FROM Schedule");
+        List list = session.createQuery("FROM Schedule").list();
         if(list.isEmpty()) {
             return true;
         } else {
