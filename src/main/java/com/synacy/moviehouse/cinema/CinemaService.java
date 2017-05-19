@@ -18,14 +18,26 @@ public class CinemaService {
     @Autowired
     CinemaRepository cinemaRepository;
 
-    public List<Cinema> fetchAll() {
-        List<Cinema> cinemas = (List) cinemaRepository.findAll();
+    public List<Cinema> fetchAll(CinemaType type) {
 
-        if(cinemas.isEmpty()) {
-            throw new NoContentException("No cinemas exist.");
+        if(type == null) {
+            List<Cinema> cinemas = (List) cinemaRepository.findAll();
+
+            if(cinemas.isEmpty()) {
+                throw new NoContentException("No cinemas exist.");
+            } else {
+                return cinemas;
+            }
         } else {
-            return cinemas;
+           List<Cinema> cinemas = (List) cinemaRepository.findAllByType(type);
+
+            if(cinemas.isEmpty()) {
+                throw new NoContentException("No cinemas of this type exist.");
+            } else {
+                return cinemas;
+            }
         }
+
     }
 
     public Cinema fetchById(Long id) {
@@ -68,4 +80,5 @@ public class CinemaService {
     public void setCinemaRepository(CinemaRepository cinemaRepository) {
         this.cinemaRepository = cinemaRepository;
     }
+
 }

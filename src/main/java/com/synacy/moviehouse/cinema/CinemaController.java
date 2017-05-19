@@ -3,6 +3,7 @@ package com.synacy.moviehouse.cinema;
 import com.synacy.moviehouse.exceptions.MissingRequiredFieldsException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,12 +20,10 @@ public class CinemaController {
     CinemaService cinemaService;
 
     @GetMapping
-    public List<Cinema> fetchAllCinemas(@RequestParam(value = "type", required = false) CinemaType cinemaType) {
-        if(cinemaType == null){
-            return cinemaService.fetchAll();
-        } else {
-            return cinemaService.fetchAllByType(cinemaType);
-        }
+    public ResponseEntity<List<Cinema>> fetchAllCinemas(@RequestParam(value = "type", required = false) CinemaType cinemaType) {
+
+        List<Cinema> cinemas =  cinemaService.fetchAll(cinemaType);
+        return ResponseEntity.ok().body(cinemas);
     }
 
     @GetMapping("/{cinemaId}")
