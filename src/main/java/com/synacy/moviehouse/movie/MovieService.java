@@ -49,7 +49,9 @@ public class MovieService {
     }
 
     public Movie getMovieById(long id) {
+        Optional <Movie> optionalMovie = movieRepository.findById(id);
 
+        return optionalMovie.get();
     }
 
     public Movie validateIfMovieAlreadyExists(Movie movie) throws MovieAlreadyExistsException {
