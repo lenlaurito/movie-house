@@ -1,6 +1,7 @@
 package com.synacy.moviehouse.movie
 
 import com.synacy.moviehouse.exception.MovieAlreadyExistsException
+import com.synacy.moviehouse.exception.MovieNotFoundException
 import spock.lang.Specification
 
 class MovieServiceSpec extends Specification {
@@ -56,8 +57,10 @@ class MovieServiceSpec extends Specification {
         expectedMovie.getDuration() >> 150
         expectedMovie.getDescription() >> "Updated Description"
 
+        movieRepository.findById(1) >> Optional.of(expectedMovie)
+
         when:
-        movieService.updateMovie(expectedMovie)
+        movieService.updateMovie(expectedMovie, 1)
 
         then:
         1 == expectedMovie.id
@@ -65,6 +68,21 @@ class MovieServiceSpec extends Specification {
         "Action" == expectedMovie.genre
         150 == expectedMovie.duration
         "Updated Description" == expectedMovie.description
+    }
+
+    def "updateMovie should throw MovieNotFoundException if movie being updated does not exist"() {
+        given:
+        Movie mockMovie = Mock(Movie)
+
+        mockMovie.getId() >> 1
+
+        movieRepository.findById(mockMovie.getId()) >> Optional.empty()
+
+        when:
+        movieService.updateMovie(mockMovie, 1)
+
+        then:
+        thrown(MovieNotFoundException)
     }
 
     def "getAllMovies should return list of movies"() {

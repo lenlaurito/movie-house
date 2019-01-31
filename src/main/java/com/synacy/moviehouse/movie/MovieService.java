@@ -1,6 +1,7 @@
 package com.synacy.moviehouse.movie;
 
 import com.synacy.moviehouse.exception.MovieAlreadyExistsException;
+import com.synacy.moviehouse.exception.MovieNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,7 +25,9 @@ public class MovieService {
         return movieRepository.save(newMovie);
     }
 
-    public void updateMovie(Movie movie) {
+    public void updateMovie(Movie movie, long id) throws MovieNotFoundException {
+        validateIfMovieDoesNotExist(id);
+
         movieRepository.save(movie);
     }
 
@@ -61,5 +64,12 @@ public class MovieService {
             throw new MovieAlreadyExistsException();
 
         return movie;
+    }
+
+    public void validateIfMovieDoesNotExist(long id) throws  MovieNotFoundException {
+        Optional <Movie> optionalMovie = movieRepository.findById(id);
+
+        if (optionalMovie.isEmpty())
+            throw new MovieNotFoundException();
     }
 }
