@@ -48,4 +48,24 @@ class MovieControllerSpec extends Specification {
         "Updated Description" == expectedMovie.description
     }
 
+    def "getAllMovies should return list of movies"() {
+        given:
+        List <Movie> expectedMovies = buildMovies()
+
+        movieService.getAllMovies() >> expectedMovies
+
+        when:
+        List <Movie> actualMovies = movieController.getAllMovies()
+
+        then:
+        expectedMovies == actualMovies
+    }
+
+    def buildMovies() {
+        Movie firstMovie = Mock(Movie)
+        Movie secondMovie = Mock(Movie)
+
+        return [firstMovie, secondMovie]
+    }
+
 }

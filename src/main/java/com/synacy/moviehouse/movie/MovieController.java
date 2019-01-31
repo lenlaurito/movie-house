@@ -5,6 +5,8 @@ import com.synacy.moviehouse.exception.MovieNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 public class MovieController {
 
@@ -28,5 +30,10 @@ public class MovieController {
     @DeleteMapping("/movie/{id}")
     public void deleteMovie(@PathVariable long id) {
         movieService.deleteMovie(id);
+    }
+
+    @GetMapping("/movie")
+    public List<Movie> getAllMovies() {
+        return movieService.getAllMovies();
     }
 }
