@@ -139,6 +139,20 @@ class MovieServiceSpec extends Specification {
 
     }
 
+    def "getMovieById should return a movie with the given id"() {
+        given:
+        Movie expectedMovie = Mock(Movie)
+        expectedMovie.id >> 1
+
+        movieRepository.findById(expectedMovie.id) >> Optional.of(expectedMovie)
+
+        when:
+        Movie actualMovie = movieService.getMovieById(1)
+
+        then:
+        expectedMovie == actualMovie
+    }
+
     def buildMovies() {
         Movie firstMovie = Mock(Movie)
         Movie secondMovie = Mock(Movie)
