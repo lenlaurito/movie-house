@@ -33,6 +33,3 @@ dependencies {
     compile ('org.objenesis:objenesis:1.4')
     compile ("cglib:cglib:2.2")
 }
-plugins {
-    compile ':cache:1.1.7'
-}
