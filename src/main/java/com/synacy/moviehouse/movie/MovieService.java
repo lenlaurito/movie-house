@@ -45,7 +45,7 @@ public class MovieService {
     }
 
     public List<Movie> getMoviesByGenreAndName(String genre, String name) {
-        return null;
+        return movieRepository.findByGenreAndName(genre, name);
     }
 
     public Movie validateIfMovieAlreadyExists(Movie movie) throws MovieAlreadyExistsException {
