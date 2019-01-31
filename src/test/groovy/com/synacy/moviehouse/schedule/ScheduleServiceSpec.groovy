@@ -12,9 +12,18 @@ class ScheduleServiceSpec extends Specification {
         scheduleService = new ScheduleService(scheduleRepository);
     }
 
-    void cleanup() {
+    void cleanup() {}
 
+    def "createNewSchedule should return Schedule object"() {
+        given:
+        Schedule expectedSchedule = Mock(Schedule)
+
+        scheduleRepository.save(_ as Schedule) >> expectedSchedule
+
+        when:
+        Schedule actualSchedule = scheduleService.createNewSchedule(expectedSchedule)
+
+        then:
+        expectedSchedule == actualSchedule
     }
-
-
 }
