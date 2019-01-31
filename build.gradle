@@ -32,4 +32,5 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     compile ('org.objenesis:objenesis:1.4')
     compile ("cglib:cglib:2.2")
+    compile ("org.projectlombok:lombok:1.18.2")
 }

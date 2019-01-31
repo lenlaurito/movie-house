@@ -37,7 +37,7 @@ public class MovieService {
     }
 
     public List<Movie> getMoviesByGenre(String genre) {
-
+        return movieRepository.findByGenre(genre);
     }
 
     public Movie validateIfMovieAlreadyExists(Movie movie) throws MovieAlreadyExistsException {
