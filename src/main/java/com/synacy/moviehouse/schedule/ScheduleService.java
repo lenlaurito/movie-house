@@ -31,7 +31,7 @@ public class ScheduleService {
     }
 
     public List<Schedule> getAllSchedules() {
-        return null;
+        return scheduleRepository.findAll();
     }
 
     public Schedule validateIfScheduleAlreadyExists(Schedule schedule) throws ScheduleAlreadyExistsException {
