@@ -53,10 +53,10 @@ class ScheduleServiceSpec extends Specification {
         Date end = Mock(Date)
         Movie movie = Mock(Movie)
 
-        expectedSchedule.getId() >> 1
+        expectedSchedule.id >> 1
         expectedSchedule.startDateTime >> start
         expectedSchedule.endDateTime >> end
-        expectedSchedule.movie = movie
+        expectedSchedule.movie >> movie
 
         scheduleRepository.findById(1) >> Optional.of(expectedSchedule)
 

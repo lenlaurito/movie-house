@@ -32,6 +32,6 @@ public class ScheduleService {
     }
 
     public void updateSchedule(Schedule schedule, long id) {
-
+        scheduleRepository.save(schedule);
     }
 }
