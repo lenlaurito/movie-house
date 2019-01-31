@@ -80,7 +80,7 @@ class MovieServiceSpec extends Specification {
         expectedMovies == actualMovies
     }
 
-    def "getMoviesByGenre should return list of movies whose genre is equal to the given genre"() {
+    def "getMoviesByGenre should return list of movies based on the given genre"() {
         given:
         List <Movie> expectedMovies = buildMovies()
         expectedMovies[0].genre >> "Action"
@@ -95,6 +95,24 @@ class MovieServiceSpec extends Specification {
         then:
         moviesByGenre.each { Movie movie ->
             assert "Action" == movie.genre
+        }
+    }
+
+    def "getMoviesByName should return list of movies based on the given name"() {
+        given:
+        List <Movie> expectedMovies = buildMovies()
+        expectedMovies[0].name >> "Die Hard"
+        expectedMovies[1].name >> "Die Hard"
+        expectedMovies[2].name >> "Avengers"
+
+        movieRepository.findByName("Die Hard") >> [expectedMovies[0], expectedMovies[1]]
+
+        when:
+        List<Movie> moviesByName = movieService.getMoviesByName("Die Hard")
+
+        then:
+        moviesByName.each { Movie movie ->
+            assert "Die Hard" == movie.name
         }
     }
 

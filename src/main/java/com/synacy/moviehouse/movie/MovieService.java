@@ -40,6 +40,10 @@ public class MovieService {
         return movieRepository.findByGenre(genre);
     }
 
+    public List<Movie> getMoviesByName(String name) {
+        return movieRepository.findByName(name);
+    }
+
     public Movie validateIfMovieAlreadyExists(Movie movie) throws MovieAlreadyExistsException {
         Optional <Movie> optionalMovie = movieRepository.findById(movie.getId());
 
