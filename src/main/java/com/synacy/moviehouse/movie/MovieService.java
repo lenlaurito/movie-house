@@ -23,7 +23,7 @@ public class MovieService {
     }
 
     public void updateMovie(Movie movie) {
-
+        movieRepository.save(movie);
     }
 
     public Movie validateIfMovieAlreadyExists(Movie movie) throws MovieAlreadyExistsException {
