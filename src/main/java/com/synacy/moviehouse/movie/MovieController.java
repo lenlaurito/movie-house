@@ -18,6 +18,6 @@ public class MovieController {
 
     @PostMapping("/movie")
     public Movie createNewMovie(@RequestBody Movie movie) throws MovieAlreadyExistsException {
-
+        return movieService.createNewMovie(movie);
     }
 }

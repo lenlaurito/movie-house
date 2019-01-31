@@ -5,10 +5,10 @@ import spock.lang.Specification
 class MovieControllerSpec extends Specification {
 
     MovieController movieController
-    MovieService movieService = Mock(movieService)
+    MovieService movieService = Mock(MovieService)
 
     void setup() {
-        movieController = new MovieController()
+        movieController = new MovieController(movieService)
     }
 
     void cleanup() {}
@@ -16,6 +16,7 @@ class MovieControllerSpec extends Specification {
     def "createNewMovie should return created Movie Object"() {
         given:
         Movie expectedMovie = Mock(Movie)
+
 
         movieService.createNewMovie(expectedMovie) >> expectedMovie
 
