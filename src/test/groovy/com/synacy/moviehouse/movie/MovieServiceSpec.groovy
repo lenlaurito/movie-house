@@ -45,4 +45,25 @@ class MovieServiceSpec extends Specification {
         then:
         thrown(MovieAlreadyExistsException)
     }
+
+    def "updateMovie should update content of movie"() {
+        given:
+        Movie expectedMovie = Mock(Movie)
+
+        expectedMovie.getName() >> "Avengers"
+        expectedMovie.getGenre() >> "Action"
+        expectedMovie.getId() >> 1
+        expectedMovie.getDuration() >> 150
+        expectedMovie.getDescription() >> "Updated Description"
+
+        when:
+        movieService.updateMovie(expectedMovie)
+
+        then:
+        1 == expectedMovie.id
+        "Avengers" == expectedMovie.name
+        "Action" == expectedMovie.genre
+        150 == expectedMovie.duration
+        "Updated Description" == expectedMovie.description
+    }
 }

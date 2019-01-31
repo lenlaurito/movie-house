@@ -22,6 +22,10 @@ public class MovieService {
         return movieRepository.save(newMovie);
     }
 
+    public void updateMovie(Movie movie) {
+
+    }
+
     public Movie validateIfMovieAlreadyExists(Movie movie) throws MovieAlreadyExistsException {
         Optional <Movie> optionalMovie = movieRepository.findById(movie.getId());
 
