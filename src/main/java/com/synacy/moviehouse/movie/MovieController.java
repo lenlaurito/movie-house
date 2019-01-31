@@ -38,12 +38,17 @@ public class MovieController {
     }
 
     @GetMapping("/movie")
-    public List<Movie> getMovieByGenre(@PathVariable String genre) {
+    public List<Movie> getMoviesByGenre(@PathVariable String genre) {
         return movieService.getMoviesByGenre(genre);
     }
 
     @GetMapping("/movie")
-    public List<Movie> getMovieByName(@PathVariable String name) {
+    public List<Movie> getMoviesByName(@PathVariable String name) {
+        return movieService.getMoviesByName(name);
+    }
+
+    @GetMapping("/movie")
+    public List<Movie> getMoviesByGenreAndName(@PathVariable String name, @PathVariable String genre) {
         return null;
     }
 }

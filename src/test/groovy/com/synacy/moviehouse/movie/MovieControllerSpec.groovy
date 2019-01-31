@@ -71,7 +71,7 @@ class MovieControllerSpec extends Specification {
         movieService.getMoviesByGenre("Action") >> [movies[0], movies[2]]
 
         when:
-        List <Movie> moviesByGenre = movieController.getMovieByGenre("Action")
+        List <Movie> moviesByGenre = movieController.getMoviesByGenre("Action")
 
         then:
         moviesByGenre.each { Movie movie ->
@@ -79,21 +79,43 @@ class MovieControllerSpec extends Specification {
         }
     }
 
-    def "getMovieByName should return list of movies based on given name"() {
+    def "getMoviesByName should return list of movies based on given name"() {
         given:
         List<Movie> movies = buildMovies()
-        movies[0].name = "Same"
-        movies[1].name = "Same"
-        movies[2].name = "Different"
+        movies[0].name >> "Same"
+        movies[1].name >> "Same"
+        movies[2].name >> "Different"
 
         movieService.getMoviesByName("Same") >> [movies[0], movies[1]]
 
         when:
-        List <Movie> moviesByName = movieController.getMovieByName("Same")
+        List <Movie> moviesByName = movieController.getMoviesByName("Same")
 
         then:
         moviesByName.each { Movie movie ->
             assert "Same" == movie.name
+        }
+    }
+
+    def "getMoviesByGenreAndName should return list of movies based on given genre and name"() {
+        given:
+        List<Movie> expectedMovies = buildMovies()
+        expectedMovies[0].name >> "Avengers"
+        expectedMovies[1].name >> "Avengers"
+        expectedMovies[2].name >> "Die Hard"
+        expectedMovies[0].genre >> "Action"
+        expectedMovies[1].genre >> "Action"
+        expectedMovies[2].genre >> "Action"
+
+        movieService.getMoviesByGenreAndName("Action", "Avengers") >> [expectedMovies[0], expectedMovies[1]]
+
+        when:
+        List<Movie> moviesByGenreAndName = movieController.getMoviesByGenreAndName("Action", "Avengers")
+
+        then:
+        moviesByGenreAndName.each { Movie movie ->
+            assert "Action" == movie.genre
+            assert "Avengers" == movie.name
         }
     }
 
