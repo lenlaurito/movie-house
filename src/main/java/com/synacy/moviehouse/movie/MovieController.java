@@ -1,6 +1,7 @@
 package com.synacy.moviehouse.movie;
 
 import com.synacy.moviehouse.exception.MovieAlreadyExistsException;
+import com.synacy.moviehouse.exception.MovieNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,7 +21,7 @@ public class MovieController {
     }
 
     @PutMapping("/movie/{id}")
-    public void updateMovie(@RequestBody Movie movie, @PathVariable long id) {
-
+    public void updateMovie(@RequestBody Movie movie, @PathVariable long id) throws MovieNotFoundException {
+        movieService.updateMovie(movie, id);
     }
 }
