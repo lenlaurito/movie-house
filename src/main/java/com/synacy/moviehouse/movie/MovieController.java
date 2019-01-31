@@ -24,4 +24,9 @@ public class MovieController {
     public void updateMovie(@RequestBody Movie movie, @PathVariable long id) throws MovieNotFoundException {
         movieService.updateMovie(movie, id);
     }
+
+    @DeleteMapping("/movie/{id}")
+    public void deleteMovie(@PathVariable long id) {
+        movieService.deleteMovie(id);
+    }
 }
