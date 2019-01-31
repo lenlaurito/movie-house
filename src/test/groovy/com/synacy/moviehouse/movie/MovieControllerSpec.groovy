@@ -119,7 +119,7 @@ class MovieControllerSpec extends Specification {
         }
     }
 
-    def buildMovies() {
+    List <Movie> buildMovies() {
         Movie firstMovie = Mock(Movie)
         Movie secondMovie = Mock(Movie)
         Movie thirdMovie = Mock(Movie)

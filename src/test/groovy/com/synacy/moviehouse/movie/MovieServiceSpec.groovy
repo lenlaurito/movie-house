@@ -171,7 +171,7 @@ class MovieServiceSpec extends Specification {
         expectedMovie == actualMovie
     }
 
-    def buildMovies() {
+    List <Movie> buildMovies() {
         Movie firstMovie = Mock(Movie)
         Movie secondMovie = Mock(Movie)
         Movie thirdMovie = Mock(Movie)

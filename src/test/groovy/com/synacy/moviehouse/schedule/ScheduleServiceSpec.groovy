@@ -85,4 +85,25 @@ class ScheduleServiceSpec extends Specification {
         then:
         thrown(ScheduleNotFoundException)
     }
+
+    def "getAllSchedules should return list of schedules"() {
+        given:
+        List <Schedule> expectedSchedules = buildSchedules()
+
+        scheduleService.findAll() >> expectedSchedules
+
+        when:
+        List <Schedule> actualSchedules = scheduleService.getAllSchedules()
+
+        then:
+        expectedSchedules == actualSchedules
+    }
+
+    List <Schedule> buildSchedules() {
+        Schedule firstSched = Mock(Schedule)
+        Schedule secondSched = Mock(Schedule)
+        Schedule thirdSched = Mock(Schedule)
+
+        return
+    }
 }

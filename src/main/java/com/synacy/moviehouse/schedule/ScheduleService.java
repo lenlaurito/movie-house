@@ -5,6 +5,7 @@ import com.synacy.moviehouse.exception.ScheduleNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -27,6 +28,10 @@ public class ScheduleService {
         Schedule newSchedule = validateIfScheduleDoesNotExist(schedule, id);
 
         scheduleRepository.save(newSchedule);
+    }
+
+    public List<Schedule> getAllSchedules() {
+        return null;
     }
 
     public Schedule validateIfScheduleAlreadyExists(Schedule schedule) throws ScheduleAlreadyExistsException {
