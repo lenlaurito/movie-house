@@ -1,6 +1,7 @@
 package com.synacy.moviehouse.schedule
 
 import com.synacy.moviehouse.exception.ScheduleAlreadyExistsException
+import com.synacy.moviehouse.movie.Movie
 import spock.lang.Specification
 
 class ScheduleServiceSpec extends Specification {
@@ -43,5 +44,29 @@ class ScheduleServiceSpec extends Specification {
 
         then:
         thrown(ScheduleAlreadyExistsException)
+    }
+
+    def "updateSchedule should update content of schedule"() {
+        given:
+        Schedule expectedSchedule = Mock(Schedule)
+        Date start = Mock(Date)
+        Date end = Mock(Date)
+        Movie movie = Mock(Movie)
+
+        expectedSchedule.getId() >> 1
+        expectedSchedule.startDateTime >> start
+        expectedSchedule.endDateTime >> end
+        expectedSchedule.movie = movie
+
+        scheduleRepository.findById(1) >> Optional.of(expectedSchedule)
+
+        when:
+        scheduleService.updateSchedule(expectedSchedule, 1)
+
+        then:
+        1 == expectedSchedule.id
+        start == expectedSchedule.startDateTime
+        end == expectedSchedule.endDateTime
+        movie == expectedSchedule.movie
     }
 }

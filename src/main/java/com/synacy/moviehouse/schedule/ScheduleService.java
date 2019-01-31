@@ -30,4 +30,8 @@ public class ScheduleService {
 
         return schedule;
     }
+
+    public void updateSchedule(Schedule schedule, long id) {
+
+    }
 }
