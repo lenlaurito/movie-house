@@ -4,6 +4,8 @@ import com.synacy.moviehouse.exception.MovieAlreadyExistsException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -24,6 +26,14 @@ public class MovieService {
 
     public void updateMovie(Movie movie) {
         movieRepository.save(movie);
+    }
+
+    public void deleteMovie(long id) {
+        movieRepository.deleteById(id);
+    }
+
+    public List<Movie> getAllMovies() {
+
     }
 
     public Movie validateIfMovieAlreadyExists(Movie movie) throws MovieAlreadyExistsException {

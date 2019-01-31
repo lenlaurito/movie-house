@@ -66,4 +66,24 @@ class MovieServiceSpec extends Specification {
         150 == expectedMovie.duration
         "Updated Description" == expectedMovie.description
     }
+
+    def "getAllMovies should return list of movies"() {
+        given:
+        List <Movie> expectedMovies = buildMovies()
+
+        movieRepository.findAll() >> expectedMovies
+
+        when:
+        List <Movie> actualMovies = movieService.getAllMovies()
+
+        then:
+        expectedMovies == actualMovies
+    }
+
+    def buildMovies() {
+        Movie firstMovie = Mock(Movie)
+        Movie secondMovie = Mock(Movie)
+
+        return [firstMovie, secondMovie]
+    }
 }
