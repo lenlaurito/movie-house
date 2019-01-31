@@ -1,5 +1,6 @@
 package com.synacy.moviehouse.schedule
 
+import com.synacy.moviehouse.exception.ScheduleAlreadyExistsException
 import spock.lang.Specification
 
 class ScheduleServiceSpec extends Specification {
@@ -25,5 +26,19 @@ class ScheduleServiceSpec extends Specification {
 
         then:
         expectedSchedule == actualSchedule
+    }
+
+    def "createNewSchedule should throw ScheduleAlreadyExistsException if given schedule already exists"() {
+        given:
+        Schedule mockSchedule = Mock(Schedule)
+        mockSchedule.id >> 1
+
+        scheduleRepository.findById(mockSchedule.id) >> Optional.of(mockSchedule)
+
+        when:
+        scheduleService.createNewSchedule(mockSchedule)
+
+        then:
+        thrown(ScheduleAlreadyExistsException)
     }
 }
