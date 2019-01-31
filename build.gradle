@@ -30,4 +30,9 @@ dependencies {
     implementation("org.postgresql:postgresql")
     testCompile ("org.spockframework:spock-core:1.1-groovy-2.4-rc-2")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
+    compile ('org.objenesis:objenesis:1.4')
+    compile ("cglib:cglib:2.2")
+}
+plugins {
+    compile ':cache:1.1.7'
 }
