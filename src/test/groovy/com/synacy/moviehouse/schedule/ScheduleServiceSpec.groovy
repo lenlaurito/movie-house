@@ -1,6 +1,7 @@
 package com.synacy.moviehouse.schedule
 
 import com.synacy.moviehouse.exception.ScheduleAlreadyExistsException
+import com.synacy.moviehouse.exception.ScheduleNotFoundException
 import com.synacy.moviehouse.movie.Movie
 import spock.lang.Specification
 
@@ -68,5 +69,20 @@ class ScheduleServiceSpec extends Specification {
         start == expectedSchedule.startDateTime
         end == expectedSchedule.endDateTime
         movie == expectedSchedule.movie
+    }
+
+    def "updateSchedule should throw ScheduleNotFoundException if given schedule does not exist"() {
+        given:
+        Schedule mockSchedule = Mock(Schedule)
+
+        mockSchedule.getId() >> 1
+
+        scheduleRepository.findById(mockSchedule.getId()) >> Optional.empty()
+
+        when:
+        scheduleService.updateSchedule(mockSchedule, 1)
+
+        then:
+        thrown(ScheduleNotFoundException)
     }
 }
