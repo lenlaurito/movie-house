@@ -2,6 +2,7 @@ package com.synacy.moviehouse.schedule;
 
 import com.synacy.moviehouse.exception.ScheduleAlreadyExistsException;
 import com.synacy.moviehouse.exception.ScheduleNotFoundException;
+import com.synacy.moviehouse.movie.Movie;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -32,6 +33,10 @@ public class ScheduleService {
 
     public List<Schedule> getAllSchedules() {
         return scheduleRepository.findAll();
+    }
+
+    public List<Schedule> getSchedulesByMovie(Movie movie) {
+        return null;
     }
 
     public Schedule validateIfScheduleAlreadyExists(Schedule schedule) throws ScheduleAlreadyExistsException {
