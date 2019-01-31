@@ -19,13 +19,16 @@ class ScheduleServiceSpec extends Specification {
         given:
         Schedule expectedSchedule = Mock(Schedule)
 
+        expectedSchedule.getId() >> 1
+
         scheduleRepository.save(_ as Schedule) >> expectedSchedule
+        scheduleRepository.findById(expectedSchedule.getId()) >> Optional.empty()
 
         when:
-        Schedule actualSchedule = scheduleService.createNewSchedule(expectedSchedule)
+        Schedule actualMovie = scheduleService.createNewSchedule(expectedSchedule)
 
         then:
-        expectedSchedule == actualSchedule
+        expectedSchedule == actualMovie
     }
 
     def "createNewSchedule should throw ScheduleAlreadyExistsException if given schedule already exists"() {
