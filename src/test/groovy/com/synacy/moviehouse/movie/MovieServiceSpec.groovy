@@ -1,6 +1,5 @@
 package com.synacy.moviehouse.movie
 
-import com.synacy.moviehouse.exception.MovieAlreadyExists
 import com.synacy.moviehouse.exception.MovieAlreadyExistsException
 import spock.lang.Specification
 
@@ -20,6 +19,9 @@ class MovieServiceSpec extends Specification {
         given:
         Movie expectedMovie = Mock(Movie)
 
+        expectedMovie.getId() >> 1
+
+        movieRepository.findById(expectedMovie.getId()) >> Optional.empty()
         movieRepository.save(_ as Movie) >> expectedMovie
 
         when:
@@ -33,7 +35,9 @@ class MovieServiceSpec extends Specification {
         given:
         Movie mockMovie = Mock(Movie)
 
-        movieRepository.findOne(mockMovie) >> Optional.of(mockMovie)
+        mockMovie.getId() >> 1
+
+        movieRepository.findById(mockMovie.getId()) >> Optional.of(mockMovie)
 
         when:
         movieService.createNewMovie(mockMovie)
