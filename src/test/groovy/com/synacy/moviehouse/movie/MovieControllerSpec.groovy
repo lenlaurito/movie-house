@@ -61,11 +61,30 @@ class MovieControllerSpec extends Specification {
         expectedMovies == actualMovies
     }
 
+    def "getMoviesByGenre should return list of movies based on given genre"() {
+        given:
+        List<Movie> expectedMovies = buildMovies()
+        expectedMovies[0].genre >> "Action"
+        expectedMovies[1].genre >> "Tragedy"
+        expectedMovies[2].genre >> "Action"
+
+        movieService.getMoviesByGenre("Action") >> [expectedMovies[0], expectedMovies[2]]
+
+        when:
+        List <Movie> actualMovies = movieController.getMovieByGenre("Action")
+
+        then:
+        actualMovies.each { Movie movie ->
+            assert "Action" == movie.genre
+        }
+    }
+
     def buildMovies() {
         Movie firstMovie = Mock(Movie)
         Movie secondMovie = Mock(Movie)
+        Movie thirdMovie = Mock(Movie)
 
-        return [firstMovie, secondMovie]
+        return [firstMovie, secondMovie, thirdMovie]
     }
 
 }
