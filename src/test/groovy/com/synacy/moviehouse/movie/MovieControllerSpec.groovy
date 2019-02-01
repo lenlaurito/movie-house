@@ -27,7 +27,7 @@ class MovieControllerSpec extends Specification {
         expectedMovie == actualMovie
     }
 
-    def "updateMovie should return movie with updated content"() {
+    def "updateMovie should update the contents of Movie of the given id"() {
         given:
         Movie expectedMovie = Mock(Movie)
 
