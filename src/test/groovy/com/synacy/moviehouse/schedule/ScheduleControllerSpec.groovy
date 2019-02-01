@@ -51,6 +51,19 @@ class ScheduleControllerSpec extends Specification {
         mockMovie == expectedSched.movie
     }
 
+    def "getScheduleById should return Schedule based on the given id"() {
+        given:
+        Schedule expectedSchedule = Mock(Schedule)
+
+        scheduleService.getScheduleById(1) >> expectedSchedule
+
+        when:
+        Schedule actualSched = scheduleController.getScheduleById(1)
+
+        then:
+        expectedSchedule == actualSched
+    }
+
     List <Date> buildStartAndEndDateTime() {
         SimpleDateFormat sdt = new SimpleDateFormat("MM-dd-yyyy HH:mm:ss");
 
