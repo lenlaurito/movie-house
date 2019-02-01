@@ -28,6 +28,7 @@ public class MovieService {
     public void updateMovie(Movie movie, long id) throws MovieNotFoundException {
         validateIfMovieDoesNotExist(id);
 
+        movie.setId(id);
         movieRepository.save(movie);
     }
 

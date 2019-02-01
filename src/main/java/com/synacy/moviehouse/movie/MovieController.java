@@ -32,23 +32,21 @@ public class MovieController {
         movieService.deleteMovie(id);
     }
 
+    @GetMapping("/movie/{id}")
+    public Movie getMovieById(@PathVariable long id) {
+        return movieService.getMovieById(id);
+    }
+
     @GetMapping("/movie")
-    public List<Movie> getAllMovies() {
+    @ResponseBody
+    public List<Movie> getMovies(@RequestParam(required = false) String genre, @RequestParam(required = false) String name) {
+        if ( genre != null && name == null )
+            return movieService.getMoviesByGenre(genre);
+        else if ( genre == null && name != null )
+            return movieService.getMoviesByName(name);
+        else if ( genre != null && name != null )
+            return movieService.getMoviesByGenreAndName(genre, name);
+
         return movieService.getAllMovies();
-    }
-
-    @GetMapping("/movie")
-    public List<Movie> getMoviesByGenre(@PathVariable String genre) {
-        return movieService.getMoviesByGenre(genre);
-    }
-
-    @GetMapping("/movie")
-    public List<Movie> getMoviesByName(@PathVariable String name) {
-        return movieService.getMoviesByName(name);
-    }
-
-    @GetMapping("/movie")
-    public List<Movie> getMoviesByGenreAndName(@PathVariable String genre, @PathVariable String name) {
-        return movieService.getMoviesByGenreAndName(genre, name);
     }
 }
