@@ -32,6 +32,6 @@ public class ScheduleController {
 
     @GetMapping("/schedule/{id}")
     public Schedule getScheduleById(@PathVariable long id) {
-        return null;
+        return scheduleService.getScheduleById(id);
     }
 }
