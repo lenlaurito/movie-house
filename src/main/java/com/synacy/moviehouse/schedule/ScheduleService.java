@@ -48,6 +48,12 @@ public class ScheduleService {
         return scheduleRepository.findScheduleByDay(date);
     }
 
+    public Schedule getScheduleById(long id) {
+        Optional <Schedule> optionalSchedule = scheduleRepository.findById(id);
+
+        return optionalSchedule.get();
+    }
+
     public Schedule validateIfScheduleAlreadyExists(Schedule schedule) throws ScheduleAlreadyExistsException {
         Optional <Schedule> optionalSchedule = scheduleRepository.findById(schedule.getId());
 
