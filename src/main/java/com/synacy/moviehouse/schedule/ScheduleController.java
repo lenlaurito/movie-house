@@ -2,17 +2,25 @@ package com.synacy.moviehouse.schedule;
 
 import com.synacy.moviehouse.exception.ScheduleAlreadyExistsException;
 import com.synacy.moviehouse.exception.ScheduleNotFoundException;
+import com.synacy.moviehouse.movie.Movie;
+import com.synacy.moviehouse.movie.MovieRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
 
 @RestController
 public class ScheduleController {
 
     private ScheduleService scheduleService;
+    private MovieRepository movieRepository;
 
     @Autowired
-    public ScheduleController(ScheduleService scheduleService) {
+    public ScheduleController(ScheduleService scheduleService, MovieRepository movieRepository) {
         this.scheduleService = scheduleService;
+        this.movieRepository = movieRepository;
     }
 
     @PostMapping("/schedule")
@@ -33,5 +41,17 @@ public class ScheduleController {
     @GetMapping("/schedule/{id}")
     public Schedule getScheduleById(@PathVariable long id) {
         return scheduleService.getScheduleById(id);
+    }
+
+    @GetMapping("/schedule")
+    @ResponseBody
+    public List<Schedule> getSchedules(@RequestParam(required = false) long movieId, @RequestParam(required = false) Date date) {
+        if ( movieId != 0 && date == null ) {
+            return scheduleService.getSchedulesByMovie(movieId);
+        }
+        //else if ( movieId == 0 && date != null )
+        //    return scheduleService.getSchedulesByDay(date);
+
+        return scheduleService.getAllSchedules();
     }
 }
