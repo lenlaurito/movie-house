@@ -7,6 +7,8 @@ import com.synacy.moviehouse.movie.MovieRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -43,14 +45,18 @@ public class ScheduleController {
 
     @GetMapping("/schedule")
     @ResponseBody
-    public List<Schedule> getSchedules(@RequestParam(required = false) Optional<long> movieId, @RequestParam(required = false) Date startDate, @RequestParam(required = false) Date endDate) {
+    public List<Schedule> getSchedules(@RequestParam(required = false) Optional<Long> movieId, @RequestParam(required = false) String startDate, @RequestParam(required = false) String endDate) throws ParseException {
         if ( movieId.isPresent() && startDate == null && endDate == null) {
             return scheduleService.getSchedulesByMovie(movieId.get());
         }
-        else if ( movieId == 0 && startDate != null && endDate != null)
-            return scheduleService.getSchedulesByDay(startDate, endDate);
+        else if ( movieId.isEmpty() && startDate != null && endDate != null) {
+            SimpleDateFormat sdt = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
+            Date startDateTime = sdt.parse(startDate);
+            Date endDateTime = sdt.parse(endDate);
 
-        //return scheduleService.getAllSchedules();
-        return null;
+            return scheduleService.getSchedulesByDay(startDateTime, endDateTime);
+        }
+
+        return scheduleService.getAllSchedules();
     }
 }
