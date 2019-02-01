@@ -43,12 +43,12 @@ public class ScheduleController {
 
     @GetMapping("/schedule")
     @ResponseBody
-    public List<Schedule> getSchedules(@RequestParam(required = false) long movieId, @RequestParam(required = false) Date date) {
-        if ( movieId != 0 && date == null ) {
+    public List<Schedule> getSchedules(@RequestParam(required = false) long movieId, @RequestParam(required = false) Date startDate, @RequestParam(required = false) Date endDate) {
+        if ( movieId != 0 && startDate == null && endDate == null) {
             return scheduleService.getSchedulesByMovie(movieId);
         }
-        //else if ( movieId == 0 && date != null )
-        //    return scheduleService.getSchedulesByDay(date);
+        else if ( movieId == 0 && startDate != null && endDate != null)
+            return scheduleService.getSchedulesByDay(startDate, endDate);
 
         //return scheduleService.getAllSchedules();
         return null;
