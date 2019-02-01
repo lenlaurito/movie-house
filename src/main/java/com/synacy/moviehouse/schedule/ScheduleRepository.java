@@ -1,6 +1,5 @@
 package com.synacy.moviehouse.schedule;
 
-import com.synacy.moviehouse.movie.Movie;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
