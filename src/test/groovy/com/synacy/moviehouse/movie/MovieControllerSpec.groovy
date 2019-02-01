@@ -48,20 +48,20 @@ class MovieControllerSpec extends Specification {
         "Updated Description" == expectedMovie.description
     }
 
-    def "getAllMovies should return list of movies"() {
+    def "getMovies should return list of all movies if there are no parameters"() {
         given:
         List <Movie> expectedMovies = buildMovies()
 
         movieService.getAllMovies() >> expectedMovies
 
         when:
-        List <Movie> actualMovies = movieController.getAllMovies()
+        List <Movie> actualMovies = movieController.getMovies(null, null)
 
         then:
         expectedMovies == actualMovies
     }
 
-    def "getMoviesByGenre should return list of movies based on given genre"() {
+    def "getMovies should return list of movies based on the parameter genre"() {
         given:
         List<Movie> movies = buildMovies()
         movies[0].genre >> "Action"
@@ -71,7 +71,7 @@ class MovieControllerSpec extends Specification {
         movieService.getMoviesByGenre("Action") >> [movies[0], movies[2]]
 
         when:
-        List <Movie> moviesByGenre = movieController.getMoviesByGenre("Action")
+        List <Movie> moviesByGenre = movieController.getMovies("Action", null)
 
         then:
         moviesByGenre.each { Movie movie ->
@@ -79,7 +79,7 @@ class MovieControllerSpec extends Specification {
         }
     }
 
-    def "getMoviesByName should return list of movies based on given name"() {
+    def "getMovies should return list of movies based on the parameter name"() {
         given:
         List<Movie> movies = buildMovies()
         movies[0].name >> "Same"
@@ -89,7 +89,7 @@ class MovieControllerSpec extends Specification {
         movieService.getMoviesByName("Same") >> [movies[0], movies[1]]
 
         when:
-        List <Movie> moviesByName = movieController.getMoviesByName("Same")
+        List <Movie> moviesByName = movieController.getMovies(null, "Same")
 
         then:
         moviesByName.each { Movie movie ->
@@ -97,7 +97,7 @@ class MovieControllerSpec extends Specification {
         }
     }
 
-    def "getMoviesByGenreAndName should return list of movies based on given genre and name"() {
+    def "getMovies should return list of movies based on the parameters genre and name"() {
         given:
         List<Movie> expectedMovies = buildMovies()
         expectedMovies[0].name >> "Avengers"
@@ -110,7 +110,7 @@ class MovieControllerSpec extends Specification {
         movieService.getMoviesByGenreAndName("Action", "Avengers") >> [expectedMovies[0], expectedMovies[1]]
 
         when:
-        List<Movie> moviesByGenreAndName = movieController.getMoviesByGenreAndName("Action", "Avengers")
+        List<Movie> moviesByGenreAndName = movieController.getMovies("Action", "Avengers")
 
         then:
         moviesByGenreAndName.each { Movie movie ->
