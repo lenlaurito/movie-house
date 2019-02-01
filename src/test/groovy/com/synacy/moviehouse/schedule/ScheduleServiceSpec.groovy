@@ -3,6 +3,7 @@ package com.synacy.moviehouse.schedule
 import com.synacy.moviehouse.exception.ScheduleAlreadyExistsException
 import com.synacy.moviehouse.exception.ScheduleNotFoundException
 import com.synacy.moviehouse.movie.Movie
+import com.synacy.moviehouse.movie.MovieRepository
 import spock.lang.Specification
 
 import java.text.SimpleDateFormat
@@ -11,10 +12,11 @@ class ScheduleServiceSpec extends Specification {
 
     ScheduleService scheduleService;
 
-    ScheduleRepository scheduleRepository = Mock(ScheduleRepository);
+    ScheduleRepository scheduleRepository = Mock(ScheduleRepository)
+    MovieRepository movieRepository = Mock(movieRepository)
 
     void setup() {
-        scheduleService = new ScheduleService(scheduleRepository);
+        scheduleService = new ScheduleService(scheduleRepository, movieRepository)
     }
 
     void cleanup() {}
