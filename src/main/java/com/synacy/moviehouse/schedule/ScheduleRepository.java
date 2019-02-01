@@ -11,6 +11,7 @@ import java.util.List;
 public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
 
     List <Schedule> findByMovie(Movie movie);
+    List<Schedule> findAllByStartDateTimeBetween(Date startDateTime, Date endDateTime);
 
     //@Query("SELECT sched FROM Schedule where sched.startDateTime < :date AND sched.endDateTime > :date")
     //List<Schedule> findScheduleByDay(@Param("date") Date date);
