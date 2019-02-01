@@ -43,9 +43,9 @@ public class ScheduleController {
 
     @GetMapping("/schedule")
     @ResponseBody
-    public List<Schedule> getSchedules(@RequestParam(required = false) long movieId, @RequestParam(required = false) Date startDate, @RequestParam(required = false) Date endDate) {
-        if ( movieId != 0 && startDate == null && endDate == null) {
-            return scheduleService.getSchedulesByMovie(movieId);
+    public List<Schedule> getSchedules(@RequestParam(required = false) Optional<long> movieId, @RequestParam(required = false) Date startDate, @RequestParam(required = false) Date endDate) {
+        if ( movieId.isPresent() && startDate == null && endDate == null) {
+            return scheduleService.getSchedulesByMovie(movieId.get());
         }
         else if ( movieId == 0 && startDate != null && endDate != null)
             return scheduleService.getSchedulesByDay(startDate, endDate);
