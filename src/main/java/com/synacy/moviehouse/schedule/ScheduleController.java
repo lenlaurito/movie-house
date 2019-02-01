@@ -24,4 +24,9 @@ public class ScheduleController {
     public void updateSchedule(@RequestBody Schedule sched, @PathVariable long id) throws ScheduleNotFoundException {
         scheduleService.updateSchedule(sched, id);
     }
+
+    @DeleteMapping("/schedule/{id}")
+    public void deleteSchedule(@PathVariable long id) {
+        scheduleService.deleteSchedule(id);
+    }
 }
