@@ -21,7 +21,7 @@ public class Schedule {
 	private Movie movie;
 
 	@NotNull
-	@JsonFormat(pattern = "MM-dd-yyyy HH:mm:ss")
+	@JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS")
 	private Date startDateTime;
 
 	@NotNull

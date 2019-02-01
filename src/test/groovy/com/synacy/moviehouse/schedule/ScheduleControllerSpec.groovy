@@ -30,7 +30,7 @@ class ScheduleControllerSpec extends Specification {
         expectedSched == actualSched
     }
 
-    def "updateSchedule should should update the contents of Schedule of the given id"() {
+    /*def "updateSchedule should should update the contents of Schedule of the given id"() {
         given:
         Schedule expectedSched = Mock(Schedule)
         List <Date> expectedDates = buildStartAndEndDateTime()
@@ -62,7 +62,7 @@ class ScheduleControllerSpec extends Specification {
 
         then:
         expectedSchedule == actualSched
-    }
+    }*/
 
     List <Date> buildStartAndEndDateTime() {
         SimpleDateFormat sdt = new SimpleDateFormat("MM-dd-yyyy HH:mm:ss");

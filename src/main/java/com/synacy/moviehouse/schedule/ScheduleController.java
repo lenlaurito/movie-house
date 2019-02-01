@@ -15,12 +15,10 @@ import java.util.Optional;
 public class ScheduleController {
 
     private ScheduleService scheduleService;
-    private MovieRepository movieRepository;
 
     @Autowired
-    public ScheduleController(ScheduleService scheduleService, MovieRepository movieRepository) {
+    public ScheduleController(ScheduleService scheduleService) {
         this.scheduleService = scheduleService;
-        this.movieRepository = movieRepository;
     }
 
     @PostMapping("/schedule")
@@ -52,6 +50,7 @@ public class ScheduleController {
         //else if ( movieId == 0 && date != null )
         //    return scheduleService.getSchedulesByDay(date);
 
-        return scheduleService.getAllSchedules();
+        //return scheduleService.getAllSchedules();
+        return null;
     }
 }

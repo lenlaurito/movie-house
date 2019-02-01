@@ -3,6 +3,7 @@ package com.synacy.moviehouse.schedule;
 import com.synacy.moviehouse.exception.ScheduleAlreadyExistsException;
 import com.synacy.moviehouse.exception.ScheduleNotFoundException;
 import com.synacy.moviehouse.movie.Movie;
+import com.synacy.moviehouse.movie.MovieRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,10 +15,12 @@ import java.util.Optional;
 public class ScheduleService {
 
     private ScheduleRepository scheduleRepository;
+    private MovieRepository movieRepository;
 
     @Autowired
-    public ScheduleService(ScheduleRepository scheduleRepository) {
+    public ScheduleService(ScheduleRepository scheduleRepository, MovieRepository movieRepository) {
         this.scheduleRepository = scheduleRepository;
+        this.movieRepository = movieRepository;
     }
 
     public Schedule createNewSchedule(Schedule schedule) throws ScheduleAlreadyExistsException {
@@ -41,12 +44,13 @@ public class ScheduleService {
     }
 
     public List<Schedule> getSchedulesByMovie(long movieId) {
-        return scheduleRepository.findByMovie(movieId);
+        Optional <Movie> movie = movieRepository.findById(movieId);
+        return scheduleRepository.findByMovie(movie.get());
     }
 
-    public List<Schedule> getSchedulesByDay(Date date) {
+    /*public List<Schedule> getSchedulesByDay(Date date) {
         return scheduleRepository.findScheduleByDay(date);
-    }
+    }*/
 
     public Schedule getScheduleById(long id) {
         Optional <Schedule> optionalSchedule = scheduleRepository.findById(id);

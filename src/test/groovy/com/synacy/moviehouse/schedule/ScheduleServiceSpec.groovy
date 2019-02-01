@@ -124,7 +124,7 @@ class ScheduleServiceSpec extends Specification {
         }
     }*/
 
-    def "getSchedulesByDay should return list of schedules based on given day"() {
+    /*def "getSchedulesByDay should return list of schedules based on given day"() {
         given:
         List <Schedule> expectedSchedules = buildSchedules()
 
@@ -140,7 +140,7 @@ class ScheduleServiceSpec extends Specification {
         schedulesByDay.each { Schedule sched ->
             assert expectedSchedules[0] == sched
         }
-    }
+    }*/
 
     def "getScheduleById should return schedule object based on given id"() {
         given:
