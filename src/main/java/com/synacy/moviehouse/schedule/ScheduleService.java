@@ -40,8 +40,8 @@ public class ScheduleService {
         return scheduleRepository.findAll();
     }
 
-    public List<Schedule> getSchedulesByMovie(long id) {
-        return scheduleRepository.findByMovie(id);
+    public List<Schedule> getSchedulesByMovie(long movieId) {
+        return scheduleRepository.findByMovie(movieId);
     }
 
     public List<Schedule> getSchedulesByDay(Date date) {
