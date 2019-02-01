@@ -140,6 +140,20 @@ class ScheduleServiceSpec extends Specification {
         }
     }
 
+    def "getScheduleById should return schedule object based on given id"() {
+        given:
+        Schedule expectedSched = Mock(Schedule)
+        expectedSched.id >> 1
+
+        scheduleRepository.findById(expectedSched.id) >> Optional.of(expectedSched)
+
+        when:
+        Schedule actualSched = scheduleService.getScheduleById(1)
+
+        then:
+        expectedSched == actualSched
+    }
+
     List <Schedule> buildSchedules() {
         Schedule firstSched = Mock(Schedule)
         Schedule secondSched = Mock(Schedule)
