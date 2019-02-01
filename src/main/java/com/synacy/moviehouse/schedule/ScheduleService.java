@@ -6,6 +6,7 @@ import com.synacy.moviehouse.movie.Movie;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -31,12 +32,20 @@ public class ScheduleService {
         scheduleRepository.save(newSchedule);
     }
 
+    public void deleteSchedule(long id) {
+        scheduleRepository.deleteById(id);
+    }
+
     public List<Schedule> getAllSchedules() {
         return scheduleRepository.findAll();
     }
 
     public List<Schedule> getSchedulesByMovie(Movie movie) {
-        return null;
+        return scheduleRepository.findByMovie(movie);
+    }
+
+    public List<Schedule> getSchedulesByDay(Date date) {
+        return scheduleRepository.findScheduleByDay(date);
     }
 
     public Schedule validateIfScheduleAlreadyExists(Schedule schedule) throws ScheduleAlreadyExistsException {

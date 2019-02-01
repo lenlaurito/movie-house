@@ -1,5 +1,6 @@
 package com.synacy.moviehouse.schedule;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.synacy.moviehouse.movie.Movie;
 import lombok.Data;
 
@@ -12,13 +13,15 @@ import java.util.Date;
 public class Schedule {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "schedule_sequence")
+	@SequenceGenerator(name = "schedule_sequence", sequenceName = "schedule_sequence", allocationSize = 1)
 	private Long id;
 
-	@NotNull @OneToOne(fetch = FetchType.LAZY)
+	@NotNull @OneToOne(fetch = FetchType.EAGER)
 	private Movie movie;
 
 	@NotNull
+	@JsonFormat(pattern = "MM-dd-yyyy HH:mm:ss")
 	private Date startDateTime;
 
 	@NotNull
