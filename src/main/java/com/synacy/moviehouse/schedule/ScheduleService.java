@@ -1,6 +1,7 @@
 package com.synacy.moviehouse.schedule;
 
 import com.synacy.moviehouse.exception.ScheduleAlreadyExistsException;
+import com.synacy.moviehouse.exception.ScheduleConflictException;
 import com.synacy.moviehouse.exception.ScheduleNotFoundException;
 import com.synacy.moviehouse.movie.Movie;
 import com.synacy.moviehouse.movie.MovieRepository;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Service;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class ScheduleService {
@@ -23,8 +25,9 @@ public class ScheduleService {
         this.movieRepository = movieRepository;
     }
 
-    public Schedule createNewSchedule(Schedule schedule) throws ScheduleAlreadyExistsException {
+    public Schedule createNewSchedule(Schedule schedule) throws ScheduleAlreadyExistsException, ScheduleConflictException{
         Schedule newSchedule = validateIfScheduleAlreadyExists(schedule);
+        newSchedule = validateIfNoScheduleConflict(newSchedule);
 
         return scheduleRepository.save(newSchedule);
     }
@@ -72,6 +75,19 @@ public class ScheduleService {
 
         if (optionalSchedule.isEmpty())
             throw new ScheduleNotFoundException();
+
+        return schedule;
+    }
+
+    public Schedule validateIfNoScheduleConflict(Schedule schedule) throws ScheduleConflictException{
+
+        long timeDiff = TimeUnit.MILLISECONDS.toMinutes( schedule.getEndDateTime().getTime() - schedule.getStartDateTime().getTime() );
+
+        System.out.println(timeDiff);
+        System.out.println(schedule.getMovie().getDuration());
+
+        if (timeDiff <= schedule.getMovie().getDuration())
+            throw new ScheduleConflictException();
 
         return schedule;
     }

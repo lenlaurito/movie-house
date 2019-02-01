@@ -1,9 +1,8 @@
 package com.synacy.moviehouse.schedule;
 
 import com.synacy.moviehouse.exception.ScheduleAlreadyExistsException;
+import com.synacy.moviehouse.exception.ScheduleConflictException;
 import com.synacy.moviehouse.exception.ScheduleNotFoundException;
-import com.synacy.moviehouse.movie.Movie;
-import com.synacy.moviehouse.movie.MovieRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,7 +23,7 @@ public class ScheduleController {
     }
 
     @PostMapping("/schedule")
-    public Schedule createNewSchedule(@RequestBody Schedule sched) throws ScheduleAlreadyExistsException {
+    public Schedule createNewSchedule(@RequestBody Schedule sched) throws ScheduleAlreadyExistsException, ScheduleConflictException{
         return scheduleService.createNewSchedule(sched);
     }
 
@@ -50,9 +49,12 @@ public class ScheduleController {
             return scheduleService.getSchedulesByMovie(movieId.get());
         }
         else if ( movieId.isEmpty() && startDate != null && endDate != null) {
-            SimpleDateFormat sdt = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
+            SimpleDateFormat sdt = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             Date startDateTime = sdt.parse(startDate);
             Date endDateTime = sdt.parse(endDate);
+
+            System.out.println(startDateTime);
+            System.out.println(endDateTime);
 
             return scheduleService.getSchedulesByDay(startDateTime, endDateTime);
         }
