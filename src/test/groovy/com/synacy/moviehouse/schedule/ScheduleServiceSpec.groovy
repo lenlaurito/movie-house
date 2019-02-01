@@ -5,6 +5,8 @@ import com.synacy.moviehouse.exception.ScheduleNotFoundException
 import com.synacy.moviehouse.movie.Movie
 import spock.lang.Specification
 
+import java.text.SimpleDateFormat
+
 class ScheduleServiceSpec extends Specification {
 
     ScheduleService scheduleService;
@@ -90,7 +92,7 @@ class ScheduleServiceSpec extends Specification {
         given:
         List <Schedule> expectedSchedules = buildSchedules()
 
-        scheduleService.findAll() >> expectedSchedules
+        scheduleRepository.findAll() >> expectedSchedules
 
         when:
         List <Schedule> actualSchedules = scheduleService.getAllSchedules()
@@ -99,11 +101,11 @@ class ScheduleServiceSpec extends Specification {
         expectedSchedules == actualSchedules
     }
 
-    /*def "getSchedulesByMovie should return list of schedules based on given movie"() {
+    def "getSchedulesByMovie should return list of schedules based on given movie"() {
         given:
         List <Schedule> expectedSchedules = buildSchedules()
-        Movie firstMovie = Mock(movie)
-        Movie secondMovie = Mock(movie)
+        Movie firstMovie = Mock(Movie)
+        Movie secondMovie = Mock(Movie)
 
         expectedSchedules[0].movie >> firstMovie
         expectedSchedules[1].movie >> firstMovie
@@ -118,13 +120,38 @@ class ScheduleServiceSpec extends Specification {
         schedulesByMovie.each { Schedule sched ->
             assert firstMovie == sched.movie
         }
-    }*/
+    }
+
+    def "getSchedulesByDay should return list of schedules based on given day"() {
+        given:
+        List <Schedule> expectedSchedules = buildSchedules()
+
+        SimpleDateFormat sdt = new SimpleDateFormat("MM-dd-yyyy HH:mm:ss");
+        Date date = sdt.parse("01-03-2019 10:00:00");
+
+        scheduleRepository.findScheduleByDay(date) >> [expectedSchedules[0]]
+
+        when:
+        List <Schedule> schedulesByDay = scheduleService.getSchedulesByDay(date)
+
+        then:
+        schedulesByDay.each { Schedule sched ->
+            assert expectedSchedules[0] == sched
+        }
+    }
 
     List <Schedule> buildSchedules() {
         Schedule firstSched = Mock(Schedule)
         Schedule secondSched = Mock(Schedule)
         Schedule thirdSched = Mock(Schedule)
 
-        return
+        firstSched.startDateTime >> "01-01-2019 08:00:00"
+        firstSched.endDateTime >> "01-07-2019 08:00:00"
+        secondSched.startDateTime >> "01-07-2019 09:00:00"
+        secondSched.endDateTime >> "01-13-2019 09:00:00"
+        thirdSched.startDateTime >> "01-13-2019 10:00:00"
+        thirdSched.endDateTime >> "01-19-2019 10:00:00"
+
+        return [firstSched, secondSched, thirdSched]
     }
 }
