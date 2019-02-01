@@ -48,9 +48,9 @@ public class ScheduleService {
         return scheduleRepository.findByMovie(movie.get());
     }
 
-    /*public List<Schedule> getSchedulesByDay(Date date) {
-        return scheduleRepository.findScheduleByDay(date);
-    }*/
+    public List<Schedule> getSchedulesByDay(Date startDate, Date endDate) {
+        return scheduleRepository.findAllByStartDateTimeBetween(startDate, endDate);
+    }
 
     public Schedule getScheduleById(long id) {
         Optional <Schedule> optionalSchedule = scheduleRepository.findById(id);
