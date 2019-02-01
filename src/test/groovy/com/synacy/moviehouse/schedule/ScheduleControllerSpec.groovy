@@ -12,7 +12,7 @@ class ScheduleControllerSpec extends Specification {
     ScheduleService scheduleService = Mock(ScheduleService)
 
     void setup() {
-        scheduleController = new ScheduleController()
+        scheduleController = new ScheduleController(scheduleService)
     }
 
     void cleanup() {}
@@ -21,7 +21,7 @@ class ScheduleControllerSpec extends Specification {
         given:
         Schedule expectedSched = Mock(Schedule)
 
-        scheduleService.createNewSchedule(_ as Schedule) >> expectedSched
+        scheduleService.createNewSchedule(expectedSched) >> expectedSched
 
         when:
         Schedule actualSched = scheduleController.createNewSchedule(expectedSched)

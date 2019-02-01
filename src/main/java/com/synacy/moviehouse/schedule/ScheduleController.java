@@ -22,6 +22,6 @@ public class ScheduleController {
 
     @PutMapping("/schedule/{id}")
     public void updateSchedule(@RequestBody Schedule sched, @PathVariable long id) throws ScheduleNotFoundException {
-
+        scheduleService.updateSchedule(sched, id);
     }
 }
