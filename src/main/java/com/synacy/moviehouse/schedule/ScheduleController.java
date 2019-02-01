@@ -18,6 +18,6 @@ public class ScheduleController {
 
     @PostMapping("/schedule")
     public Schedule createNewSchedule(@RequestBody Schedule sched) throws ScheduleAlreadyExistsException {
-        return null;
+        return scheduleService.createNewSchedule(sched);
     }
 }
