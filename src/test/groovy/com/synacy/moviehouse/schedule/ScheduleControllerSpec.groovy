@@ -92,6 +92,21 @@ class ScheduleControllerSpec extends Specification {
         }
     }
 
+    def "getSchedules should return list of schedules whose startDateTime and endDateTime is between the given startDate and endDate"() {
+        given:
+        List <Schedule> schedules = buildSchedules()
+
+        scheduleService.getSchedulesByDay("2019-01-01 07:00:00","2019-01-01 11:00:00") >> [schedules[0]]
+
+        when:
+        List <Schedule> schedByDay = scheduleController.getSchedules(Optional.empty(), "2019-01-01 07:00:00", "2019-01-01 11:00:00")
+
+        then:
+        schedByDay.each { Schedule sched ->
+            assert schedules[0] == sched
+        }
+    }
+
     List <Date> buildStartAndEndDateTime() {
         SimpleDateFormat sdt = new SimpleDateFormat("MM-dd-yyyy HH:mm:ss");
 
@@ -116,6 +131,14 @@ class ScheduleControllerSpec extends Specification {
         firstSched.movie >> firstMovie
         secondSched.movie >> secondMovie
         thirdSched.movie >> thirdMovie
+
+        SimpleDateFormat sdt = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+        firstSched.startDateTime >> sdt.parse("2019-01-01 08:00:00")
+        secondSched.startDateTime >> sdt.parse("2019-01-02 08:00:00")
+        thirdSched.startDateTime >> sdt.parse("2019-01-03 08:00:00")
+        firstSched.endDateTime >> sdt.parse("2019-01-01 10:00:00")
+        secondSched.endDateTime >> sdt.parse("2019-01-02 10:00:00")
+        thirdSched.endDateTime >> sdt.parse("2019-01-03 10:00:00")
 
         return [firstSched, secondSched, thirdSched]
     }
