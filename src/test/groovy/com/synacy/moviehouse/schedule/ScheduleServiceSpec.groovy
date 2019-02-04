@@ -114,7 +114,7 @@ class ScheduleServiceSpec extends Specification {
         expectedSchedules == actualSchedules
     }
 
-    /*def "getSchedulesByMovie should return list of schedules based on given movie"() {
+    def "getSchedulesByMovie should return list of schedules based on given movie"() {
         given:
         List <Schedule> expectedSchedules = buildSchedules()
         Movie firstMovie = Mock(Movie)
@@ -126,6 +126,7 @@ class ScheduleServiceSpec extends Specification {
         expectedSchedules[1].movie >> firstMovie
         expectedSchedules[2].movie >> secondMovie
 
+        movieRepository.findById(1) >> Optional.of(firstMovie)
         scheduleRepository.findByMovie(firstMovie) >> [expectedSchedules[0], expectedSchedules[1]]
 
         when:
@@ -133,9 +134,9 @@ class ScheduleServiceSpec extends Specification {
 
         then:
         schedulesByMovie.each { Schedule sched ->
-            assert firstMovie.id == sched.movie
+            assert firstMovie == sched.movie
         }
-    }*/
+    }
 
     /*def "getSchedulesByDay should return list of schedules based on given day"() {
         given:
