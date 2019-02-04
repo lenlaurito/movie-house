@@ -30,7 +30,7 @@ class ScheduleControllerSpec extends Specification {
         expectedSched == actualSched
     }
 
-    /*def "updateSchedule should should update the contents of Schedule of the given id"() {
+    def "updateSchedule should should update the contents of Schedule of the given id"() {
         given:
         Schedule expectedSched = Mock(Schedule)
         List <Date> expectedDates = buildStartAndEndDateTime()
@@ -62,7 +62,20 @@ class ScheduleControllerSpec extends Specification {
 
         then:
         expectedSchedule == actualSched
-    }*/
+    }
+
+    def "getSchedules should return list of all schedules if there are no parameters"() {
+        given:
+        List <Schedule> expectedSched = buildSchedules()
+
+        scheduleService.getAllSchedules() >> expectedSched
+
+        when:
+        List <Schedule> actualSched = scheduleController.getSchedules(Optional.empty(), null, null)
+
+        then:
+        expectedSched == actualSched
+    }
 
     List <Date> buildStartAndEndDateTime() {
         SimpleDateFormat sdt = new SimpleDateFormat("MM-dd-yyyy HH:mm:ss");
@@ -71,5 +84,13 @@ class ScheduleControllerSpec extends Specification {
         Date end = sdt.parse("01-07-2019 08:00:00")
 
         return [start, end]
+    }
+
+    List <Schedule> buildSchedules() {
+        Schedule firstSched = Mock(Schedule)
+        Schedule secondSched = Mock(Schedule)
+        Schedule thirdSched = Mock(Schedule)
+
+        return [firstSched, secondSched, thirdSched]
     }
 }
