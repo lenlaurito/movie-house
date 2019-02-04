@@ -21,11 +21,9 @@ class ScheduleServiceSpec extends Specification {
 
     void cleanup() {}
 
-    /*def "createNewSchedule should return Schedule object"() {
+    def "createNewSchedule should return Schedule object"() {
         given:
-        Schedule expectedSchedule = Mock(Schedule)
-
-        expectedSchedule.getId() >> 1
+        Schedule expectedSchedule = buildSchedule()
 
         scheduleRepository.save(_ as Schedule) >> expectedSchedule
         scheduleRepository.findById(expectedSchedule.getId()) >> Optional.empty()
@@ -37,7 +35,7 @@ class ScheduleServiceSpec extends Specification {
         expectedSchedule == actualMovie
     }
 
-    def "createNewSchedule should throw ScheduleAlreadyExistsException if given schedule already exists"() {
+    /*def "createNewSchedule should throw ScheduleAlreadyExistsException if given schedule already exists"() {
         given:
         Schedule mockSchedule = Mock(Schedule)
         mockSchedule.id >> 1
@@ -171,5 +169,20 @@ class ScheduleServiceSpec extends Specification {
         thirdSched.endDateTime >> "01-19-2019 10:00:00"
 
         return [firstSched, secondSched, thirdSched]
+    }
+
+    Schedule buildSchedule() {
+        Schedule mockSchedule = Mock(Schedule)
+        Movie mockMovie = Mock(Movie)
+        mockMovie.getDuration() >> 90
+
+        SimpleDateFormat sdt = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+
+        mockSchedule.getId() >> 1
+        mockSchedule.getEndDateTime() >> sdt.parse("2019-01-01 10:00:00")
+        mockSchedule.getStartDateTime() >> sdt.parse("2019-01-01 08:00:00")
+        mockSchedule.getMovie() >> mockMovie
+
+        return mockSchedule
     }
 }

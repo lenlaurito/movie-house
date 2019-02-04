@@ -89,9 +89,6 @@ public class ScheduleService {
 
         long timeDiff = TimeUnit.MILLISECONDS.toMinutes( schedule.getEndDateTime().getTime() - schedule.getStartDateTime().getTime() );
 
-        System.out.println(timeDiff);
-        System.out.println(schedule.getMovie().getDuration());
-
         if (timeDiff <= schedule.getMovie().getDuration())
             throw new ScheduleConflictException();
 
