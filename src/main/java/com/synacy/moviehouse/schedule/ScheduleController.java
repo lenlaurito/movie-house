@@ -49,14 +49,7 @@ public class ScheduleController {
             return scheduleService.getSchedulesByMovie(movieId.get());
         }
         else if ( movieId.isEmpty() && startDate != null && endDate != null) {
-            SimpleDateFormat sdt = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            Date startDateTime = sdt.parse(startDate);
-            Date endDateTime = sdt.parse(endDate);
-
-            System.out.println(startDateTime);
-            System.out.println(endDateTime);
-
-            return scheduleService.getSchedulesByDay(startDateTime, endDateTime);
+            return scheduleService.getSchedulesByDay(startDate, endDate);
         }
 
         return scheduleService.getAllSchedules();
