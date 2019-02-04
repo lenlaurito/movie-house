@@ -8,6 +8,7 @@ import com.synacy.moviehouse.movie.MovieRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -51,8 +52,12 @@ public class ScheduleService {
         return scheduleRepository.findByMovie(movie.get());
     }
 
-    public List<Schedule> getSchedulesByDay(Date startDate, Date endDate) {
-        return scheduleRepository.findByStartDateTimeBetween(startDate, endDate);
+    public List<Schedule> getSchedulesByDay(String startDate, String endDate) {
+        SimpleDateFormat sdt = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date startDateTime = sdt.parse(startDate);
+        Date endDateTime = sdt.parse(endDate);
+
+        return scheduleRepository.findByStartDateTimeBetween(startDateTime, endDateTime);
     }
 
     public Schedule getScheduleById(long id) {
