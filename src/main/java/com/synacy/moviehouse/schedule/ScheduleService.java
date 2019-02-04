@@ -52,7 +52,7 @@ public class ScheduleService {
     }
 
     public List<Schedule> getSchedulesByDay(Date startDate, Date endDate) {
-        return scheduleRepository.findAllByStartDateTimeBetween(startDate, endDate);
+        return scheduleRepository.findByStartDateTimeBetween(startDate, endDate);
     }
 
     public Schedule getScheduleById(long id) {
