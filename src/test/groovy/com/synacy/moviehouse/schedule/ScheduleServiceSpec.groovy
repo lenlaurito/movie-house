@@ -1,6 +1,7 @@
 package com.synacy.moviehouse.schedule
 
 import com.synacy.moviehouse.exception.ScheduleAlreadyExistsException
+import com.synacy.moviehouse.exception.ScheduleConflictException
 import com.synacy.moviehouse.exception.ScheduleNotFoundException
 import com.synacy.moviehouse.movie.Movie
 import com.synacy.moviehouse.movie.MovieRepository
@@ -35,10 +36,9 @@ class ScheduleServiceSpec extends Specification {
         expectedSchedule == actualMovie
     }
 
-    /*def "createNewSchedule should throw ScheduleAlreadyExistsException if given schedule already exists"() {
+    def "createNewSchedule should throw ScheduleAlreadyExistsException if given schedule already exists"() {
         given:
-        Schedule mockSchedule = Mock(Schedule)
-        mockSchedule.id >> 1
+        Schedule mockSchedule = buildSchedule()
 
         scheduleRepository.findById(mockSchedule.id) >> Optional.of(mockSchedule)
 
@@ -47,7 +47,20 @@ class ScheduleServiceSpec extends Specification {
 
         then:
         thrown(ScheduleAlreadyExistsException)
-    }*/
+    }
+
+    def "createNewSchedule should throw ScheduleConflictException if the time difference between startDateTime and endDateTime is less than the movie duration"() {
+        given:
+        Schedule mockSchedule = buildConflictchedule()
+
+        scheduleRepository.findById(1) >> Optional.empty()
+
+        when:
+        scheduleService.createNewSchedule(mockSchedule)
+
+        then:
+        thrown(ScheduleConflictException)
+    }
 
     /*def "updateSchedule should update content of schedule"() {
         given:
@@ -182,6 +195,21 @@ class ScheduleServiceSpec extends Specification {
         mockSchedule.getEndDateTime() >> sdt.parse("2019-01-01 10:00:00")
         mockSchedule.getStartDateTime() >> sdt.parse("2019-01-01 08:00:00")
         mockSchedule.getMovie() >> mockMovie
+
+        return mockSchedule
+    }
+
+    Schedule buildConflictchedule() {
+        Schedule mockSchedule = Mock(Schedule)
+        Movie mockMovie = Mock(Movie)
+        mockMovie.duration >> 90
+
+        SimpleDateFormat sdt = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+
+        mockSchedule.id >> 1
+        mockSchedule.endDateTime >> sdt.parse("2019-01-01 8:30:00")
+        mockSchedule.startDateTime >> sdt.parse("2019-01-01 08:00:00")
+        mockSchedule.movie >> mockMovie
 
         return mockSchedule
     }
