@@ -8,11 +8,13 @@ import com.synacy.moviehouse.movie.MovieRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.swing.text.html.Option;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -55,6 +57,7 @@ public class ScheduleService {
 
     public List<Schedule> getSchedulesByDay(String startDate, String endDate) throws ParseException {
         SimpleDateFormat sdt = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        sdt.setTimeZone(TimeZone.getTimeZone("UTC"));
         Date startDateTime = sdt.parse(startDate);
         Date endDateTime = sdt.parse(endDate);
 
