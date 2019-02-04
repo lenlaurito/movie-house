@@ -77,6 +77,21 @@ class ScheduleControllerSpec extends Specification {
         expectedSched == actualSched
     }
 
+    def "getSchedules should return list of schedules based given movie"() {
+        given:
+        List <Schedule> schedules = buildSchedules()
+
+        scheduleService.getSchedulesByMovie(1) >> [schedules[0]]
+
+        when:
+        List <Schedule> schedByMovie = scheduleController.getSchedules(Optional.of(1L), null, null)
+
+        then:
+        schedByMovie.each { Schedule sched ->
+            assert schedules[0].movie == sched.movie
+        }
+    }
+
     List <Date> buildStartAndEndDateTime() {
         SimpleDateFormat sdt = new SimpleDateFormat("MM-dd-yyyy HH:mm:ss");
 
@@ -90,6 +105,17 @@ class ScheduleControllerSpec extends Specification {
         Schedule firstSched = Mock(Schedule)
         Schedule secondSched = Mock(Schedule)
         Schedule thirdSched = Mock(Schedule)
+
+        Movie firstMovie = Mock(Movie)
+        firstMovie.id >> 1
+        Movie secondMovie = Mock(Movie)
+        secondMovie.id >> 2
+        Movie thirdMovie = Mock(Movie)
+        thirdMovie.id >> 3
+
+        firstSched.movie >> firstMovie
+        secondSched.movie >> secondMovie
+        thirdSched.movie >> thirdMovie
 
         return [firstSched, secondSched, thirdSched]
     }
