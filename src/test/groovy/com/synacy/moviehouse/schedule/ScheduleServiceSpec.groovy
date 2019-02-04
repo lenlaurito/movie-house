@@ -62,7 +62,7 @@ class ScheduleServiceSpec extends Specification {
         thrown(ScheduleConflictException)
     }
 
-    /*def "updateSchedule should update content of schedule"() {
+    def "updateSchedule should update content of schedule"() {
         given:
         Schedule expectedSchedule = Mock(Schedule)
         Date start = Mock(Date)
@@ -99,7 +99,7 @@ class ScheduleServiceSpec extends Specification {
 
         then:
         thrown(ScheduleNotFoundException)
-    }*/
+    }
 
     def "getAllSchedules should return list of schedules"() {
         given:
