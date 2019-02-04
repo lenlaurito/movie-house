@@ -8,6 +8,7 @@ import com.synacy.moviehouse.movie.MovieRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -52,7 +53,7 @@ public class ScheduleService {
         return scheduleRepository.findByMovie(movie.get());
     }
 
-    public List<Schedule> getSchedulesByDay(String startDate, String endDate) {
+    public List<Schedule> getSchedulesByDay(String startDate, String endDate) throws ParseException {
         SimpleDateFormat sdt = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Date startDateTime = sdt.parse(startDate);
         Date endDateTime = sdt.parse(endDate);
