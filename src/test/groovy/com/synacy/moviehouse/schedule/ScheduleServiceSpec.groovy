@@ -144,6 +144,7 @@ class ScheduleServiceSpec extends Specification {
         String startDate = "2019-01-01 07:00:00"
         String endDate = "2019-01-01 17:00:00"
         SimpleDateFormat sdt = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+        sdt.setTimeZone(TimeZone.getTimeZone("UTC"))
 
         scheduleRepository.findByStartDateTimeBetween(sdt.parse(startDate), sdt.parse(endDate)) >> expectedSchedules
 
