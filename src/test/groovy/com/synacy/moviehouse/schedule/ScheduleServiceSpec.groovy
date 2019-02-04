@@ -138,23 +138,21 @@ class ScheduleServiceSpec extends Specification {
         }
     }
 
-    /*def "getSchedulesByDay should return list of schedules based on given day"() {
+    def "getSchedulesByDay should return list of schedules based on given day"() {
         given:
         List <Schedule> expectedSchedules = buildSchedules()
+        String startDate = "2019-01-01 07:00:00"
+        String endDate = "2019-01-01 17:00:00"
+        SimpleDateFormat sdt = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
 
-        SimpleDateFormat sdt = new SimpleDateFormat("MM-dd-yyyy HH:mm:ss");
-        Date date = sdt.parse("01-03-2019 10:00:00");
-
-        scheduleRepository.findScheduleByDay(date) >> [expectedSchedules[0]]
+        scheduleRepository.findByStartDateTimeBetween(sdt.parse(startDate), sdt.parse(endDate)) >> expectedSchedules
 
         when:
-        List <Schedule> schedulesByDay = scheduleService.getSchedulesByDay(date)
+        List <Schedule> actualSchedules = scheduleService.getSchedulesByDay(startDate, endDate)
 
         then:
-        schedulesByDay.each { Schedule sched ->
-            assert expectedSchedules[0] == sched
-        }
-    }*/
+        expectedSchedules == actualSchedules
+    }
 
     def "getScheduleById should return schedule object based on given id"() {
         given:
@@ -176,11 +174,11 @@ class ScheduleServiceSpec extends Specification {
         Schedule thirdSched = Mock(Schedule)
 
         firstSched.startDateTime >> "01-01-2019 08:00:00"
-        firstSched.endDateTime >> "01-07-2019 08:00:00"
-        secondSched.startDateTime >> "01-07-2019 09:00:00"
-        secondSched.endDateTime >> "01-13-2019 09:00:00"
-        thirdSched.startDateTime >> "01-13-2019 10:00:00"
-        thirdSched.endDateTime >> "01-19-2019 10:00:00"
+        firstSched.endDateTime >> "01-01-2019 10:00:00"
+        secondSched.startDateTime >> "01-01-2019 11:00:00"
+        secondSched.endDateTime >> "01-01-2019 13:00:00"
+        thirdSched.startDateTime >> "01-01-2019 14:00:00"
+        thirdSched.endDateTime >> "01-01-2019 16:00:00"
 
         return [firstSched, secondSched, thirdSched]
     }
