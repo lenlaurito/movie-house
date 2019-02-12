@@ -15,7 +15,9 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
 
     List <Schedule> findByStartDateTimeBetween(Date startDateTime, Date endDateTime);
 
-    @Query("SELECT s FROM Schedule WHERE ?2 >= s.startDateTime AND s.endDateTime >= ?1")
+    @Query(
+            value = "SELECT * FROM SCHEDULE s WHERE ?2 >= s.start_date_time AND s.end_date_time >= ?1",
+            nativeQuery = true)
     List <Schedule> findOverlappingSchedules(Date startDateTime, Date endDateTime);
 
     //@Query("SELECT s FROM Schedule WHERE NOT (s.startDateTime > ?1 OR s.endDateTime < ?2)")
