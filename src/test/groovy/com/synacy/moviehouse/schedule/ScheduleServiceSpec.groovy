@@ -27,6 +27,7 @@ class ScheduleServiceSpec extends Specification {
         Schedule expectedSchedule = buildSchedule()
 
         scheduleRepository.save(_ as Schedule) >> expectedSchedule
+        scheduleRepository.findOverlappingSchedules(_ as Date, _ as Date) >> []
         scheduleRepository.findById(expectedSchedule.getId()) >> Optional.empty()
 
         when:
@@ -49,10 +50,28 @@ class ScheduleServiceSpec extends Specification {
         thrown(ScheduleAlreadyExistsException)
     }
 
+    def "createNewSchedule should throw ScheduleAlreadyExistsException if the date of the given schedule overlaps with the existing schedules"() {
+        given:
+        Schedule schedule = Mock(Schedule)
+        schedule.id >> 1
+        schedule.startDateTime >> Mock(Date)
+        schedule.endDateTime >> Mock(Date)
+
+        scheduleRepository.findOverlappingSchedules(schedule.startDateTime, schedule.endDateTime) >> [Mock(Schedule), Mock(Schedule)]
+        scheduleRepository.findById(1) >> Optional.empty()
+
+        when:
+        scheduleService.createNewSchedule(schedule)
+
+        then:
+        thrown(ScheduleConflictException)
+    }
+
     def "createNewSchedule should throw ScheduleConflictException if the time difference between startDateTime and endDateTime is less than the movie duration"() {
         given:
         Schedule mockSchedule = buildConflictchedule()
 
+        scheduleRepository.findOverlappingSchedules(_ as Date, _ as Date) >> []
         scheduleRepository.findById(1) >> Optional.empty()
 
         when:
