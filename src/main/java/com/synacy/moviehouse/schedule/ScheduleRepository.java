@@ -2,6 +2,7 @@ package com.synacy.moviehouse.schedule;
 
 import com.synacy.moviehouse.movie.Movie;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.Date;
@@ -13,6 +14,9 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
     List <Schedule> findByMovie(Movie movie);
 
     List <Schedule> findByStartDateTimeBetween(Date startDateTime, Date endDateTime);
+
+    @Query("SELECT s FROM Schedule WHERE ?2 >= s.startDateTime AND s.endDateTime >= ?1")
+    List <Schedule> findOverlappingSchedules(Date startDateTime, Date endDateTime);
 
     //@Query("SELECT s FROM Schedule WHERE NOT (s.startDateTime > ?1 OR s.endDateTime < ?2)")
     //List<Schedule> findByDay(Date start, Date end);
