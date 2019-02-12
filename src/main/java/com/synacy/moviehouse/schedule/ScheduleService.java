@@ -8,7 +8,6 @@ import com.synacy.moviehouse.movie.MovieRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.swing.text.html.Option;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -32,6 +31,7 @@ public class ScheduleService {
     public Schedule createNewSchedule(Schedule schedule) throws ScheduleAlreadyExistsException, ScheduleConflictException{
         Schedule newSchedule = validateIfScheduleAlreadyExists(schedule);
         newSchedule = validateIfNoScheduleConflict(newSchedule);
+        newSchedule = validateIfNoScheduleAndDurationConflict(newSchedule);
 
         return scheduleRepository.save(newSchedule);
     }
@@ -70,7 +70,7 @@ public class ScheduleService {
         return optionalSchedule.get();
     }
 
-    public Schedule validateIfScheduleAlreadyExists(Schedule schedule) throws ScheduleAlreadyExistsException {
+    private Schedule validateIfScheduleAlreadyExists(Schedule schedule) throws ScheduleAlreadyExistsException {
         Optional <Schedule> optionalSchedule = scheduleRepository.findById(schedule.getId());
 
         if (optionalSchedule.isPresent())
@@ -79,7 +79,7 @@ public class ScheduleService {
         return schedule;
     }
 
-    public Schedule validateIfScheduleDoesNotExist(Schedule schedule, long id) throws ScheduleNotFoundException {
+    private Schedule validateIfScheduleDoesNotExist(Schedule schedule, long id) throws ScheduleNotFoundException {
         Optional <Schedule> optionalSchedule = scheduleRepository.findById(id);
 
         if (optionalSchedule.isEmpty())
@@ -88,7 +88,16 @@ public class ScheduleService {
         return schedule;
     }
 
-    public Schedule validateIfNoScheduleConflict(Schedule schedule) throws ScheduleConflictException{
+    private Schedule validateIfNoScheduleConflict(Schedule schedule) throws ScheduleConflictException{
+        List <Schedule> overlappingSchedules = scheduleRepository.findOverlappingSchedules(schedule.getStartDateTime(), schedule.getEndDateTime());
+
+        if (overlappingSchedules.isEmpty())
+            return schedule;
+
+        throw new ScheduleConflictException();
+    }
+
+    private Schedule validateIfNoScheduleAndDurationConflict(Schedule schedule) throws ScheduleConflictException{
 
         long timeDiff = TimeUnit.MILLISECONDS.toMinutes( schedule.getEndDateTime().getTime() - schedule.getStartDateTime().getTime() );
 
