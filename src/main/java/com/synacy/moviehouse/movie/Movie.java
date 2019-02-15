@@ -1,14 +1,19 @@
 package com.synacy.moviehouse.movie;
 
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import lombok.Data;
+
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.util.concurrent.TimeUnit;
 
 @Entity
+@Data
 public class Movie {
 
-	@Id @NotNull
+	@Id
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "movie_sequence")
+	@SequenceGenerator(name = "movie_sequence", sequenceName = "movie_sequence", allocationSize = 1)
 	private Long id;
 
 	@NotNull
